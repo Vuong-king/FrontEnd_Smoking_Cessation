@@ -30,31 +30,31 @@ export function Navbar() {
               Home
             </Link>
             <Link
-              to="/#blog"
+              to="*"
               className="text-white/80 hover:text-white transition-colors"
             >
               Blog
             </Link>
             <Link
-              to="/#plan"
+              to="*"
               className="text-white/80 hover:text-white transition-colors"
             >
               Plan
             </Link>
             <Link
-              to="/#community"
+              to="*"
               className="text-white/80 hover:text-white transition-colors"
             >
               Community
             </Link>
             <Link
-              to="/#ranking"
+              to="*"
               className="text-white/80 hover:text-white transition-colors"
             >
               Ranking
             </Link>
             <Link
-              to="/#premium"
+              to="*"
               className="text-white/80 hover:text-white transition-colors"
             >
               Premium

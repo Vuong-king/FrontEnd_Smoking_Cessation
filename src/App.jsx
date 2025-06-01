@@ -12,6 +12,7 @@ import { Footer } from "./layouts/Footer";
 // Pages
 import HomePages from "./pages/generic/home/HomePage";
 import AuthPage from "./pages/auth/AuthPage";
+import NotFoundPage from "./pages/error/404Page";
 
 
 // ===== Layout Wrapper =====
@@ -44,9 +45,7 @@ function App() {
           <Route
             path="*"
             element={
-              <div className="text-center py-16 text-2xl">
-                404 - Page Not Found
-              </div>
+              <NotFoundPage/>
             }
           />
         </Route>
