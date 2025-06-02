@@ -16,7 +16,7 @@ const AuthContainer = () => {
               }`}
             >
               <div className="w-full h-full flex flex-col justify-center items-center p-10 bg-white">
-                <h2 className="text-3xl font-bold mb-6 text-gray-800">
+                <h2 className="text-3xl font-bold mb-6">
                     <ColourfulText text="Sign Up" />
                 </h2>
                 <input
@@ -55,7 +55,7 @@ const AuthContainer = () => {
               }`}
             >
               <div className="w-full h-full flex flex-col justify-center items-center p-10 bg-white">
-                <h2 className="text-3xl font-bold mb-6 text-gray-800">
+                <h2 className="text-3xl font-bold mb-6 \">
                   <ColourfulText text="Sign In" />
                 </h2>
                 <input

@@ -24,7 +24,7 @@ export function Navbar() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link
-              to="/#services"
+              to="/"
               className="text-white/80 hover:text-white transition-colors"
             >
               Home

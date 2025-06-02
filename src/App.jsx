@@ -6,11 +6,12 @@ import "antd/dist/reset.css";
 import { Navbar } from "./layouts/Navbar";
 import { Footer } from "./layouts/Footer";
 import ScrollToTop from "./layouts/ScrolltoTop";
-
+import UserLayout from "./layouts/user/UserLayout";
 // Pages
 import HomePages from "./pages/generic/home/HomePage";
 import AuthPage from "./pages/auth/AuthPage";
 import NotFoundPage from "./pages/error/404Page";
+import DashBoardUser from "./pages/user/DashBoardUser";
 
 // ===== Layout Wrapper =====
 const Layout = () => (
@@ -29,19 +30,20 @@ function App() {
     <Router>
       <ScrollToTop />
       <Routes>
-        {/*  Route useuse layout */}
+        {/* Auth route */}
         <Route path="/login" element={<AuthPage />} />
 
-        {/*  Route not useuse layout */}
+        {/* Main layout routes */}
         <Route element={<Layout />}>
           <Route path="/" element={<HomePages />} />
         </Route>
 
-        {/* Admin routes */}
-        {/* <Route path='/admin/dashboard' element={<DashboardAdmin />} />
-        <Route path='/admin/dashboard/user-management' element={<UserManagement />} /> */}
-
-        {/* 404 layout */}
+        {/* User routes */}
+        <Route path="/user" element={<UserLayout />}>
+          <Route path="dashboard" element={<DashBoardUser />} />
+        </Route>
+        
+        {/* 404 route */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
