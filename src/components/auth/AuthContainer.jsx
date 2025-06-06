@@ -1,8 +1,34 @@
 import React, { useState } from "react";
 import ColourfulText from "../ui/ColourfulText";
+import { useAuth } from "../../context/AuthContext";
+
 
 const AuthContainer = () => {
   const [isSignUp, setIsSignUp] = useState(false);
+  const { login, loading, error } = useAuth(); // Add useAuth hook
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
+
+  // Handle input changes
+  const handleLoginChange = (e) => {
+    const { name, value } = e.target;
+    setLoginData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Handle login submit
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await login(loginData.email, loginData.password);
+    } catch (err) {
+      console.error("Login failed:", err);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-600">
@@ -17,7 +43,7 @@ const AuthContainer = () => {
             >
               <div className="w-full h-full flex flex-col justify-center items-center p-10 bg-white">
                 <h2 className="text-3xl font-bold mb-6">
-                    <ColourfulText text="Sign Up" />
+                  <ColourfulText text="Sign Up" />
                 </h2>
                 <input
                   type="email"
@@ -55,22 +81,41 @@ const AuthContainer = () => {
               }`}
             >
               <div className="w-full h-full flex flex-col justify-center items-center p-10 bg-white">
-                <h2 className="text-3xl font-bold mb-6 \">
+                <h2 className="text-3xl font-bold mb-6">
                   <ColourfulText text="Sign In" />
                 </h2>
-                <input
-                  type="email"
-                  placeholder="Email"
-                  className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
-                />
-                <button className="bg-indigo-600 text-white px-6 py-2 rounded mb-3 transition-transform transform hover:scale-105 duration-200 w-[215px] h-[45px]">
-                  Sign In
-                </button>
+                <form onSubmit={handleLoginSubmit} className="w-full">
+                  <input
+                    type="email"
+                    name="email"
+                    value={loginData.email}
+                    onChange={handleLoginChange}
+                    placeholder="Email"
+                    className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
+                  />
+                  <input
+                    type="password"
+                    name="password"
+                    value={loginData.password}
+                    onChange={handleLoginChange}
+                    placeholder="Password"
+                    className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
+                  />
+                  {error && (
+                    <p className="text-red-500 text-sm mb-3">{error}</p>
+                  )}
+                  <span className="text-gray-600 mb-3 text-right w-full block">
+                    Forgot Password?
+                  </span>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="bg-indigo-600 text-white px-6 py-2 rounded mb-3 transition-transform transform hover:scale-105 duration-200 w-[215px] h-[45px] disabled:opacity-50"
+                  >
+                    {loading ? "Signing in..." : "Sign In"}
+                  </button>
+                </form>
+
                 <button className="flex items-center justify-center border border-gray-300 px-6 py-2 rounded hover:bg-gray-100 hover:border-indigo-500 transition transform hover:scale-105 duration-200 text-gray-800 w-auto max-w-[250px]">
                   <img
                     src="https://www.svgrepo.com/show/475656/google-color.svg"

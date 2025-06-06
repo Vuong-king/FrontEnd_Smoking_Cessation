@@ -7,11 +7,14 @@ import { Navbar } from "./layouts/Navbar";
 import { Footer } from "./layouts/Footer";
 import ScrollToTop from "./layouts/ScrolltoTop";
 import UserLayout from "./layouts/user/UserLayout";
+import { AuthProvider } from "./context/AuthContext";
+
 // Pages
 import HomePages from "./pages/generic/home/HomePage";
 import AuthPage from "./pages/auth/AuthPage";
 import NotFoundPage from "./pages/error/404Page";
 import DashBoardUser from "./pages/user/DashBoardUser";
+import BlogPages from "./pages/generic/blogs/BlogPages";
 
 // ===== Layout Wrapper =====
 const Layout = () => (
@@ -27,7 +30,9 @@ const Layout = () => (
 // ===== App with Routing =====
 function App() {
   return (
+  
     <Router>
+        <AuthProvider>
       <ScrollToTop />
       <Routes>
         {/* Auth route */}
@@ -36,6 +41,7 @@ function App() {
         {/* Main layout routes */}
         <Route element={<Layout />}>
           <Route path="/" element={<HomePages />} />
+          <Route path="/blog" element={<BlogPages />} />
         </Route>
 
         {/* User routes */}
@@ -46,7 +52,9 @@ function App() {
         {/* 404 route */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      </AuthProvider>
     </Router>
+    
   );
 }
 
