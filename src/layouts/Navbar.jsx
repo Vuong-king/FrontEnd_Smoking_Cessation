@@ -39,12 +39,6 @@ export function Navbar() {
               to="*"
               className="text-white/80 hover:text-white transition-colors"
             >
-              Plan
-            </Link>
-            <Link
-              to="*"
-              className="text-white/80 hover:text-white transition-colors"
-            >
               Community
             </Link>
             <Link

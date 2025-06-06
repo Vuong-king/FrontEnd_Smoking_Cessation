@@ -18,6 +18,7 @@ import ColourfulText from "../../components/ui/ColourfulText";
 
 const menu = [
   { label: "Dashboard", icon: <DashboardOutlined />, path: "/user/dashboard" },
+  {label: "Smoking Status", icon: <DashboardOutlined />, path: "/user/smoking-status"},
   { label: "Blog", icon: <AuditOutlined />, path: "/user/blog" },
   { label: "Quit Plan", icon: <CarryOutOutlined />, path: "/user/quitplan" },
   { label: "Progress", icon: <FieldTimeOutlined />, path: "/user/progress" },

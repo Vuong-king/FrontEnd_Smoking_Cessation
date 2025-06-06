@@ -15,6 +15,8 @@ import AuthPage from "./pages/auth/AuthPage";
 import NotFoundPage from "./pages/error/404Page";
 import DashBoardUser from "./pages/user/DashBoardUser";
 import BlogPages from "./pages/generic/blogs/BlogPages";
+import QuitPlanPage from "./pages/user/QuitPlanPage";
+
 
 // ===== Layout Wrapper =====
 const Layout = () => (
@@ -47,6 +49,7 @@ function App() {
         {/* User routes */}
         <Route path="/user" element={<UserLayout />}>
           <Route path="dashboard" element={<DashBoardUser />} />
+          <Route path="quitplan" element={<QuitPlanPage />} />
         </Route>
         
         {/* 404 route */}
