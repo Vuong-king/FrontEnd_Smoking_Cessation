@@ -1,15 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ColourfulText from "../ui/ColourfulText";
 import { useAuth } from "../../context/AuthContext";
-
+import api from "../../api";
+import { useNavigate, useParams } from "react-router-dom";
 
 const AuthContainer = () => {
   const [isSignUp, setIsSignUp] = useState(false);
-  const { login, loading, error } = useAuth(); // Add useAuth hook
+  const { login, register, loading, error } = useAuth(); // Update useAuth destructuring
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
+  const [registerData, setRegisterData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const { token } = useParams();
+  const hasVerified = useRef(false);
+
+  useEffect(() => {
+    const verifyEmail = async () => {
+      if (token && !hasVerified.current) {
+        hasVerified.current = true;
+        try {
+          const response = await api.get(
+            `/auth/verify/${token}`
+          );
+          if (response.status === 200) {
+            alert("Email verified successfully. Please login.");
+            navigate("/login");
+          }
+        } catch (error) {
+          alert(error.response?.data?.message || "Verification failed");
+          navigate("/login");
+        }
+      }
+    };
+
+    verifyEmail();
+  }, [token, navigate]);
 
   // Handle input changes
   const handleLoginChange = (e) => {
@@ -30,6 +62,33 @@ const AuthContainer = () => {
     }
   };
 
+  const handleRegisterChange = (e) => {
+    const { name, value } = e.target;
+    setRegisterData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    if (registerData.password !== registerData.confirmPassword) {
+      // You might want to add error state to show this message
+      console.error("Passwords don't match");
+      return;
+    }
+
+    try {
+      await register(
+        registerData.name,
+        registerData.email,
+        registerData.password
+      );
+    } catch (err) {
+      console.error("Registration failed:", err);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-600">
       <div className="relative w-[900px] h-[500px] overflow-hidden bg-white rounded-xl shadow-2xl">
@@ -45,24 +104,50 @@ const AuthContainer = () => {
                 <h2 className="text-3xl font-bold mb-6">
                   <ColourfulText text="Sign Up" />
                 </h2>
-                <input
-                  type="email"
-                  placeholder="Email"
-                  className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
-                />
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
-                />
-                <button className="bg-indigo-600 text-white px-6 py-2 rounded mb-3 transition-transform transform hover:scale-105 duration-200 w-[215px] h-[45px]">
-                  Sign Up
-                </button>
+                <form onSubmit={handleRegisterSubmit} className="w-full">
+                  <input
+                    type="text"
+                    name="name"
+                    value={registerData.name}
+                    onChange={handleRegisterChange}
+                    placeholder="Name"
+                    className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    value={registerData.email}
+                    onChange={handleRegisterChange}
+                    placeholder="Email"
+                    className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
+                  />
+                  <input
+                    type="password"
+                    name="password"
+                    value={registerData.password}
+                    onChange={handleRegisterChange}
+                    placeholder="Password"
+                    className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
+                  />
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={registerData.confirmPassword}
+                    onChange={handleRegisterChange}
+                    placeholder="Confirm Password"
+                    className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
+                  />
+                  {error && (
+                    <p className="text-red-500 text-sm mb-3">{error}</p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="bg-indigo-600 text-white px-6 py-2 rounded mb-3 transition-transform transform hover:scale-105 duration-200 w-[215px] h-[45px] disabled:opacity-50"
+                  >
+                    {loading ? "Signing up..." : "Sign Up"}
+                  </button>
+                </form>
                 <button className="flex items-center justify-center border border-gray-300 px-6 py-2 rounded hover:bg-gray-100 hover:border-indigo-500 transition transform hover:scale-105 duration-200 text-gray-800 w-auto max-w-[250px]">
                   <img
                     src="https://www.svgrepo.com/show/475656/google-color.svg"

@@ -39,6 +39,7 @@ function App() {
       <Routes>
         {/* Auth route */}
         <Route path="/login" element={<AuthPage />} />
+        <Route path="/login/:token" element={<AuthPage />} />
 
         {/* Main layout routes */}
         <Route element={<Layout />}>
