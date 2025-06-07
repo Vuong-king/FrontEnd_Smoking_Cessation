@@ -1,25 +1,35 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Avatar, Button, Dropdown } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { DashboardOutlined, UserOutlined } from '@ant-design/icons';
 import { useAuth } from '../../context/AuthContext';
+import { MdLogout } from 'react-icons/md';
+import { FaUser } from 'react-icons/fa';
 
 const UserHeader = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const getUserMenuItems = (role) => {
     const baseItems = [
       {
-        key: 'profile',
-        label: <span className="text-gray-700">Profile</span>
+        key: "1",
+        label: "Profile",
+        icon: <FaUser />,
+        onClick: () => navigate("/user/profile"),
       },
       {
-        key: 'logout',
-        label: (
-          <span className="text-red-500" onClick={logout}>
-            Logout
-          </span>
-        )
+        key: "2",
+             label: "Logout",
+             icon: <MdLogout />,
+             onClick: async () => {
+              try{
+               await logout();
+       
+              }catch (error) {
+               console.error("Logout error:", error);
+              }
+             },
       }
     ];
 
@@ -27,7 +37,8 @@ const UserHeader = () => {
       return [
         {
           key: 'dashboard',
-          label: <Link to="/admin/dashboard">Admin Dashboard</Link>
+          label: <Link to="/admin/dashboard">Admin Dashboard</Link>,
+          icon:<DashboardOutlined />
         },
         ...baseItems
       ];
@@ -36,7 +47,8 @@ const UserHeader = () => {
     return [
       {
         key: 'dashboard',
-        label: <Link to="/user/dashboard">Dashboard</Link>
+        label: <Link to="/user/dashboard">Dashboard</Link>,
+        icon: <DashboardOutlined />
       },
       ...baseItems
     ];

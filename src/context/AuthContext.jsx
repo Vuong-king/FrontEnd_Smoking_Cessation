@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     if (userData.role === "admin") {
       navigate("/admin");
     } else {
-      navigate("/user/dashboard"); 
+      navigate("/"); 
     }
   };
 
