@@ -1,15 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ColourfulText from "../ui/ColourfulText";
 import { useAuth } from "../../context/AuthContext";
-
+import api from "../../api";
+import { useNavigate, useParams } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 const AuthContainer = () => {
   const [isSignUp, setIsSignUp] = useState(false);
-  const { login, loading, error } = useAuth(); // Add useAuth hook
+  const { login, register, handleGoogleLogin, loading } = useAuth();
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
+  const [registerData, setRegisterData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const { token } = useParams();
+  const hasVerified = useRef(false);
+  const [loginError, setLoginError] = useState("");
+  const [registerError, setRegisterError] = useState("");
+
+  useEffect(() => {
+    const verifyEmail = async () => {
+      if (token && !hasVerified.current) {
+        hasVerified.current = true;
+        try {
+          const response = await api.get(
+            `/auth/verify/${token}`
+          );
+          if (response.status === 200) {
+            alert("Email verified successfully. Please login.");
+            navigate("/login");
+          }
+        } catch (error) {
+          alert(error.response?.data?.message || "Verification failed");
+          navigate("/login");
+        }
+      }
+    };
+
+    verifyEmail();
+  }, [token, navigate]);
 
   // Handle input changes
   const handleLoginChange = (e) => {
@@ -23,11 +58,66 @@ const AuthContainer = () => {
   // Handle login submit
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    setLoginError(""); // Reset error message
     try {
       await login(loginData.email, loginData.password);
     } catch (err) {
       console.error("Login failed:", err);
+      if (err.response?.status === 401) {
+        setLoginError("Invalid email or password");
+      } else if (err.response?.status === 404) {
+        setLoginError("Account not found");
+      } else {
+        setLoginError(err.response?.data?.message || "Login failed. Please try again.");
+      }
     }
+  };
+
+  const handleRegisterChange = (e) => {
+    const { name, value } = e.target;
+    setRegisterData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+const handleRegisterSubmit = async (e) => {
+  e.preventDefault();
+  setRegisterError(""); // Reset error message
+  
+  if (registerData.password !== registerData.confirmPassword) {
+    setRegisterError("Passwords do not match");
+    return;
+  }
+
+  if (registerData.password.length < 6) {
+    setRegisterError("Password must be at least 6 characters long");
+    return;
+  }
+
+  try {
+    await register(registerData.name, registerData.email, registerData.password);
+  } catch (err) {
+    console.error("Registration failed:", err);
+    if (err.response?.status === 409) {
+      setRegisterError("Email already exists");
+    } else {
+      setRegisterError(err.response?.data?.message || "Registration failed. Please try again.");
+    }
+  }
+};
+
+  // Thêm hàm xử lý Google login
+  const onGoogleLoginSuccess = async (credentialResponse) => {
+    try {
+      await handleGoogleLogin(credentialResponse);
+    } catch (error) {
+      console.error("Google login failed:", error);
+    }
+  };
+
+  const onGoogleLoginError = () => {
+    console.error("Google login failed");
   };
 
   return (
@@ -45,32 +135,76 @@ const AuthContainer = () => {
                 <h2 className="text-3xl font-bold mb-6">
                   <ColourfulText text="Sign Up" />
                 </h2>
-                <input
-                  type="email"
-                  placeholder="Email"
-                  className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
-                />
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
-                />
-                <button className="bg-indigo-600 text-white px-6 py-2 rounded mb-3 transition-transform transform hover:scale-105 duration-200 w-[215px] h-[45px]">
-                  Sign Up
-                </button>
-                <button className="flex items-center justify-center border border-gray-300 px-6 py-2 rounded hover:bg-gray-100 hover:border-indigo-500 transition transform hover:scale-105 duration-200 text-gray-800 w-auto max-w-[250px]">
-                  <img
-                    src="https://www.svgrepo.com/show/475656/google-color.svg"
-                    alt="Google"
-                    className="w-5 h-5 mr-2"
+                <form onSubmit={handleRegisterSubmit} className="w-full">
+                  <input
+                    type="text"
+                    name="name"
+                    value={registerData.name}
+                    onChange={handleRegisterChange}
+                    placeholder="Name"
+                    className={`w-full p-2 mb-3 rounded backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none ${
+                      registerError ? 'border-red-500 bg-red-50' : 'bg-gray-500/20'
+                    }`}
                   />
-                  Sign In with Google
-                </button>
+                  <input
+                    type="email"
+                    name="email"
+                    value={registerData.email}
+                    onChange={handleRegisterChange}
+                    placeholder="Email"
+                    className={`w-full p-2 mb-3 rounded backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none ${
+                      registerError ? 'border-red-500 bg-red-50' : 'bg-gray-500/20'
+                    }`}
+                  />
+                  <input
+                    type="password"
+                    name="password"
+                    value={registerData.password}
+                    onChange={handleRegisterChange}
+                    placeholder="Password"
+                    className={`w-full p-2 mb-3 rounded backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none ${
+                      registerError ? 'border-red-500 bg-red-50' : 'bg-gray-500/20'
+                    }`}
+                  />
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={registerData.confirmPassword}
+                    onChange={handleRegisterChange}
+                    placeholder="Confirm Password"
+                    className={`w-full p-2 mb-3 rounded backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none ${
+                      registerError ? 'border-red-500 bg-red-50' : 'bg-gray-500/20'
+                    }`}
+                  />
+                  {registerError && (
+                    <div className="mb-3 text-sm text-red-500 bg-red-100 p-2 rounded flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {registerError}
+                    </div>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="bg-indigo-600 text-white px-6 py-2 rounded mb-3 transition-transform transform hover:scale-105 duration-200 w-[215px] h-[45px] disabled:opacity-50 ml-20"
+                  >
+                    {loading ? "Signing up..." : "Sign Up"}
+                  </button>
+                </form>
+
+                <div className="w-full flex justify-center">
+                  <GoogleLogin
+                    onSuccess={onGoogleLoginSuccess}
+                    onError={onGoogleLoginError}
+                    useOneTap
+                    shape="rectangular"
+                    size="large"
+                    width="250px"
+                    text="signin_with"
+                    locale="en"
+                  />
+                </div>
               </div>
             </div>
 
@@ -91,7 +225,9 @@ const AuthContainer = () => {
                     value={loginData.email}
                     onChange={handleLoginChange}
                     placeholder="Email"
-                    className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
+                    className={`w-full p-2 mb-3 rounded backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none ${
+                      loginError ? 'border-red-500 bg-red-50' : 'bg-gray-500/20'
+                    }`}
                   />
                   <input
                     type="password"
@@ -99,10 +235,17 @@ const AuthContainer = () => {
                     value={loginData.password}
                     onChange={handleLoginChange}
                     placeholder="Password"
-                    className="w-full p-2 mb-3 rounded bg-gray-500/20 backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none"
+                    className={`w-full p-2 mb-3 rounded backdrop-blur-sm placeholder-text-gray-200 text-gray-800 focus:outline-none ${
+                      loginError ? 'border-red-500 bg-red-50' : 'bg-gray-500/20'
+                    }`}
                   />
-                  {error && (
-                    <p className="text-red-500 text-sm mb-3">{error}</p>
+                  {loginError && (
+                    <div className="mb-3 text-sm text-red-500 bg-red-100 p-2 rounded flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {loginError}
+                    </div>
                   )}
                   <span className="text-gray-600 mb-3 text-right w-full block">
                     Forgot Password?
@@ -110,20 +253,24 @@ const AuthContainer = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="bg-indigo-600 text-white px-6 py-2 rounded mb-3 transition-transform transform hover:scale-105 duration-200 w-[215px] h-[45px] disabled:opacity-50"
+                    className="bg-indigo-600 text-white px-6 py-2 rounded mb-3 transition-transform transform hover:scale-105 duration-200 w-[215px] h-[45px] disabled:opacity-50 ml-20"
                   >
                     {loading ? "Signing in..." : "Sign In"}
                   </button>
                 </form>
 
-                <button className="flex items-center justify-center border border-gray-300 px-6 py-2 rounded hover:bg-gray-100 hover:border-indigo-500 transition transform hover:scale-105 duration-200 text-gray-800 w-auto max-w-[250px]">
-                  <img
-                    src="https://www.svgrepo.com/show/475656/google-color.svg"
-                    alt="Google"
-                    className="w-5 h-5 mr-2"
+                <div className="w-full flex justify-center">
+                  <GoogleLogin
+                    onSuccess={onGoogleLoginSuccess}
+                    onError={onGoogleLoginError}
+                    useOneTap
+                    shape="rectangular"
+                    size="large"
+                    width="250px"
+                    text="signin_with"
+                    locale="en"
                   />
-                  Sign In with Google
-                </button>
+                </div>
               </div>
             </div>
           </div>

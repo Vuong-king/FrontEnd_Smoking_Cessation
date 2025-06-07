@@ -13,12 +13,17 @@ import { MessageCircleHeart, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import ColourfulText from "../../components/ui/ColourfulText";
+import { useAuth } from "../../context/AuthContext";
 
 const menu = [
   { label: "Dashboard", icon: <DashboardOutlined />, path: "/user/dashboard" },
-  {label: "Smoking Status", icon: <DashboardOutlined />, path: "/user/smoking-status"},
+  {
+    label: "Smoking Status",
+    icon: <DashboardOutlined />,
+    path: "/user/smoking-status",
+  },
   { label: "Blog", icon: <AuditOutlined />, path: "/user/blog" },
   { label: "Quit Plan", icon: <CarryOutOutlined />, path: "/user/quitplan" },
   { label: "Progress", icon: <FieldTimeOutlined />, path: "/user/progress" },
@@ -27,10 +32,12 @@ const menu = [
 ];
 function Sidebal({ user = {} }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(() => {
     const saved = localStorage.getItem("sidebar-collaped");
     return saved === "true";
   });
+  const {logout} = useAuth();
 
   useEffect(() => {
     localStorage.setItem("sidebar-collaped", collapsed);
@@ -39,7 +46,7 @@ function Sidebal({ user = {} }) {
   const items = [
     {
       key: "1",
-      label: "My Account",
+      label: user?.name || "My Account",
       disabled: true,
     },
     {
@@ -49,20 +56,26 @@ function Sidebal({ user = {} }) {
       key: "2",
       label: "Profile",
       icon: <FaUser />,
+      onClick: () => navigate("/user/profile"),
     },
 
     {
       key: "3",
       label: "Settings",
       icon: <SettingOutlined />,
+       onClick: () => navigate("/user/settings"),
     },
     {
       key: "4",
       label: "Logout",
       icon: <MdLogout />,
-      onClick: () => {
-        // Xử lý đăng xuất ở đây
-        console.log("Logout clicked");
+      onClick: async () => {
+       try{
+        await logout();
+
+       }catch (error) {
+        console.error("Logout error:", error);
+       }
       },
     },
   ];
@@ -82,10 +95,10 @@ function Sidebal({ user = {} }) {
         } `}
       >
         {!collapsed && (
-            <Link to="/">
-          <div  className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
-            <ColourfulText text="EXHELA" />
-          </div>
+          <Link to="/">
+            <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
+              <ColourfulText text="EXHELA" />
+            </div>
           </Link>
         )}
         <div className="flex items-center justify-end p-2">
@@ -116,8 +129,8 @@ function Sidebal({ user = {} }) {
               />
               {!collapsed && (
                 <div>
-                  <div className="text-sm font-semibold">{user.name}</div>
-                  <div className="text-xs text-gray-400">{user.role}</div>
+                  <div className="text-sm font-semibold">{user.name || "Guest"}</div>
+                  <div className="text-xs text-gray-400">{user.email}</div>
                 </div>
               )}
             </Space>
