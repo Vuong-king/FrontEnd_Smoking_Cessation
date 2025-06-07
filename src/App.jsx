@@ -7,7 +7,8 @@ import { Navbar } from "./layouts/Navbar";
 import { Footer } from "./layouts/Footer";
 import ScrollToTop from "./layouts/ScrolltoTop";
 import UserLayout from "./layouts/user/UserLayout";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import UserHeader from "./layouts/user/UserHeader";
 
 // Pages
 import HomePages from "./pages/generic/home/HomePage";
@@ -17,48 +18,49 @@ import DashBoardUser from "./pages/user/DashBoardUser";
 import BlogPages from "./pages/generic/blogs/BlogPages";
 import QuitPlanPage from "./pages/user/QuitPlanPage";
 
-
 // ===== Layout Wrapper =====
-const Layout = () => (
-  <div className="min-h-screen bg-black text-white mt-20">
-    <Navbar />
-    <main>
-      <Outlet />
-    </main>
-    <Footer />
-  </div>
-);
+const Layout = () => {
+  const { user } = useAuth();
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      {user ? <UserHeader /> : <Navbar />}
+      <main className="mt-16">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+};
 
 // ===== App with Routing =====
 function App() {
   return (
-  
     <Router>
-        <AuthProvider>
-      <ScrollToTop />
-      <Routes>
-        {/* Auth route */}
-        <Route path="/login" element={<AuthPage />} />
-        <Route path="/login/:token" element={<AuthPage />} />
+      <AuthProvider>
+        <ScrollToTop />
+        <Routes>
+          {/* Auth route */}
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/login/:token" element={<AuthPage />} />
 
-        {/* Main layout routes */}
-        <Route element={<Layout />}>
-          <Route path="/" element={<HomePages />} />
-          <Route path="/blog" element={<BlogPages />} />
-        </Route>
+          {/* Main layout routes */}
+          <Route element={<Layout />}>
+            <Route path="/" element={<HomePages />} />
+            <Route path="/blog" element={<BlogPages />} />
+          </Route>
 
-        {/* User routes */}
-        <Route path="/user" element={<UserLayout />}>
-          <Route path="dashboard" element={<DashBoardUser />} />
-          <Route path="quitplan" element={<QuitPlanPage />} />
-        </Route>
-        
-        {/* 404 route */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          {/* User routes */}
+          <Route path="/user" element={<UserLayout />}>
+            <Route path="dashboard" element={<DashBoardUser />} />
+            <Route path="quitplan" element={<QuitPlanPage />} />
+          </Route>
+
+          {/* 404 route */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
       </AuthProvider>
     </Router>
-    
   );
 }
 

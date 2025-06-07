@@ -27,13 +27,23 @@ export const AuthProvider = ({ children }) => {
   }, [user]);
 
   const handleSuccessfulAuth = (userData) => {
-    setUser(userData);
-    setIsAuthModalOpen(false);
-    // Navigate based on role
+    // Đảm bảo lưu đầy đủ thông tin user
+    const userToSave = {
+      ...userData,
+      name: userData.name || userData.email,
+      avatar: userData.avatar || null,
+      email: userData.email,
+      role: userData.role,
+    };
+
+    setUser(userToSave);
+    localStorage.setItem("user", JSON.stringify(userToSave));
+
+
     if (userData.role === "admin") {
       navigate("/admin");
     } else {
-      navigate("/");
+      navigate("/user/dashboard"); 
     }
   };
 
