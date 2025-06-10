@@ -17,9 +17,9 @@ import NotFoundPage from "./pages/error/404Page";
 import DashBoardUser from "./pages/user/DashBoardUser";
 import BlogPages from "./pages/generic/blogs/BlogPages";
 import QuitPlanPage from "./pages/user/QuitPlanPage";
-import UserProfilePage from "./pages/user/UserProfilePage";
 import UserBlogPage from "./pages/user/UserBlogPage";
 import SmokingStatusPage from "./pages/user/SmokingStatusPage";
+import ProfilePage from "./pages/user/ProfilePage";
 
 
 // ===== Layout Wrapper =====
@@ -58,7 +58,7 @@ function App() {
           <Route path="/user" element={<UserLayout />}>
             <Route path="dashboard" element={<DashBoardUser />} />
             <Route path="quitplan" element={<QuitPlanPage />} />
-            <Route path="profile" element={<UserProfilePage />} />
+            <Route path="profile/:id" element={<ProfilePage />} />
             <Route path="blog" element={<UserBlogPage />} />
             <Route path="smoking-status" element={<SmokingStatusPage />} />
           </Route>
