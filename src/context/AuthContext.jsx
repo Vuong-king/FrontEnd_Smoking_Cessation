@@ -81,13 +81,13 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      console.log("Google Response:", credentialResponse); // Debug log
+      console.log("Google Response:", credentialResponse); 
 
       const response = await api.post("/auth/google", {
         credential: credentialResponse.credential,
       });
 
-      console.log("Server Response:", response.data); // Debug log
+      console.log("Server Response:", response.data); 
       console.log(response.data.user);
       handleSuccessfulAuth(response.data.user);
       return response.data.user;

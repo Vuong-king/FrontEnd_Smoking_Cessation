@@ -9,7 +9,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Space } from "antd";
-import { MessageCircleHeart, Trophy } from "lucide-react";
+import { Cigarette, MessageCircleHeart, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
@@ -21,7 +21,7 @@ const menu = [
   { label: "Dashboard", icon: <DashboardOutlined />, path: "/user/dashboard" },
   {
     label: "Smoking Status",
-    icon: <DashboardOutlined />,
+    icon: <Cigarette  />,
     path: "/user/smoking-status",
   },
   { label: "Blog", icon: <AuditOutlined />, path: "/user/blog" },
@@ -37,7 +37,7 @@ function Sidebal({ user = {} }) {
     const saved = localStorage.getItem("sidebar-collaped");
     return saved === "true";
   });
-  const {logout} = useAuth();
+  const { logout } = useAuth();
 
   useEffect(() => {
     localStorage.setItem("sidebar-collaped", collapsed);
@@ -63,19 +63,18 @@ function Sidebal({ user = {} }) {
       key: "3",
       label: "Settings",
       icon: <SettingOutlined />,
-       onClick: () => navigate("/user/settings"),
+      onClick: () => navigate("/user/settings"),
     },
     {
       key: "4",
       label: "Logout",
       icon: <MdLogout />,
       onClick: async () => {
-       try{
-        await logout();
-
-       }catch (error) {
-        console.error("Logout error:", error);
-       }
+        try {
+          await logout();
+        } catch (error) {
+          console.error("Logout error:", error);
+        }
       },
     },
   ];
@@ -129,7 +128,9 @@ function Sidebal({ user = {} }) {
               />
               {!collapsed && (
                 <div>
-                  <div className="text-sm font-semibold">{user.name || "Guest"}</div>
+                  <div className="text-sm font-semibold">
+                    {user.name || "Guest"}
+                  </div>
                   <div className="text-xs text-gray-400">{user.email}</div>
                 </div>
               )}
