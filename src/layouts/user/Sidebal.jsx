@@ -6,7 +6,6 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   SettingOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Space } from "antd";
 import { Cigarette, MessageCircleHeart, Trophy } from "lucide-react";
@@ -124,8 +123,7 @@ function Sidebal() {
             <Space>
               <Avatar
                 size={collapsed ? 32 : 40}
-                src={user.avatar}
-                icon={<UserOutlined />}
+                src={user?.avatar || "https://cdn-media.sforum.vn/storage/app/media/ve-capybara-2.jpg"}
               />
               {!collapsed && (
                 <div>

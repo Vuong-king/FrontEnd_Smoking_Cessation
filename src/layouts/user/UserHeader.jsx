@@ -1,10 +1,10 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Avatar, Dropdown, Menu } from 'antd';
-import { DashboardOutlined, UserOutlined } from '@ant-design/icons';
-import { MdLogout } from 'react-icons/md';
-import { FaUser } from 'react-icons/fa';
-import { useAuth } from '../../context/AuthContext';
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Avatar, Dropdown, Menu } from "antd";
+import { DashboardOutlined } from "@ant-design/icons";
+import { MdLogout } from "react-icons/md";
+import { FaUser } from "react-icons/fa";
+import { useAuth } from "../../context/AuthContext";
 
 const UserHeader = () => {
   const { user, logout } = useAuth();
@@ -14,48 +14,48 @@ const UserHeader = () => {
     try {
       await logout();
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
   };
 
   const getUserMenuItems = (role) => {
-  const baseItems = [
-    {
-      key: 'profile',
-      icon: <FaUser className="text-purple-400" />,
-      label: <span className="text-white">Profile</span>,
-      onClick: () => navigate(`/user/profile/${user?.id}`),
-    },
-    {
-      key: 'logout',
-      icon: <MdLogout className="text-red-400" />,
-      label: <span className="text-white">Logout</span>,
-      onClick: handleLogout,
-    },
-  ];
+    const baseItems = [
+      {
+        key: "profile",
+        icon: <FaUser className="text-purple-400" />,
+        label: <span className="text-white">Profile</span>,
+        onClick: () => navigate(`/user/profile/${user?.id}`),
+      },
+      {
+        key: "logout",
+        icon: <MdLogout className="text-red-400" />,
+        label: <span className="text-white">Logout</span>,
+        onClick: handleLogout,
+      },
+    ];
 
-  const dashboardItem = {
-    key: 'dashboard',
-    icon: <DashboardOutlined className="text-blue-400" />,
-    label: (
-      <Link to={role === 'admin' ? '/admin/dashboard' : '/user/dashboard'}>
-        <span className="text-white">Dashboard</span>
-      </Link>
-    ),
+    const dashboardItem = {
+      key: "dashboard",
+      icon: <DashboardOutlined className="text-blue-400" />,
+      label: (
+        <Link to={role === "admin" ? "/admin/dashboard" : "/user/dashboard"}>
+          <span className="text-white">Dashboard</span>
+        </Link>
+      ),
+    };
+
+    return [dashboardItem, ...baseItems];
   };
 
-  return [dashboardItem, ...baseItems];
-};
-
-const menu = (
-  <Menu
-    items={getUserMenuItems(user?.role)}
-    className="rounded-xl border-none bg-gradient-to-br from-gray-800 to-gray-900 shadow-2xl p-2"
-    style={{
-      minWidth: '180px',
-    }}
-  />
-);
+  const menu = (
+    <Menu
+      items={getUserMenuItems(user?.role)}
+      className="rounded-xl border-none bg-gradient-to-br from-gray-800 to-gray-900 shadow-2xl p-2"
+      style={{
+        minWidth: "180px",
+      }}
+    />
+  );
   return (
     <header className="fixed w-full top-0 z-50 bg-gray-900/90 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -69,33 +69,35 @@ const menu = (
 
           {/* Navigation links */}
           <nav className="hidden md:flex space-x-8">
-  {[
-    { name: 'Home', path: '/' },
-    { name: 'Blog', path: '/blog' },
-    { name: 'Community', path: '/community' },
-    { name: 'Ranking', path: '/ranking' },
-    { name: 'Premium', path: '/premium' }
-  ].map((item) => (
-    <Link
-      key={item.name}
-      to={item.path}
-      className="text-white hover:text-purple-400 transition-colors"
-    >
-      {item.name}
-    </Link>
-  ))}
-</nav>
+            {[
+              { name: "Home", path: "/" },
+              { name: "Blog", path: "/blog" },
+              { name: "Community", path: "/community" },
+              { name: "Ranking", path: "/ranking" },
+              { name: "Premium", path: "/premium" },
+            ].map((item) => (
+              <Link
+                key={item.name}
+                to={item.path}
+                className="text-white hover:text-purple-400 transition-colors"
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
 
           {/* User Dropdown */}
           <div className="flex items-center gap-4">
             <Dropdown overlay={menu} placement="bottomRight" arrow>
               <div className="flex items-center gap-3 cursor-pointer">
                 <span className="text-white font-medium">
-                  {user?.name || 'User'}
+                  {user?.name || "User"}
                 </span>
                 <Avatar
-                  src={user?.avatar}
-                  icon={<UserOutlined />}
+                  src={
+                    user?.avatar ||
+                    "https://cdn-media.sforum.vn/storage/app/media/ve-capybara-2.jpg"
+                  }
                   className="border-2 border-purple-500"
                 />
               </div>

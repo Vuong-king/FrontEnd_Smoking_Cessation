@@ -1,4 +1,4 @@
-import { Modal, Form, Input, Upload, Avatar, Button, message } from "antd"
+import { Modal, Form, Input, Upload, Avatar, Button} from "antd"
 import { Edit, Camera, User, Mail, Phone } from "lucide-react"
 
 export function EditProfileModal({ 
@@ -6,11 +6,19 @@ export function EditProfileModal({
   onCancel, 
   onSave, 
   user, 
-  form 
+  form,
+  handleAvatarUpload 
 }) {
-  const handleAvatarChange = (info) => {
-    if (info.file.status === "done") {
-      message.success("Cập nhật ảnh đại diện thành công!")
+  const handleAvatarChange = async (info) => {
+    if (info.file.status === 'uploading') {
+      return;
+    }
+    if (info.file.originFileObj) {
+      try {
+        await handleAvatarUpload(info.file.originFileObj);
+      } catch (error) {
+        console.error("Error uploading avatar:", error);
+      }
     }
   }
 
@@ -81,28 +89,6 @@ export function EditProfileModal({
         >
           <Input size="large" placeholder="Nhập họ và tên" prefix={<User size={16} style={{ color: "#d9d9d9" }} />} />
         </Form.Item>
-
-        <Form.Item
-          label={
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <span>@</span>
-              <span>Tên người dùng</span>
-            </div>
-          }
-          name="username"
-          rules={[
-            { required: true, message: "Vui lòng nhập tên người dùng!" },
-            { min: 3, message: "Tên người dùng phải có ít nhất 3 ký tự!" },
-            { pattern: /^[a-zA-Z0-9_]+$/, message: "Tên người dùng chỉ được chứa chữ cái, số và dấu gạch dưới!" },
-          ]}
-        >
-          <Input
-            size="large"
-            placeholder="Nhập tên người dùng"
-            prefix={<span style={{ color: "#d9d9d9" }}>@</span>}
-          />
-        </Form.Item>
-
         <Form.Item
           label={
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -123,26 +109,6 @@ export function EditProfileModal({
           />
         </Form.Item>
 
-        <Form.Item
-          label={
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <Phone size={14} />
-              <span>Số điện thoại</span>
-            </div>
-          }
-          name="phone"
-          rules={[
-            { required: true, message: "Vui lòng nhập số điện thoại!" },
-            { pattern: /^[+]?[0-9\s-()]+$/, message: "Số điện thoại không hợp lệ!" },
-          ]}
-        >
-          <Input
-            size="large"
-            placeholder="Nhập số điện thoại"
-            prefix={<Phone size={16} style={{ color: "#d9d9d9" }} />}
-          />
-        </Form.Item>
-
         <Form.Item style={{ marginBottom: 0, marginTop: "32px" }}>
           <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
             <Button onClick={onCancel} size="large">
@@ -155,6 +121,6 @@ export function EditProfileModal({
         </Form.Item>
       </Form>
     </Modal>
-    
+
   )
 }
