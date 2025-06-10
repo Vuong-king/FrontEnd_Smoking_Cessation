@@ -134,19 +134,6 @@ export const AuthProvider = ({ children }) => {
       // Clear user data first
       setUser(null);
       localStorage.removeItem("user");
-
-      // Then make the logout request
-      await api.post(
-        "/auth/logout",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`, // Send token in header
-          },
-        }
-      );
-
-      // Navigate after successful logout
       navigate("/");
       setIsAuthModalOpen(false);
     } catch (err) {
