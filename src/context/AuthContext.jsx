@@ -160,19 +160,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Function to update user data
-  const updateUser = (userData) => {
-    setUser((prevUser) => ({
-      ...prevUser,
-      ...userData,
-    }));
+
+
+
+  // Wrap setUser để luôn cập nhật localStorage
+  const updateUserWithLocalStorage = (data) => {
+    if (typeof data === "function") {
+      setUser((prev) => {
+        const newUser = data(prev);
+        localStorage.setItem("user", JSON.stringify(newUser));
+        return newUser;
+      });
+    } else {
+      setUser(data);
+      localStorage.setItem("user", JSON.stringify(data));
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        setUser: updateUser, // Provide setUser function
+        setUser: updateUserWithLocalStorage, // Provide setUser function
         login,
         register,
         handleGoogleLogin,

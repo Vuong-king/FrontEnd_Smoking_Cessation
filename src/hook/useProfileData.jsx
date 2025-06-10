@@ -1,12 +1,13 @@
-import { useState } from "react"
-import { Form } from "antd"
-import { Trophy, Coins, Heart } from "lucide-react"
-import { useAuth } from "../context/AuthContext"
+import { useState } from "react";
+import { Form, message } from "antd";
+import { Trophy, Coins, Heart } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { editUserProfile } from "../api";
 
 export function useProfileData() {
-  const {user} = useAuth();
-  const [isEditModalVisible, setIsEditModalVisible] = useState(false)
-  const [form] = Form.useForm()
+  const { user, setUser } = useAuth();
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [form] = Form.useForm();
 
   const achievements = [
     {
@@ -33,32 +34,69 @@ export function useProfileData() {
       bgColor: "#fff2f0",
       completed: true,
     },
-  ]
+  ];
 
   const handleEditProfile = () => {
     form.setFieldsValue({
       name: user.name,
-      username: user.name.replace("@", ""),
       email: user.email,
-    })
-    setIsEditModalVisible(true)
-  }
+    });
+    setIsEditModalVisible(true);
+  };
 
-//   const handleSaveProfile = (values) => {
-//     setUser((prev) => ({
-//       ...prev,
-//       name: values.name,
-//       username: `@${values.name}`,
-//       email: values.email,
-//     }))
-//     setIsEditModalVisible(false)
-//     message.success("Cập nhật hồ sơ thành công!")
-//   }
+  const handleSaveProfile = async (values) => {
+    try {
+      const profileData = {
+        name: values.name,
+        email: values.email,
+      };
+
+      console.log("Dữ liệu gửi đi:", profileData);
+      const response = await editUserProfile(user.id, profileData);
+
+      if (response) {
+        setUser({
+          ...user,
+          name: values.name,
+          email: values.email,
+        });
+
+        setIsEditModalVisible(false);
+        message.success("Cập nhật hồ sơ thành công!");
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Có lỗi xảy ra khi cập nhật hồ sơ!";
+      message.error(errorMessage);
+      console.error("Lỗi cập nhật:", error);
+    }
+  };
+
+  // Cập nhật hàm handleAvatarUpload
+  const handleAvatarUpload = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      const response = await editUserProfile(user.id, formData);
+
+      // Cập nhật trực tiếp user trong context
+      setUser({
+        ...user,
+        avatar: response.avatar, // Đã bỏ .data vì response đã là data
+      });
+
+      message.success("Cập nhật ảnh đại diện thành công!");
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi cập nhật ảnh đại diện!");
+      console.error("Error uploading avatar:", error);
+    }
+  };
 
   const handleCancel = () => {
-    setIsEditModalVisible(false)
-    form.resetFields()
-  }
+    setIsEditModalVisible(false);
+    form.resetFields();
+  };
 
   return {
     user,
@@ -66,7 +104,8 @@ export function useProfileData() {
     isEditModalVisible,
     form,
     handleEditProfile,
-    // handleSaveProfile,
+    handleSaveProfile,
     handleCancel,
-  }
+    handleAvatarUpload,
+  };
 }
