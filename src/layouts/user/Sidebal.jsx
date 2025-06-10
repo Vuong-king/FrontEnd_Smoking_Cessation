@@ -30,14 +30,15 @@ const menu = [
   { label: "Achievements", icon: <Trophy />, path: "/user/achievements" },
   { label: "Support", icon: <MessageCircleHeart />, path: "/user/support" },
 ];
-function Sidebal({ user = {} }) {
+function Sidebal() {
+
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(() => {
     const saved = localStorage.getItem("sidebar-collaped");
     return saved === "true";
   });
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   useEffect(() => {
     localStorage.setItem("sidebar-collaped", collapsed);
@@ -56,7 +57,7 @@ function Sidebal({ user = {} }) {
       key: "2",
       label: "Profile",
       icon: <FaUser />,
-      onClick: () => navigate("/user/profile"),
+      onClick: () => navigate(`/user/profile/${user.id}`),
     },
 
     {
