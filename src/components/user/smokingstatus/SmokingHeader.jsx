@@ -19,7 +19,7 @@ export default function SmokingHeader({ onAddClick }) {
           className="text-4xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent mb-4 m-0 flex items-center "
           level={2}
         >
-          <Cigarette size={32} style={{ color: "#1890ff" }} />
+          <Cigarette size={32} style={{ color: "#1890ff", marginRight: "8px" }} />
           Smoking   <ColourfulText text=" Information"  /> 
         </h2>
         <Paragraph style={{ margin: "8px 0 0 0", color: "#666" }}>
