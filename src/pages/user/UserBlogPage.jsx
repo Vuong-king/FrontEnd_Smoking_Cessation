@@ -1,6 +1,6 @@
 "use client"
 
-import { useState} from "react"
+import { useState } from "react"
 import { usePostData } from "../../hook/usePostData"
 import BlogDetail from "../../components/user/blog/BlogDetail"
 import CreateBlog from "../../components/user/blog/CreateBlog"
@@ -8,8 +8,6 @@ import MyPosts from "../../components/user/blog/MyPosts"
 import FilterSidebar from "../../components/user/blog/FilterSidbar"
 import FilterBar from "../../components/user/blog/FilterBar"
 import BlogCard from "../../components/user/blog/BlogCard"
-
-
 
 
 function UserBlogPage() {
@@ -29,10 +27,10 @@ function UserBlogPage() {
     const matchesSearch =
       !searchTerm ||
       post.content.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesTags = selectedTags.length === 0 || 
+    const matchesTags = selectedTags.length === 0 ||
       post.tags?.some((tag) => selectedTags.includes(tag._id)) // Sửa chỗ này
 
-    return matchesSearch &&matchesTags
+    return matchesSearch && matchesTags
   })
 
   // Handlers
@@ -42,7 +40,7 @@ function UserBlogPage() {
     setCurrentView("detail")
   }
   const handlePostCreate = async (newPost) => {
-    try{
+    try {
       const createdPost = await createPost({
         ...newPost,
         author: "user",
@@ -50,7 +48,7 @@ function UserBlogPage() {
         like: 0,
         comment: 0,
       })
-    setUserPosts([createdPost, ...userPosts]);
+      setUserPosts([createdPost, ...userPosts]);
       setCurrentView("myPosts");
     } catch (error) {
       console.error("Failed to create post:", error);
@@ -62,10 +60,10 @@ function UserBlogPage() {
     if (filters.searchTerm !== undefined) setSearchTerm(filters.searchTerm)
   }
 
-  
+
   const handleTagToggle = (tagId) => {
-    setSelectedTags(prev => 
-      prev.includes(tagId) 
+    setSelectedTags(prev =>
+      prev.includes(tagId)
         ? prev.filter(id => id !== tagId)
         : [...prev, tagId]
     );
@@ -77,7 +75,7 @@ function UserBlogPage() {
     const relatedPosts = allPosts.filter(
       (post) =>
         post.id !== selectedPost.id &&
-        (post.category === selectedPost.category ||
+        (
           post.tags.some((tag) => selectedPost.tags.includes(tag)))
     ).slice(0, 3);
 

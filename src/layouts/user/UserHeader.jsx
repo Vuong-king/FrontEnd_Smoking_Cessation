@@ -95,10 +95,10 @@ const UserHeader = () => {
                 </span>
                 <Avatar
                   src={
-                    user?.avatar ||
+                    user.avatar_url ||
                     "https://cdn-media.sforum.vn/storage/app/media/ve-capybara-2.jpg"
                   }
-                  className="border-2 border-purple-500"
+                  className="border-2 "
                 />
               </div>
             </Dropdown>

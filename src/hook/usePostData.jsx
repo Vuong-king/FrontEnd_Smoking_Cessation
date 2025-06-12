@@ -3,14 +3,13 @@ import api from "../api";
 
 export function usePostData() {
   const [posts, setPosts] = useState([]);
-    const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchPosts();
     fetchTags();
-
   }, []);
   const fetchTags = async () => {
     try {
@@ -32,8 +31,7 @@ export function usePostData() {
     } finally {
       setLoading(false);
     }
-  }
-
+  };
 
   const fetchPosts = async () => {
     try {
@@ -97,6 +95,52 @@ export function usePostData() {
     }
   };
 
+  const getPostById = async (postId) => {
+    try {
+      setLoading(true);
+      const response = await api.get(`/posts/${postId}`);
+      console.log("API Response:", response);
+
+      // Handle different response structures
+      let postData;
+      if (response.data?.data) {
+        postData = response.data.data;
+      } else if (response.data?.post) {
+        postData = response.data.post;
+      } else {
+        postData = response.data;
+      }
+
+      // Validate post data
+      if (!postData) {
+        throw new Error('Post not found');
+      }
+
+      // Ensure required fields exist with proper fallbacks
+      const formattedPost = {
+        _id: postData._id || postId,
+        title: postData.title || postData.content?.substring(0, 50) || 'Untitled',
+        content: postData.content || '',
+        image: postData.image || postData.banner || postData.thumbnail || '/placeholder.svg',
+        post_date: postData.post_date || postData.createdAt || new Date().toISOString(),
+        user_id: postData.user_id || { name: 'Anonymous' },
+        tags: Array.isArray(postData.tags) ? postData.tags : [],
+        reaction_count: postData.reaction_count || 0,
+        comment_count: postData.comment_count || 0,
+        post_type: postData.post_type || 'blog'
+      };
+
+      console.log("Formatted post data:", formattedPost);
+      return formattedPost;
+    } catch (err) {
+      console.error('Error loading post:', err);
+      setError(err.message || "Có lỗi xảy ra khi tải bài viết");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     posts,
     tags,
@@ -107,5 +151,6 @@ export function usePostData() {
     createPost,
     updatePost,
     deletePost,
+    getPostById,
   };
 }
