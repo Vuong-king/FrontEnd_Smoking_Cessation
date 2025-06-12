@@ -27,12 +27,12 @@ const CreateBlog = ({ onSubmit, onCancel, tags = [] }) => {
       try {
         setIsSubmitting(true)
         setError(null)
-        // Gửi đúng trường tags là string
+
         const postData = {
           title: formData.title,
           content: formData.content,
           image: formData.image,
-          tags: formData.tag, // Đúng tên trường, đúng kiểu string
+          tags: formData.tag, 
         }
         await onSubmit(postData)
       } catch (err) {
@@ -43,7 +43,7 @@ const CreateBlog = ({ onSubmit, onCancel, tags = [] }) => {
     }
   }
 
-  // Hàm lấy tên tag từ id
+
   const getTagTitle = (id) => {
     const found = tags.find(t => t._id === id);
     return found ? found.title : id;

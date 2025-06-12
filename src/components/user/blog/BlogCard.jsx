@@ -1,9 +1,15 @@
 "use client"
 import { Heart, MessageCircle, Calendar, User, Tag } from "lucide-react"
 import { usePostData } from '../../../hook/usePostData'
+import { useNavigate } from 'react-router-dom'
 
-const BlogCard = ({ post, onClick }) => {
+const BlogCard = ({ post }) => {
   const { updatePost } = usePostData();
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/user/blog/${post._id}`);
+  };
 
   const handleLikeClick = async (e) => {
     e.stopPropagation(); 
@@ -21,25 +27,27 @@ const BlogCard = ({ post, onClick }) => {
   };
 
   const renderTitle = () => {
-    // Giới hạn nội dung hiển thị 50 ký tự đầu tiên
     return post.content?.substring(0, 50) + '...' || 'Untitled';
   };
 
   return (
     <div
-      className="bg-white rounded-lg shadow-xl hover:shadow-2xl transition-shadow cursor-pointer"
-      onClick={() => onClick(post)}
+      className="bg-white rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer overflow-hidden group"
+      onClick={handleCardClick}
     >
-      <img 
-        src={post.image || "/placeholder.svg"} 
-        alt={renderTitle()} 
-        className="w-full h-48 object-cover"
-        onError={(e) => {
-          e.target.src = '/placeholder.svg'
-        }}
-      />
+      <div className="relative overflow-hidden">
+        <img 
+          src={post.image || "/placeholder.svg"} 
+          alt={renderTitle()} 
+          className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+          onError={(e) => {
+            e.target.src = '/placeholder.svg'
+          }}
+        />
+        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+      </div>
       <div className="p-6">
-        <h3 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-2">
+        <h3 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-2 group-hover:text-purple-600 transition-colors duration-200">
           {post.title}
         </h3>
         <p className="text-gray-600 mb-4 line-clamp-3">{post.content}</p>
@@ -67,9 +75,9 @@ const BlogCard = ({ post, onClick }) => {
           <div className="flex items-center space-x-4">
             <button 
               onClick={handleLikeClick}
-              className="flex items-center hover:text-purple-600 transition-colors"
+              className="flex items-center hover:text-purple-600 transition-colors group/like"
             >
-              <Heart className={`h-4 w-4 mr-1 ${post.liked ? 'fill-purple-600' : ''}`} />
+              <Heart className={`h-4 w-4 mr-1 ${post.liked ? 'fill-purple-600' : ''} group-hover/like:scale-110 transition-transform`} />
               {post.reaction_count || 0}
             </button>
             <span className="flex items-center">

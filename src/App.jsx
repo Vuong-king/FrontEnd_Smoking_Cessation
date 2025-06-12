@@ -20,6 +20,7 @@ import QuitPlanPage from "./pages/user/QuitPlanPage";
 import UserBlogPage from "./pages/user/UserBlogPage";
 import SmokingStatusPage from "./pages/user/SmokingStatusPage";
 import ProfilePage from "./pages/user/ProfilePage";
+import BlogDetail from "./components/user/blog/BlogDetail";
 
 
 // ===== Layout Wrapper =====
@@ -61,6 +62,7 @@ function App() {
             <Route path="profile/:id" element={<ProfilePage />} />
             <Route path="blog" element={<UserBlogPage />} />
             <Route path="smoking-status" element={<SmokingStatusPage />} />
+            <Route path= "blog/:id" element={<BlogDetail />} />
           </Route>
 
           {/* 404 route */}
