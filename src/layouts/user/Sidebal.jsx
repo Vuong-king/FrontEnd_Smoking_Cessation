@@ -13,11 +13,18 @@ import { useEffect, useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import ColourfulText from "../../components/ui/ColourfulText";
+import { useAuth } from "../../context/AuthContext";
 import { useAuth } from "../../context/AuthContext";
 
 const menu = [
   { label: "Dashboard", icon: <DashboardOutlined />, path: "/user/dashboard" },
+  {
+    label: "Smoking Status",
+    icon: <Cigarette  />,
+    path: "/user/smoking-status",
+  },
   {
     label: "Smoking Status",
     icon: <Cigarette  />,
@@ -31,12 +38,16 @@ const menu = [
 ];
 function Sidebal() {
 
+function Sidebal() {
+
   const location = useLocation();
+  const navigate = useNavigate();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(() => {
     const saved = localStorage.getItem("sidebar-collaped");
     return saved === "true";
   });
+  const { logout, user } = useAuth();
   const { logout, user } = useAuth();
 
   useEffect(() => {
@@ -46,6 +57,7 @@ function Sidebal() {
   const items = [
     {
       key: "1",
+      label: user?.name || "My Account",
       label: user?.name || "My Account",
       disabled: true,
     },
@@ -57,6 +69,7 @@ function Sidebal() {
       label: "Profile",
       icon: <FaUser />,
       onClick: () => navigate(`/user/profile/${user.id}`),
+      onClick: () => navigate(`/user/profile/${user.id}`),
     },
 
     {
@@ -64,11 +77,18 @@ function Sidebal() {
       label: "Settings",
       icon: <SettingOutlined />,
       onClick: () => navigate("/user/settings"),
+      onClick: () => navigate("/user/settings"),
     },
     {
       key: "4",
       label: "Logout",
       icon: <MdLogout />,
+      onClick: async () => {
+        try {
+          await logout();
+        } catch (error) {
+          console.error("Logout error:", error);
+        }
       onClick: async () => {
         try {
           await logout();
@@ -94,6 +114,10 @@ function Sidebal() {
         } `}
       >
         {!collapsed && (
+          <Link to="/">
+            <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
+              <ColourfulText text="EXHELA" />
+            </div>
           <Link to="/">
             <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
               <ColourfulText text="EXHELA" />
@@ -127,6 +151,10 @@ function Sidebal() {
               />
               {!collapsed && (
                 <div>
+                  <div className="text-sm font-semibold">
+                    {user.name || "Guest"}
+                  </div>
+                  <div className="text-xs text-gray-400">{user.email}</div>
                   <div className="text-sm font-semibold">
                     {user.name || "Guest"}
                   </div>
