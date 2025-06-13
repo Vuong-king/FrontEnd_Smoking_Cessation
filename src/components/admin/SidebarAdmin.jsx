@@ -1,82 +1,163 @@
-import { Link, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard,
-  Users,
-  CreditCard,
-  Award,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import React, { useState } from "react";
-import * as Tooltip from "@radix-ui/react-tooltip";
+  SettingOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  DashboardOutlined,
+  CreditCardOutlined,
+  UserOutlined,
+  FieldTimeOutlined,
+  MessageOutlined,
+  TrophyOutlined,
+  FileTextOutlined,
+  BellOutlined,
+  TeamOutlined,
+  SafetyOutlined,
+  BarChartOutlined,
+  StarOutlined,
+  CheckCircleOutlined,
+} from "@ant-design/icons";
+import { Avatar, Button, Dropdown, Space } from "antd";
+import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
-export function SidebarAdmin() {
+function SidebarAdmin({ user = {} }) {
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    const saved = localStorage.getItem("admin-sidebar-collapsed");
+    return saved === "true";
+  });
 
-  const links = [
-    { to: "/admin", label: "Dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
-    { to: "/admin/users", label: "Users", icon: <Users className="w-5 h-5" /> },
-    { to: "/admin/subscriptions", label: "Subscriptions", icon: <CreditCard className="w-5 h-5" /> },
-    { to: "/admin/badges", label: "Badges", icon: <Award className="w-5 h-5" /> },
+  useEffect(() => {
+    localStorage.setItem("admin-sidebar-collapsed", collapsed);
+  }, [collapsed]);
+
+  const menu = [
+    { label: "Dashboard", icon: <DashboardOutlined />, path: "/admin" },
+    { label: "Users", icon: <UserOutlined />, path: "/admin/users" },
+    { label: "Subscriptions", icon: <CreditCardOutlined />, path: "/admin/subscriptions" },
+    { label: "Badges", icon: <StarOutlined />, path: "/admin/badges" },
+    { label: "Reports", icon: <BarChartOutlined />, path: "/admin/reports" },
+    { label: "Feedbacks", icon: <MessageOutlined />, path: "/admin/feedbacks" },
+    { label: "Quit Plans", icon: <CheckCircleOutlined />, path: "/admin/quit-plans" },
+    { label: "Progress", icon: <FieldTimeOutlined />, path: "/admin/progress" },
+    { label: "Blog Posts", icon: <FileTextOutlined />, path: "/admin/blogs" },
+    { label: "Leaderboard", icon: <TrophyOutlined />, path: "/admin/leaderboard" },
+    { label: "Notifications", icon: <BellOutlined />, path: "/admin/notifications" },
+    { label: "Coaches", icon: <TeamOutlined />, path: "/admin/coaches" },
+    { label: "Permissions", icon: <SafetyOutlined />, path: "/admin/roles" },
+    { label: "Settings", icon: <SettingOutlined />, path: "/admin/settings" },
+  ];
+
+  const dropdownItems = [
+    { key: "1", label: "My Account", disabled: true },
+    { type: "divider" },
+    { key: "2", label: "Profile", icon: <UserOutlined /> },
+    { key: "3", label: "Settings", icon: <SettingOutlined /> },
+    {
+      key: "4",
+      label: "Logout",
+      icon: <SettingOutlined />,
+      onClick: () => {
+        console.log("Logout clicked");
+      },
+    },
   ];
 
   return (
-    <aside
-      className={`${
-        collapsed ? "w-20" : "w-64"
-      } bg-gradient-to-b from-purple-800 to-cyan-800 text-white p-4 space-y-6 shadow-2xl transition-all duration-300`}
-    >
-      {/* Header + Toggle */}
-      <div className="flex items-center justify-between">
-        {!collapsed && <h2 className="text-xl font-bold">Admin</h2>}
-        <button onClick={() => setCollapsed(!collapsed)} className="text-white hover:opacity-80">
-          {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-        </button>
+    <div
+  className={`h-screen sticky top-0 overflow-y-auto sidebar-scroll ${
+    collapsed ? "w-20" : "w-64"
+  } bg-gradient-to-b from-[#1a1333] via-[#2b2256] to-[#1a2a3a] flex flex-col transition-all duration-300`}
+>
+
+
+      {/* Collapse Button & Logo */}
+      <div
+        className={`${
+          !collapsed
+            ? "flex justify-between items-center border-b border-[#1f1f1f]"
+            : "flex items-center justify-center"
+        }`}
+      >
+        {!collapsed && (
+          <Link to="/admin">
+            <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500 px-4 py-3">
+              ADMIN PANEL
+            </div>
+          </Link>
+        )}
+        <div className="p-2">
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+            className="text-white"
+          />
+        </div>
       </div>
 
-      {/* Nav Links */}
-      <nav className="space-y-2">
-        {links.map((link) => {
-          const isActive = location.pathname === link.to;
-          const linkClasses = `flex items-center ${
-            collapsed ? "justify-center" : "gap-3 px-4"
-          } py-2 rounded-md font-medium text-sm transition-all duration-200 ease-in-out transform
-          ${
-            isActive
-              ? "bg-white/20 border-l-4 border-white text-white shadow-inner"
-              : "hover:bg-white/10 hover:scale-[1.02] text-white/80"
-          }`;
+      {/* Profile */}
+      <div
+        className={`${
+          collapsed
+            ? "px-4 py-3 border-b border-[#1f1f1f] flex flex-col items-center gap-2 hover:bg-[#232042] hover:cursor-pointer transition-colors duration-200"
+            : "px-4 py-3 border-b border-[#1f1f1f] flex items-center gap-3 hover:bg-[#232042] hover:cursor-pointer transition-colors duration-200"
+        }`}
+      >
+        <Dropdown menu={{ items: dropdownItems }}>
+          <a onClick={(e) => e.preventDefault()}>
+            <Space direction={collapsed ? "vertical" : "horizontal"}>
+              <Avatar
+                size={collapsed ? 32 : 40}
+                src={user.avatar}
+                icon={<UserOutlined />}
+              />
+              {!collapsed && (
+                <div>
+                  <div className="text-sm font-semibold">
+                    {user.name || "Admin"}
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {user.role || "Administrator"}
+                  </div>
+                </div>
+              )}
+            </Space>
+          </a>
+        </Dropdown>
+      </div>
 
-          return collapsed ? (
-            <Tooltip.Provider delayDuration={200} key={link.to}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <Link to={link.to} className={linkClasses}>
-                    {link.icon}
-                  </Link>
-                </Tooltip.Trigger>
-                <Tooltip.Portal>
-                  <Tooltip.Content
-                    className="bg-white text-black px-3 py-1 text-sm rounded shadow-lg z-50"
-                    side="right"
-                    align="center"
-                    sideOffset={8}
-                  >
-                    {link.label}
-                    <Tooltip.Arrow className="fill-white" />
-                  </Tooltip.Content>
-                </Tooltip.Portal>
-              </Tooltip.Root>
-            </Tooltip.Provider>
-          ) : (
-            <Link key={link.to} to={link.to} className={linkClasses}>
-              {link.icon}
-              <span className="tracking-wide">{link.label}</span>
+      {/* Menu */}
+      <nav className="flex-1 mt-4 flex flex-col items-center">
+        {menu.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex items-center transition-all duration-200 mt-1 ${
+                collapsed ? "justify-center w-12 h-12" : "px-6 py-2 w-11/12"
+              } ${
+                isActive
+                  ? "bg-gray-200 text-[#232042] rounded-2xl"
+                  : "text-white hover:bg-[#232042] hover:text-[#1ecbe1] rounded-2xl"
+              }`}
+              style={{
+                minHeight: collapsed ? 48 : undefined,
+              }}
+            >
+              <span className={`text-lg ${isActive ? "text-[#232042]" : ""}`}>
+                {item.icon}
+              </span>
+              {!collapsed && (
+                <span className="font-medium ml-3">{item.label}</span>
+              )}
             </Link>
           );
         })}
       </nav>
-    </aside>
+    </div>
   );
 }
+
+export default SidebarAdmin;

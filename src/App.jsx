@@ -7,6 +7,8 @@ import { Navbar } from "./layouts/Navbar";
 import { Footer } from "./layouts/Footer";
 import ScrollToTop from "./layouts/ScrolltoTop";
 import UserLayout from "./layouts/user/UserLayout";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import UserHeader from "./layouts/user/UserHeader";
 import AdminLayout from "./components/admin/AdminLayout";
 
 // Pages
@@ -14,6 +16,11 @@ import HomePages from "./pages/generic/home/HomePage";
 import AuthPage from "./pages/auth/AuthPage";
 import NotFoundPage from "./pages/error/404Page";
 import DashBoardUser from "./pages/user/DashBoardUser";
+import BlogPages from "./pages/generic/blogs/BlogPages";
+import QuitPlanPage from "./pages/user/QuitPlanPage";
+import UserBlogPage from "./pages/user/UserBlogPage";
+import SmokingStatusPage from "./pages/user/SmokingStatusPage";
+import ProfilePage from "./pages/user/ProfilePage";
 
 // Admin pages
 import AdminDashboardHome from "./pages/admin/AdminDashboardHome";
@@ -33,59 +40,69 @@ import Settings from "./pages/admin/Settings";
 import Coaches from "./pages/admin/Coaches";
 
 // ===== Layout Wrapper =====
-const Layout = () => (
-  <div className="min-h-screen bg-black text-white mt-20">
-    <Navbar />
-    <main>
-      <Outlet />
-    </main>
-    <Footer />
-  </div>
-);
+const Layout = () => {
+  const { user } = useAuth();
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      {user ? <UserHeader /> : <Navbar />}
+      <main className="mt-16">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+};
 
 // ===== App with Routing =====
 function App() {
   return (
     <Router>
-      <ScrollToTop />
-      <Routes>
-        {/* Auth route */}
-        <Route path="/login" element={<AuthPage />} />
+      <AuthProvider>
+        <ScrollToTop />
+        <Routes>
+          {/* Auth route */}
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/login/:token" element={<AuthPage />} />
 
-        {/* Main layout routes */}
-        <Route element={<Layout />}>
-          <Route path="/" element={<HomePages />} />
-        </Route>
+          {/* Main layout routes */}
+          <Route element={<Layout />}>
+            <Route path="/" element={<HomePages />} />
+            <Route path="/blog" element={<BlogPages />} />
+          </Route>
 
-        {/* User routes */}
-        <Route path="/user" element={<UserLayout />}>
-          <Route path="dashboard" element={<DashBoardUser />} />
-        </Route>
+          {/* User routes */}
+          <Route path="/user" element={<UserLayout />}>
+            <Route path="dashboard" element={<DashBoardUser />} />
+            <Route path="quitplan" element={<QuitPlanPage />} />
+            <Route path="profile/:id" element={<ProfilePage />} />
+            <Route path="blog" element={<UserBlogPage />} />
+            <Route path="smoking-status" element={<SmokingStatusPage />} />
+          </Route>
 
-        {/* Admin routes */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboardHome />} />
-          <Route path="users" element={<Users />} />
-          <Route path="subscriptions" element={<Subscriptions />} />
-          <Route path="badges" element={<Badges />} />
-          <Route path="feedbacks" element={<Feedbacks />} />
-          <Route path="leaderboard" element={<Leaderboard />} />
-          <Route path="notifications" element={<Notifications />} />
-          <Route path="roles" element={<Permissions />} />
-          <Route path="progress" element={<Progress />} />
-          <Route path="quit-plans" element={<QuitPlans />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="coaches" element={<Coaches />} />
+          {/* Admin routes */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboardHome />} />
+            <Route path="users" element={<Users />} />
+            <Route path="subscriptions" element={<Subscriptions />} />
+            <Route path="badges" element={<Badges />} />
+            <Route path="feedbacks" element={<Feedbacks />} />
+            <Route path="leaderboard" element={<Leaderboard />} />
+            <Route path="notifications" element={<Notifications />} />
+            <Route path="roles" element={<Permissions />} />
+            <Route path="progress" element={<Progress />} />
+            <Route path="quit-plans" element={<QuitPlans />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="coaches" element={<Coaches />} />
+            <Route path="blogs" element={<BlogPosts />} />
+            <Route path="blogs/:id" element={<BlogDetail />} />
+          </Route>
 
-          {/* Blog list và blog detail */}
-          <Route path="blogs" element={<BlogPosts />} />
-          <Route path="blogs/:id" element={<BlogDetail />} />
-        </Route>
-
-        {/* 404 route */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          {/* 404 route */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </AuthProvider>
     </Router>
   );
 }

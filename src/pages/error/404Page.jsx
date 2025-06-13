@@ -29,7 +29,7 @@ export default function NotFoundPage() {
                   </p>
                   <Link
                     to="/"
-                    className="inline-block bg-green-600 text-white py-2 px-5 rounded hover:bg-green-700 transition"
+                     className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500"
                   >
                     Go to Home
                   </Link>

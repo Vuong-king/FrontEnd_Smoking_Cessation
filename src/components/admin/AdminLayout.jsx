@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
-import { SidebarAdmin } from "./SidebarAdmin";
-import { HeaderAdmin } from "./HeaderAdmin";
+import  SidebarAdmin  from "./SidebarAdmin";
+
 
 const AdminLayout = () => {
   return (
@@ -9,7 +9,7 @@ const AdminLayout = () => {
 
       <SidebarAdmin />
       <main className="flex-1 p-8 overflow-y-auto bg-gradient-to-b from-black to-gray-900">
-          <HeaderAdmin />
+        
         <Outlet />
       </main>
     </div>

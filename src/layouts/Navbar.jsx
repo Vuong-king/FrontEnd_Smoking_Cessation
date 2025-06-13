@@ -30,16 +30,10 @@ export function Navbar() {
               Home
             </Link>
             <Link
-              to="*"
+              to="/blog"
               className="text-white/80 hover:text-white transition-colors"
             >
               Blog
-            </Link>
-            <Link
-              to="*"
-              className="text-white/80 hover:text-white transition-colors"
-            >
-              Plan
             </Link>
             <Link
               to="*"
