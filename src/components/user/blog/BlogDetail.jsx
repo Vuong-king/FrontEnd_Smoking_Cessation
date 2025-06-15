@@ -12,20 +12,40 @@ import {
   MessageCircle,
   Send,
 } from "lucide-react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
+import { usePostData } from "../../../hook/usePostData"
 
-const BlogDetail = ({ post, onBack, relatedPosts, onPostClick }) => {
+const BlogDetail = () => {
+  const navigate = useNavigate();
   const [liked, setLiked] = useState(false)
   const [bookmarked, setBookmarked] = useState(false)
+  const [error, setError] = useState(null)
   const { id } = useParams()
-  
+  const { getPostById } = usePostData()
+  const [post, setPost] = useState(null)
+
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth' 
-    });
-  }, [id, post.id]); 
-  
+    const loadPost = async () => {
+      try {
+        setError(null);
+        setPost(null);
+        if (!id) {
+          setError("Không tìm thấy bài viết");
+          return;
+        }
+        const postData = await getPostById(id);
+        console.log('Loaded post:', postData);
+        setPost(postData);
+      } catch (err) {
+        console.error('Error loading post:', err);
+        setError(err.message || "Có lỗi xảy ra khi tải bài viết");
+      }
+    };
+
+    loadPost();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
   const [comments, setComments] = useState([
     {
       id: 1,
@@ -51,43 +71,87 @@ const BlogDetail = ({ post, onBack, relatedPosts, onPostClick }) => {
     }
   }
 
+  const handleBack = () => {
+    navigate('/user/blog');
+  };
+
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto p-8">
+        <button onClick={handleBack} className="text-purple-600 hover:text-purple-700 mb-4">
+          ← Quay lại
+        </button>
+        <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>
+      </div>
+    );
+  }
+
+  if (!post) {
+    return (
+      <div className="max-w-4xl mx-auto p-8">
+        <button onClick={handleBack} className="text-purple-600 hover:text-purple-700 mb-4">
+          ← Quay lại
+        </button>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Back Button */}
-      <button onClick={onBack} className="flex items-center text-purple-600 hover:text-purple-700 mb-6">
+      {/* Sửa nút back */}
+      <button 
+        onClick={handleBack} 
+        className="flex items-center text-purple-600 hover:text-purple-700 mb-6"
+      >
         <ArrowLeft className="h-5 w-5 mr-2" />
         Quay lại danh sách
       </button>
 
       {/* Article Header */}
       <article className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src={post.banner || post.thumbnail} alt={post.title} className="w-full h-64 md:h-96 object-cover" />
+        <img 
+          src={post.image || post.banner || post.thumbnail || "/placeholder.svg"} 
+          alt={post.title || "Blog image"} 
+          className="w-full h-64 md:h-96 object-cover"
+          onError={(e) => {
+            e.target.src = '/placeholder.svg'
+          }}
+        />
 
         <div className="p-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">{post.title}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            {post.title || "Untitled"}
+          </h1>
 
           <div className="flex items-center text-gray-600 mb-6">
             <User className="h-5 w-5 mr-2" />
-            <span className="mr-6">{post.author}</span>
+            <span className="mr-6">{post.user_id?.name || post.author || "Anonymous"}</span>
             <Calendar className="h-5 w-5 mr-2" />
-            <span>{new Date(post.date).toLocaleDateString("vi-VN")}</span>
+            <span>{new Date(post.post_date || post.date).toLocaleDateString("vi-VN")}</span>
           </div>
 
           <div className="flex flex-wrap gap-2 mb-6">
-            {post.tags.map((tag) => (
+            {(Array.isArray(post.tags) ? post.tags : [post.tags]).filter(Boolean).map((tag, idx) => (
               <span
-                key={tag}
+                key={tag._id || tag || idx}
                 className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full"
               >
                 <Tag className="h-3 w-3 mr-1" />
-                {tag}
+                {tag.title || tag}
               </span>
             ))}
           </div>
 
           {/* Content */}
           <div className="prose max-w-none mb-8 text-gray-900">
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
+            {post.content ? (
+              <div>{post.content}</div>
+            ) : (
+              <p className="text-gray-500">Không có nội dung</p>
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -100,7 +164,7 @@ const BlogDetail = ({ post, onBack, relatedPosts, onPostClick }) => {
                 }`}
               >
                 <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
-                <span>{post.likes + (liked ? 1 : 0)}</span>
+                <span>{(post.likes || 0) + (liked ? 1 : 0)}</span>
               </button>
 
               <button
@@ -171,32 +235,6 @@ const BlogDetail = ({ post, onBack, relatedPosts, onPostClick }) => {
           ))}
         </div>
       </div>
-
-      {/* Related Posts */}
-      {relatedPosts.length > 0 && (
-        <div className="mt-12">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6">Bài viết liên quan</h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {relatedPosts.map((relatedPost) => (
-              <div
-                key={relatedPost.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => onPostClick(relatedPost)}
-              >
-                <img
-                  src={relatedPost.thumbnail || "/placeholder.svg"}
-                  alt={relatedPost.title}
-                  className="w-full h-32 object-cover"
-                />
-                <div className="p-4">
-                  <h4 className="font-semibold text-gray-800 mb-2 line-clamp-2">{relatedPost.title}</h4>
-                  <p className="text-gray-600 text-sm line-clamp-2">{relatedPost.summary}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
