@@ -1,10 +1,12 @@
+"use client"
 
-
-import { useState } from "react"
-import { ArrowLeft, Plus, Edit, Trash2, Eye, Calendar, Tag } from "lucide-react"
+import { useState } from "react";
+import { ArrowLeft, Plus, Edit, Trash2, Eye, Calendar, Tag } from "lucide-react";
 
 const MyPosts = ({ posts, onPostClick, onBack, onCreateNew }) => {
   const [selectedPosts, setSelectedPosts] = useState([])
+
+  console.log("MyPosts received posts:", posts); // Thêm log để debug
 
   const handleSelectPost = (postId) => {
     setSelectedPosts((prev) => (prev.includes(postId) ? prev.filter((id) => id !== postId) : [...prev, postId]))
@@ -14,7 +16,7 @@ const MyPosts = ({ posts, onPostClick, onBack, onCreateNew }) => {
     if (selectedPosts.length === posts.length) {
       setSelectedPosts([])
     } else {
-      setSelectedPosts(posts.map((post) => post.id))
+      setSelectedPosts(posts.map((post) => post._id)) // Sửa post.id thành post._id
     }
   }
 
@@ -77,39 +79,38 @@ const MyPosts = ({ posts, onPostClick, onBack, onCreateNew }) => {
         ) : (
           <div className="space-y-4">
             {posts.map((post) => (
-              <div key={post.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div key={post._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div className="flex items-start space-x-4">
                   <input
                     type="checkbox"
-                    checked={selectedPosts.includes(post.id)}
-                    onChange={() => handleSelectPost(post.id)}
+                    checked={selectedPosts.includes(post._id)}
+                    onChange={() => handleSelectPost(post._id)}
                     className="mt-2"
                   />
 
                   <img
-                    src={post.thumbnail || "/placeholder.svg?height=100&width=150"}
+                    src={post.image || "/placeholder.svg?height=100&width=150"}
                     alt={post.title}
                     className="w-24 h-16 object-cover rounded-lg flex-shrink-0"
                   />
 
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1">{post.title}</h3>
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{post.summary}</p>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{post.content}</p>
 
                     <div className="flex items-center text-xs text-gray-500 mb-2">
                       <Calendar className="h-3 w-3 mr-1" />
-                      <span className="mr-4">{new Date(post.date).toLocaleDateString("vi-VN")}</span>
-                      <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full">{post.category}</span>
+                      <span className="mr-4">{new Date(post.post_date).toLocaleDateString("vi-VN")}</span>
                     </div>
 
                     <div className="flex flex-wrap gap-1 mb-3">
                       {post.tags.slice(0, 3).map((tag) => (
                         <span
-                          key={tag}
+                          key={tag._id}
                           className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full"
                         >
                           <Tag className="h-2 w-2 mr-1" />
-                          {tag}
+                          {tag.title}
                         </span>
                       ))}
                       {post.tags.length > 3 && (

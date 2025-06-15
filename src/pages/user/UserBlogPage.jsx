@@ -1,44 +1,89 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { usePostData } from "../../hook/usePostData"
-import BlogDetail from "../../components/user/blog/BlogDetail"
-import CreateBlog from "../../components/user/blog/CreateBlog"
-import MyPosts from "../../components/user/blog/MyPosts"
-import FilterSidebar from "../../components/user/blog/FilterSidbar"
-import FilterBar from "../../components/user/blog/FilterBar"
-import BlogCard from "../../components/user/blog/BlogCard"
-
+import { useState, useEffect } from "react";
+import { usePostData } from "../../hook/usePostData";
+import BlogDetail from "../../components/user/blog/BlogDetail";
+import CreateBlog from "../../components/user/blog/CreateBlog";
+import MyPosts from "../../components/user/blog/MyPosts";
+import FilterSidebar from "../../components/user/blog/FilterSidbar";
+import FilterBar from "../../components/user/blog/FilterBar";
+import BlogCard from "../../components/user/blog/BlogCard";
 
 function UserBlogPage() {
-  const { posts: apiPosts, createPost, tags = [], loading, error } = usePostData();
-  const [currentView, setCurrentView] = useState("home")
-  const [selectedPost, setSelectedPost] = useState(null)
-  const [userPosts, setUserPosts] = useState([])
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const {
+    posts: apiPosts,
+    createPost,
+    tags = [],
+    loading,
+    error,
+    getPostsByUserId,
+  } = usePostData();
+  const [currentView, setCurrentView] = useState("home");
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [userPosts, setUserPosts] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Filter states
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const [selectedTags, setSelectedTags] = useState([])
+  const [selectedTags, setSelectedTags] = useState([]);
+
+  useEffect(() => {
+    const fetchUserPosts = async () => {
+      try {
+        const userString = localStorage.getItem("user");
+        let userId = null;
+        let userObject = null;
+
+        if (userString) {
+          userObject = JSON.parse(userString);
+
+          if (userObject && userObject.id) {
+            userId = userObject.id;
+          }
+        }
+
+        if (userId) {
+          console.log("Calling getPostsByUserId with userId:", userId);
+          const posts = await getPostsByUserId(userId);
+          console.log("Fetched posts:", posts);
+          setUserPosts(posts);
+        } else {
+          console.log("UserId is null or undefined, not fetching posts.");
+          setUserPosts([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user posts:", error);
+        setUserPosts([]);
+      }
+    };
+
+    if (currentView === "myPosts") {
+      console.log("Current view is myPosts, attempting to fetch user posts.");
+      fetchUserPosts();
+    } else {
+      console.log("Current view is not myPosts, not fetching user posts.");
+    }
+  }, [currentView, getPostsByUserId]);
 
   // Filter posts
   const filteredPosts = (apiPosts || []).filter((post) => {
     const matchesSearch =
       !searchTerm ||
-      post.content.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesTags = selectedTags.length === 0 ||
-      post.tags?.some((tag) => selectedTags.includes(tag._id)) // Sửa chỗ này
+      post.content.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesTags =
+      selectedTags.length === 0 ||
+      post.tags?.some((tag) => selectedTags.includes(tag._id)); // Sửa chỗ này
 
-    return matchesSearch && matchesTags
-  })
+    return matchesSearch && matchesTags;
+  });
 
   // Handlers
-  const handleViewChange = (view) => setCurrentView(view)
+  const handleViewChange = (view) => setCurrentView(view);
   const handlePostSelect = (post) => {
-    setSelectedPost(post)
-    setCurrentView("detail")
-  }
+    setSelectedPost(post);
+    setCurrentView("detail");
+  };
   const handlePostCreate = async (newPost) => {
     try {
       const createdPost = await createPost({
@@ -47,24 +92,23 @@ function UserBlogPage() {
         data: new Date().toISOString(),
         like: 0,
         comment: 0,
-      })
+      });
       setUserPosts([createdPost, ...userPosts]);
       setCurrentView("myPosts");
     } catch (error) {
       console.error("Failed to create post:", error);
       // Add error handling UI here
     }
-  }
+  };
 
   const handleFilterChange = (filters) => {
-    if (filters.searchTerm !== undefined) setSearchTerm(filters.searchTerm)
-  }
-
+    if (filters.searchTerm !== undefined) setSearchTerm(filters.searchTerm);
+  };
 
   const handleTagToggle = (tagId) => {
-    setSelectedTags(prev =>
+    setSelectedTags((prev) =>
       prev.includes(tagId)
-        ? prev.filter(id => id !== tagId)
+        ? prev.filter((id) => id !== tagId)
         : [...prev, tagId]
     );
   };
@@ -72,12 +116,13 @@ function UserBlogPage() {
   // Render views
   const allPosts = [...(apiPosts || []), ...userPosts];
   if (currentView === "detail" && selectedPost) {
-    const relatedPosts = allPosts.filter(
-      (post) =>
-        post.id !== selectedPost.id &&
-        (
-          post.tags.some((tag) => selectedPost.tags.includes(tag)))
-    ).slice(0, 3);
+    const relatedPosts = allPosts
+      .filter(
+        (post) =>
+          post.id !== selectedPost.id &&
+          post.tags.some((tag) => selectedPost.tags.includes(tag))
+      )
+      .slice(0, 3);
 
     return (
       <BlogDetail
@@ -86,17 +131,24 @@ function UserBlogPage() {
         onBack={() => setCurrentView("home")}
         onPostClick={handlePostSelect}
       />
-    )
+    );
   }
 
   if (currentView === "create") {
     if (!tags || tags.length === 0) {
       return <div>Loading tags...</div>;
     }
-    return <CreateBlog onSubmit={handlePostCreate} onCancel={() => setCurrentView("home")} tags={tags} />
+    return (
+      <CreateBlog
+        onSubmit={handlePostCreate}
+        onCancel={() => setCurrentView("home")}
+        tags={tags}
+      />
+    );
   }
 
   if (currentView === "myPosts") {
+    console.log("Rendering Myposts with userPosts:", userPosts);
     return (
       <MyPosts
         posts={userPosts}
@@ -104,13 +156,13 @@ function UserBlogPage() {
         onBack={() => setCurrentView("home")}
         onCreateNew={() => setCurrentView("create")}
       />
-    )
+    );
   }
 
   // Home view with sidebar layout
   return (
     <div className="flex gap-6">
-      {/* Filter Sidebar */}
+
       <FilterSidebar
         tags={tags}
         selectedTags={selectedTags}
@@ -119,7 +171,7 @@ function UserBlogPage() {
         onClose={() => setSidebarOpen(false)}
       />
 
-      {/* Main Content */}
+
       <div className="flex-1 min-w-0">
         <FilterBar
           onNavigate={handleViewChange}
@@ -132,15 +184,13 @@ function UserBlogPage() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
           </div>
         ) : error ? (
-          <div className="text-center text-red-600 p-4">
-            Error: {error}
-          </div>
+          <div className="text-center text-red-600 p-4">Error: {error}</div>
         ) : (
           <BlogList posts={filteredPosts} onPostClick={handlePostSelect} />
         )}
       </div>
     </div>
-  )
+  );
 }
 
 // Update BlogList component to handle loading states
@@ -161,11 +211,13 @@ const BlogList = ({ posts, onPostClick }) => {
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">Không tìm thấy bài viết nào phù hợp.</p>
+          <p className="text-gray-500 text-lg">
+            Không tìm thấy bài viết nào phù hợp.
+          </p>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default UserBlogPage
+export default UserBlogPage;
