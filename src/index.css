@@ -38,10 +38,29 @@ body {
   }
 }
 
+/* ---------- 🎨 Scrollbar Gradient Style ---------- */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, hsl(267, 100%, 63%), hsl(180, 100%, 50%));
+  border-radius: 8px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, hsl(267, 100%, 70%), hsl(180, 100%, 60%));
+}
+
+/* ---------- 🌀 Marquee Animation (Custom Keyframes) ---------- */
 @theme inline {
   --animate-marquee: marquee var(--duration) infinite linear;
   --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
- 
+
   @keyframes marquee {
     from {
       transform: translateX(0);

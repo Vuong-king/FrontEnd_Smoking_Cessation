@@ -20,7 +20,7 @@ const menu = [
   { label: "Dashboard", icon: <DashboardOutlined />, path: "/user/dashboard" },
   {
     label: "Smoking Status",
-    icon: <Cigarette  />,
+    icon: <Cigarette />,
     path: "/user/smoking-status",
   },
   { label: "Blog", icon: <AuditOutlined />, path: "/user/blog" },
@@ -29,18 +29,18 @@ const menu = [
   { label: "Achievements", icon: <Trophy />, path: "/user/achievements" },
   { label: "Support", icon: <MessageCircleHeart />, path: "/user/support" },
 ];
-function Sidebal() {
 
+function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(() => {
-    const saved = localStorage.getItem("sidebar-collaped");
+    const saved = localStorage.getItem("sidebar-collapsed");
     return saved === "true";
   });
   const { logout, user } = useAuth();
 
   useEffect(() => {
-    localStorage.setItem("sidebar-collaped", collapsed);
+    localStorage.setItem("sidebar-collapsed", collapsed);
   }, [collapsed]);
 
   const items = [
@@ -58,7 +58,6 @@ function Sidebal() {
       icon: <FaUser />,
       onClick: () => navigate(`/user/profile/${user.id}`),
     },
-
     {
       key: "3",
       label: "Settings",
@@ -82,16 +81,15 @@ function Sidebal() {
     <div
       className={`h-screen sticky top-0 ${
         collapsed ? "w-20" : "w-64"
-      } bg-gradient-to-b from-[#1a1333] via-[#2b2256] to-[#1a2a3a] flex flex-col  transition-all duration-300`}
+      } bg-gradient-to-b from-[#1a1333] via-[#2b2256] to-[#1a2a3a] flex flex-col transition-all duration-300`}
     >
       {/* Collapse button */}
-
       <div
         className={`${
           !collapsed
-            ? "flex justify-between items-center border-b border-[#1f1f1f]"
-            : "flex items-center"
-        } `}
+            ? "flex justify-between items-center border-b border-[#1f1f1f] p-2"
+            : "flex items-center justify-center p-2"
+        }`}
       >
         {!collapsed && (
           <Link to="/">
@@ -100,23 +98,21 @@ function Sidebal() {
             </div>
           </Link>
         )}
-        <div className="flex items-center justify-end p-2">
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            className="text-white"
-          />
-        </div>
+        <Button
+          type="text"
+          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          onClick={() => setCollapsed(!collapsed)}
+          className="text-white"
+        />
       </div>
 
       {/* Profile */}
       <div
         className={`${
           !collapsed
-            ? "px-4 py-3 border-b border-[#1f1f1f] flex items-center gap-3 hover:bg-[#232042] hover:cursor-pointer transition-colors duration-200"
-            : "px-4 py-3 border-b border-[#1f1f1f] flex items-center gap-3 hover:bg-[#232042] hover:cursor-pointer transition-colors duration-200 flex-col justify-center"
-        }`}
+            ? "px-4 py-3 border-b border-[#1f1f1f] flex items-center gap-3"
+            : "px-4 py-3 border-b border-[#1f1f1f] flex flex-col items-center gap-3"
+        } hover:bg-[#232042] hover:cursor-pointer transition-colors duration-200`}
       >
         <Dropdown menu={{ items }}>
           <a onClick={(e) => e.preventDefault()}>
@@ -128,9 +124,9 @@ function Sidebal() {
               {!collapsed && (
                 <div>
                   <div className="text-sm font-semibold">
-                    {user.name || "Guest"}
+                    {user?.name || "Guest"}
                   </div>
-                  <div className="text-xs text-gray-400">{user.email}</div>
+                  <div className="text-xs text-gray-400">{user?.email}</div>
                 </div>
               )}
             </Space>
@@ -146,18 +142,18 @@ function Sidebal() {
               key={item.path}
               to={item.path}
               className={`
-                                        flex items-center transition-all duration-200 active-menu mt-1
-                                        ${
-                                          collapsed
-                                            ? "justify-center w-12 h-12"
-                                            : "px-6 py-2 w-11/12"
-                                        }
-                                        ${
-                                          isActive
-                                            ? `bg-gray-200 text-[#232042]  rounded-2xl`
-                                            : "text-white hover:bg-[#232042]  hover:text-[#1ecbe1] rounded-2xl"
-                                        }
-                                    `}
+                flex items-center transition-all duration-200 mt-1
+                ${
+                  collapsed
+                    ? "justify-center w-12 h-12"
+                    : "px-6 py-2 w-11/12"
+                }
+                ${
+                  isActive
+                    ? "bg-gray-200 text-[#232042] rounded-2xl"
+                    : "text-white hover:bg-[#232042] hover:text-[#1ecbe1] rounded-2xl"
+                }
+              `}
               style={{
                 minHeight: collapsed ? 48 : undefined,
               }}
@@ -176,4 +172,4 @@ function Sidebal() {
   );
 }
 
-export default Sidebal;
+export default Sidebar;

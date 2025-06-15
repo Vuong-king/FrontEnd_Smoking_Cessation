@@ -9,6 +9,7 @@ import ScrollToTop from "./layouts/ScrolltoTop";
 import UserLayout from "./layouts/user/UserLayout";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import UserHeader from "./layouts/user/UserHeader";
+import AdminLayout from "./components/admin/AdminLayout";
 
 // Pages
 import HomePages from "./pages/generic/home/HomePage";
@@ -21,6 +22,22 @@ import UserBlogPage from "./pages/user/UserBlogPage";
 import SmokingStatusPage from "./pages/user/SmokingStatusPage";
 import ProfilePage from "./pages/user/ProfilePage";
 
+// Admin pages
+import AdminDashboardHome from "./pages/admin/AdminDashboardHome";
+import Users from "./pages/admin/Users";
+import Subscriptions from "./pages/admin/Subscriptions";
+import Badges from "./pages/admin/Badges";
+import BlogPosts from "./pages/admin/BlogPosts";
+import BlogDetail from "./pages/admin/BlogDetail";
+import Feedbacks from "./pages/admin/Feedbacks";
+import Leaderboard from "./pages/admin/Leaderboard";
+import Notifications from "./pages/admin/Notifications";
+import Permissions from "./pages/admin/Permissions";
+import Progress from "./pages/admin/Progress";
+import QuitPlans from "./pages/admin/QuitPlans";
+import Reports from "./pages/admin/Reports";
+import Settings from "./pages/admin/Settings";
+import Coaches from "./pages/admin/Coaches";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -61,6 +78,25 @@ function App() {
             <Route path="profile/:id" element={<ProfilePage />} />
             <Route path="blog" element={<UserBlogPage />} />
             <Route path="smoking-status" element={<SmokingStatusPage />} />
+          </Route>
+
+          {/* Admin routes */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboardHome />} />
+            <Route path="users" element={<Users />} />
+            <Route path="subscriptions" element={<Subscriptions />} />
+            <Route path="badges" element={<Badges />} />
+            <Route path="feedbacks" element={<Feedbacks />} />
+            <Route path="leaderboard" element={<Leaderboard />} />
+            <Route path="notifications" element={<Notifications />} />
+            <Route path="roles" element={<Permissions />} />
+            <Route path="progress" element={<Progress />} />
+            <Route path="quit-plans" element={<QuitPlans />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="coaches" element={<Coaches />} />
+            <Route path="blogs" element={<BlogPosts />} />
+            <Route path="blogs/:id" element={<BlogDetail />} />
           </Route>
 
           {/* 404 route */}
