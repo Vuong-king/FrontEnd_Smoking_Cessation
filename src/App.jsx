@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import "antd/dist/reset.css";
 
@@ -48,7 +48,7 @@ function App() {
           {/* Auth route */}
           <Route path="/login" element={<AuthPage />} />
           <Route path="/login/:token" element={<AuthPage />} />
-
+    
           {/* Main layout routes */}
           <Route element={<Layout />}>
             <Route path="/" element={<HomePages />} />
@@ -64,6 +64,8 @@ function App() {
             <Route path="smoking-status" element={<SmokingStatusPage />} />
             <Route path= "blog/:id" element={<BlogDetail />} />
           </Route>
+
+
 
           {/* 404 route */}
           <Route path="*" element={<NotFoundPage />} />

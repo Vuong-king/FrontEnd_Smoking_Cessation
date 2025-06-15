@@ -140,6 +140,32 @@ export function usePostData() {
       setLoading(false);
     }
   };
+  const getPostsByUserId = async (userId) => {
+    try {
+      setLoading(true);
+      const response = await api.get(`/posts/user/${userId}`);
+      console.log("Posts by user ID:", response.data);
+
+      let postList;
+      if (Array.isArray(response.data)) {
+        postList = response.data;
+      } else if (Array.isArray(response.data.posts)) {
+        postList = response.data.posts;
+      } else if (Array.isArray(response.data.data)) {
+        postList = response.data.data;
+      } else {
+        postList = [];
+      }
+
+      return postList;
+    } catch (err) {
+      console.error("Error fetching posts by user ID:", err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return {
     posts,
@@ -152,5 +178,6 @@ export function usePostData() {
     updatePost,
     deletePost,
     getPostById,
+    getPostsByUserId,
   };
 }
