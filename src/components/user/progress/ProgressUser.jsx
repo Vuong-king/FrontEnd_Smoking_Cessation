@@ -43,8 +43,9 @@ import {
   MehOutlined,
   FrownOutlined,
 } from "@ant-design/icons";
-import ColourfulText from "../../ui/colourful-text";
+
 import dayjs from "dayjs";
+import ColourfulText from "../../ui/ColourfulText";
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;

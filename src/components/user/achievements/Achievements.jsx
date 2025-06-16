@@ -12,8 +12,10 @@ import {
 } from "lucide-react";
 import { Progress, Button, Modal, Tooltip, message, Tabs } from "antd";
 import { motion } from "framer-motion";
-import { Marquee } from "~/components/ui/Marquee";
-import ColourfulText from "~/components/ui/colourful-text";
+
+import ColourfulText from "../../ui/ColourfulText";
+import { Marquee } from "../../ui/Marquee";
+
 
 const { TabPane } = Tabs;
 
@@ -167,7 +169,7 @@ const Achievements = () => {
           <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 mb-4">
             Your <ColourfulText text="Achievements" />
           </h1>
-          <p className="text-lg text-gray-300">
+          <p className="text-lg text-gray-600">
             Track your milestones and celebrate your smoke-free journey
           </p>
         </div>
@@ -175,9 +177,9 @@ const Achievements = () => {
         {/* Achievement Stats */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
           {/* Badge Summary Card */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20">
+          <div className="bg-white/90 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-gray-200">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-white">Badge Collection</h3>
+              <h3 className="text-xl font-bold text-gray-800">Badge Collection</h3>
               <Trophy className="w-7 h-7 text-yellow-400" />
             </div>
 
@@ -185,7 +187,7 @@ const Achievements = () => {
               <span className="text-3xl font-bold text-cyan-400 mr-2">
                 {totalEarnedBadges}
               </span>
-              <span className="text-gray-300">/ {totalBadges} earned</span>
+              <span className="text-gray-600">/ {totalBadges} earned</span>
             </div>
 
             <Progress
@@ -198,14 +200,14 @@ const Achievements = () => {
               className="mb-3"
             />
 
-            <p className="text-gray-300 text-sm">
+            <p className="text-gray-600 text-sm">
               You've earned {Math.round(completionRate)}% of all available
               achievements!
             </p>
           </div>
 
           {/* Ongoing Achievements */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20">
+          <div className="bg-white/90 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-gray-200">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-white">In Progress</h3>
               <Timer className="w-7 h-7 text-blue-400" />
@@ -220,7 +222,7 @@ const Achievements = () => {
                   <div className="flex justify-between items-center mb-1">
                     <div className="flex items-center">
                       <span className="text-2xl mr-2">{badge.icon}</span>
-                      <span className="text-gray-200">{badge.name}</span>
+                      <span className="text-gray-800">{badge.name}</span>
                     </div>
                     <span className="text-cyan-400 font-semibold">
                       {badge.progress}%
@@ -235,7 +237,7 @@ const Achievements = () => {
                     }}
                     className="mb-1"
                   />
-                  <p className="text-xs text-gray-400">{badge.description}</p>
+                  <p className="text-gray-600 text-xs">{badge.description}</p>
                 </div>
               ))}
 
@@ -247,7 +249,7 @@ const Achievements = () => {
           </div>
 
           {/* Recent Achievements */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20">
+          <div className="bg-white/90 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-gray-200">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-white">Recent Achievements</h3>
               <Zap className="w-7 h-7 text-yellow-400" />
@@ -313,7 +315,7 @@ const Achievements = () => {
         {/* Badge Categories */}
         <div className="mb-6">
           <h3 className="text-xl font-bold text-white mb-4">All Achievements</h3>
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20">
+          <div className="bg-white/90 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-gray-200">
             <Tabs defaultActiveKey="time" type="card" className="achievements-tabs">
               {Object.entries(badgesByCategory).map(([category, badges]) => (
                 <TabPane
@@ -322,6 +324,7 @@ const Achievements = () => {
                     <TabHeader
                       icon={getCategoryIcon(category)}
                       label={getCategoryLabel(category)}
+                      className="text-gray-800"
                     />
                   }
                 >
@@ -397,8 +400,8 @@ const BadgeCard = ({ badge, onView, onShare, tierColors }) => {
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className={`bg-white/5 backdrop-blur-sm rounded-xl p-4 border ${
-        badge.earned ? "border-white/30" : "border-white/10"
+      className={`bg-white shadow-md backdrop-blur-sm rounded-xl p-4 border ${
+        badge.earned ? "border-gray-300" : "border-gray-200"
       }`}
     >
       <div className="flex justify-between">
@@ -431,10 +434,10 @@ const BadgeCard = ({ badge, onView, onShare, tierColors }) => {
         </div>
 
         <div>
-          <h4 className={`font-semibold ${badge.earned ? "text-white" : "text-gray-400"}`}>
+          <h4 className={`font-semibold ${badge.earned ? "text-white" : "text-gray-800"}`}>
             {badge.name}
           </h4>
-          <p className="text-xs text-gray-400 line-clamp-1">{badge.description}</p>
+          <p className="text-gray-600 text-xs line-clamp-1">{badge.description}</p>
         </div>
       </div>
 

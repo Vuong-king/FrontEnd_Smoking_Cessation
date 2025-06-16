@@ -10,19 +10,18 @@ const GoalsTab = ({
   deleteGoal 
 }) => {
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-white mb-6">Daily Goals</h2>
+    <div className="bg-white rounded-xl p-6">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Daily Goals</h2>
       
-      {/* Add New Goal */}
-      <div className="bg-white/5 rounded-xl p-6 mb-6">
-        <h3 className="text-lg font-semibold text-white mb-4">Add New Goal</h3>
+      <div className="bg-gray-50 rounded-xl p-6 mb-6 border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Add New Goal</h3>
         <div className="flex gap-3">
           <input
             type="text"
             value={newGoal}
             onChange={(e) => setNewGoal(e.target.value)}
             placeholder="Enter a new daily goal..."
-            className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="flex-1 px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
             onKeyPress={(e) => e.key === 'Enter' && addCustomGoal()}
           />
           <button
@@ -35,15 +34,14 @@ const GoalsTab = ({
         </div>
       </div>
 
-      {/* Goals List */}
       <div className="space-y-4">
         {customGoals.map((goal) => (
           <div
             key={goal.id}
-            className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-200 ${
+            className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-200 bg-gray-50 ${
               goal.completed
-                ? 'bg-green-500/10 border-green-500/30'
-                : 'bg-white/5 border-white/10'
+                ? 'border-green-500'
+                : 'border-gray-200'
             }`}
           >
             <div className="flex items-center">
@@ -52,20 +50,20 @@ const GoalsTab = ({
                 className="mr-3"
               >
                 {goal.completed ? (
-                  <CheckCircle className="w-5 h-5 text-green-400" />
+                  <CheckCircle className="w-5 h-5 text-green-500" />
                 ) : (
                   <Circle className="w-5 h-5 text-gray-400" />
                 )}
               </button>
               <span className={`${
-                goal.completed ? 'text-green-300 line-through' : 'text-white'
+                goal.completed ? 'text-green-600 line-through' : 'text-gray-700'
               }`}>
                 {goal.text}
               </span>
             </div>
             <button
               onClick={() => deleteGoal(goal.id)}
-              className="text-red-400 hover:text-red-300 transition-colors"
+              className="text-red-500 hover:text-red-600 transition-colors"
             >
               <Trash2 className="w-4 h-4" />
             </button>
