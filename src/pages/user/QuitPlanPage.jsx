@@ -11,7 +11,7 @@ import GoalsTab from "../../components/user/quitplan/GoalsTab";
 
 const QuitPlanPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
-  const [completedDays, setCompletedDays] = useState([1, 2, 3, 5, 7]);
+  const [completedDays] = useState([1, 2, 3, 5, 7]);
   const [customGoals, setCustomGoals] = useState([
     { id: 1, text: "Exercise for 30 minutes daily", completed: false },
     { id: 2, text: "Drink 8 glasses of water", completed: true },
@@ -78,7 +78,7 @@ const QuitPlanPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gray-100">
       <HeaderSection />
 
       <div className="max-w-7xl mx-auto px-6 pb-16">
@@ -86,7 +86,7 @@ const QuitPlanPage = () => {
 
         <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8">
+        <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-200">
           {renderTabContent()}
         </div>
 

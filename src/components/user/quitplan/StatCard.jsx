@@ -1,12 +1,14 @@
 import React from 'react';
 
 const StatCard = ({ icon: Icon, value, label, color, bgColor }) => (
-  <div className={`${bgColor} backdrop-blur-sm border border-white/20 rounded-2xl p-6`}>
+  <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
     <div className="flex items-center justify-between mb-4">
-      <Icon className={`w-8 h-8 ${color}`} />
+      <div className={`${bgColor} p-3 rounded-xl`}>
+        <Icon className={`w-6 h-6 ${color}`} />
+      </div>
       <div className="text-right">
         <div className={`text-2xl font-bold ${color}`}>{value}</div>
-        <div className="text-gray-300 text-sm">{label}</div>
+        <div className="text-gray-600 text-sm">{label}</div>
       </div>
     </div>
   </div>

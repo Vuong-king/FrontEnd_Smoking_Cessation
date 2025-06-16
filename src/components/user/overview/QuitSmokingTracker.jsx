@@ -42,15 +42,16 @@ const QuitSmokingTracker = () => {
     }).format(amount);
   };
 
+  // Thay đổi cards config
   const cards = [
     {
       title: 'Days Smoke-Free',
       value: stats.days,
       unit: 'days',
       icon: Calendar,
-      bgColor: 'bg-gradient-to-br from-emerald-500 to-teal-600',
-      bgLight: 'bg-white/10 backdrop-blur-sm border border-white/20',
-      textColor: 'text-emerald-400',
+      bgColor: 'bg-emerald-100',
+      bgLight: 'bg-white',
+      textColor: 'text-emerald-600',
       emoji: '✅'
     },
     {
@@ -58,9 +59,9 @@ const QuitSmokingTracker = () => {
       value: formatMoney(stats.moneySaved),
       unit: '',
       icon: DollarSign,
-      bgColor: 'bg-gradient-to-br from-blue-500 to-indigo-600',
-      bgLight: 'bg-white/10 backdrop-blur-sm border border-white/20',
-      textColor: 'text-blue-400',
+      bgColor: 'bg-blue-100',
+      bgLight: 'bg-white',
+      textColor: 'text-blue-600',
       emoji: '💰'
     },
     {
@@ -68,9 +69,9 @@ const QuitSmokingTracker = () => {
       value: stats.healthImprovement,
       unit: '%',
       icon: Heart,
-      bgColor: 'bg-gradient-to-br from-pink-500 to-rose-600',
-      bgLight: 'bg-white/10 backdrop-blur-sm border border-white/20',
-      textColor: 'text-pink-400',
+      bgColor: 'bg-pink-100',
+      bgLight: 'bg-white',
+      textColor: 'text-pink-600',
       emoji: '❤️'
     },
     {
@@ -78,27 +79,27 @@ const QuitSmokingTracker = () => {
       value: stats.badges,
       unit: 'badges',
       icon: Award,
-      bgColor: 'bg-gradient-to-br from-yellow-500 to-orange-600',
-      bgLight: 'bg-white/10 backdrop-blur-sm border border-white/20',
-      textColor: 'text-yellow-400',
+      bgColor: 'bg-yellow-100',
+      bgLight: 'bg-white',
+      textColor: 'text-yellow-600',
       emoji: '🏅'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
+    <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent mb-4">
+          <h1 className="text-5xl font-bold text-gray-800 mb-4">
              Quit Smoking <ColourfulText text="Journey"/>
           </h1>
-          <p className="text-lg text-gray-300">
+          <p className="text-lg text-gray-600">
             Track your progress and achievements
           </p>
-          <div className="mt-4 inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full shadow-lg border border-white/20">
-            <Cigarette className="w-5 h-5 text-red-400 mr-2" />
-            <span className="text-gray-200">
+          <div className="mt-4 inline-flex items-center px-4 py-2 bg-white rounded-full shadow-md border border-gray-200">
+            <Cigarette className="w-5 h-5 text-red-500 mr-2" />
+            <span className="text-gray-700">
               Started on: {quitDate.toLocaleDateString('en-US')}
             </span>
           </div>
@@ -111,16 +112,16 @@ const QuitSmokingTracker = () => {
             return (
               <div
                 key={index}
-                className={`${card.bgLight} rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-white`}
+                className="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-200"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <div className={`${card.bgColor} p-3 rounded-xl shadow-md`}>
-                    <IconComponent className="w-6 h-6 text-white" />
+                  <div className={`${card.bgColor} p-3 rounded-xl shadow-sm`}>
+                    <IconComponent className={`w-6 h-6 ${card.textColor}`} />
                   </div>
                   <span className="text-2xl">{card.emoji}</span>
                 </div>
                 
-                <h3 className="text-gray-600 text-sm font-medium mb-2">
+                <h3 className="text-gray-700 text-sm font-medium mb-2">
                   {card.title}
                 </h3>
                 
@@ -140,31 +141,31 @@ const QuitSmokingTracker = () => {
         </div>
 
         {/* Achievement Section */}
-        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-xl">
+        <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-200">
           <div className="flex items-center mb-6">
-            <Trophy className="w-8 h-8 text-yellow-400 mr-3" />
-            <h2 className="text-2xl font-bold text-white">Achievements</h2>
+            <Trophy className="w-8 h-8 text-yellow-500 mr-3" />
+            <h2 className="text-2xl font-bold text-gray-800">Achievements</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-sm p-6 rounded-xl border border-green-400/30">
-              <h3 className="text-lg font-semibold text-white mb-2">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
                 Cigarettes Avoided
               </h3>
-              <p className="text-3xl font-bold text-green-400">
+              <p className="text-3xl font-bold text-green-600">
                 {stats.cigarettesAvoided.toLocaleString('en-US')}
               </p>
-              <p className="text-gray-300 text-sm mt-1">cigarettes</p>
+              <p className="text-gray-600 text-sm mt-1">cigarettes</p>
             </div>
             
-            <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-sm p-6 rounded-xl border border-purple-400/30">
-              <h3 className="text-lg font-semibold text-white mb-2">
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl border border-purple-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
                 Current Level
               </h3>
-              <p className="text-3xl font-bold text-purple-400">
+              <p className="text-3xl font-bold text-purple-600">
                 {Math.floor(stats.days / 30) + 1}
               </p>
-              <p className="text-gray-300 text-sm mt-1">
+              <p className="text-gray-600 text-sm mt-1">
                 {stats.days < 30 ? 'Beginner' : 
                  stats.days < 90 ? 'Persistent' : 
                  stats.days < 180 ? 'Warrior' : 
@@ -176,11 +177,11 @@ const QuitSmokingTracker = () => {
 
         {/* Motivational Quote */}
         <div className="mt-8 text-center">
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
-            <p className="text-xl text-gray-200 italic mb-2">
+          <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-200">
+            <p className="text-xl text-gray-700 italic mb-2">
               "Every day without smoking is a victory!"
             </p>
-            <p className="text-gray-400">
+            <p className="text-gray-600">
               Keep going and be proud of what you've achieved 💪
             </p>
           </div>

@@ -9,29 +9,29 @@ const StatsOverview = ({ quitStats }) => {
         icon={Calendar}
         value={quitStats.daysSmokesFree}
         label="Days Smoke-Free"
-        color="text-green-400"
-        bgColor="bg-green-500/10"
+        color="text-green-500"
+        bgColor="bg-green-100"
       />
       <StatCard
         icon={DollarSign}
         value={`$${quitStats.moneySaved}`}
         label="Money Saved"
-        color="text-blue-400"
-        bgColor="bg-blue-500/10"
+        color="text-blue-500"
+        bgColor="bg-blue-100"
       />
       <StatCard
         icon={Cigarette}
         value={quitStats.cigarettesNotSmoked}
         label="Cigarettes Not Smoked"
-        color="text-purple-400"
-        bgColor="bg-purple-500/10"
+        color="text-purple-500"
+        bgColor="bg-purple-100"
       />
       <StatCard
         icon={Heart}
         value={`${quitStats.healthPoints}%`}
         label="Health Score"
-        color="text-red-400"
-        bgColor="bg-red-500/10"
+        color="text-red-500"
+        bgColor="bg-red-100"
       />
     </div>
   );
