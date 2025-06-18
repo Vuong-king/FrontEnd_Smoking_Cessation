@@ -30,6 +30,7 @@ import UserSupport from "./pages/user/UserSupport";
 import UserProgress from "./pages/user/UserProgress";
 import UserQuitPlanPage from "./pages/user/UserQuitPlanPage";
 import QuitPlanPage from "./pages/generic/QuitPlanPage";
+import QuitPlanDetailPage from "./pages/generic/QuitPlanDetailPage";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -62,6 +63,7 @@ function App() {
             <Route path="/" element={<HomePages />} />
             <Route path="/blog" element={<BlogPages />} />
             <Route path="/quit-plan" element={<QuitPlanPage />} />
+            <Route path="/quit-plan-detail/:id" element={<QuitPlanDetailPage />} />
           </Route>
 
           {/* User routes */}
