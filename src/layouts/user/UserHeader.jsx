@@ -72,6 +72,7 @@ const UserHeader = () => {
             {[
               { name: "Home", path: "/" },
               { name: "Blog", path: "/blog" },
+              { name: "Kế Hoạch", path: "/quit-plan" },
               { name: "Community", path: "/community" },
               { name: "Ranking", path: "/ranking" },
               { name: "Premium", path: "/premium" },
