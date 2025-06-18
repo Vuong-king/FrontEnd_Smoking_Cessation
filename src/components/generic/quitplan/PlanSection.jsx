@@ -1,9 +1,8 @@
-import { Alert, Card, Col, Row, Spin } from "antd";
+import { Alert ,Col, Row, Spin } from "antd";
 import { useQuitPlanData } from "../../../hook/useQuitPlanData";
 import ColourfulText from "../../ui/ColourfulText";
 import PlanCard from "./PlanCard";
 
-const { Meta } = Card;
 function PlanSection() {
   const { quitPlans, loading, error } = useQuitPlanData();
 
@@ -35,6 +34,7 @@ function PlanSection() {
             {quitPlans.map((plan, index) => (
               <Col xs={24} sm={12} md={8} lg={6} key={plan._id}>
                 <PlanCard
+                  id={plan._id} // Thêm dòng này
                   image={plan.image || "/placeholder.svg"}
                   title={plan.name}
                   description={

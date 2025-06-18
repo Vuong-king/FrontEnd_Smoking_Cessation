@@ -1,8 +1,9 @@
 import { Card } from "antd"
 import { ArrowRight } from "lucide-react"
 import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 
-function PlanCard({ image, title, description, delay = 0 }) {
+function PlanCard({ id, image, title, description, delay = 0 }) {
   const [isVisible, setIsVisible] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
@@ -39,12 +40,14 @@ function PlanCard({ image, title, description, delay = 0 }) {
           opacity-0 group-hover:opacity-100 transition-all duration-300 
           flex items-end justify-center pb-6 z-10"
         >
+          <Link to={`/quit-plan-detail/${id}`}>
           <button className="bg-white text-blue-600 px-4 py-2 rounded-full 
             flex items-center gap-2 font-medium transform translate-y-full 
             group-hover:translate-y-0 transition-transform duration-300 ease-out"
           >
             Xem chi tiết <ArrowRight className="w-4 h-4" />
           </button>
+          </Link>
         </div>
         
         <img
