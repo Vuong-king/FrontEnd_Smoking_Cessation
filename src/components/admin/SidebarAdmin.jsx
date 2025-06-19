@@ -36,6 +36,7 @@ function SidebarAdmin({ user = {} }) {
     { label: "Users", icon: <UserOutlined />, path: "/admin/users" },
     { label: "Subscriptions", icon: <CreditCardOutlined />, path: "/admin/subscriptions" },
     { label: "Badges", icon: <StarOutlined />, path: "/admin/badges" },
+    { label: "Stages", icon: <BarChartOutlined />, path: "/admin/stages" },
     { label: "Reports", icon: <BarChartOutlined />, path: "/admin/reports" },
     { label: "Feedbacks", icon: <MessageOutlined />, path: "/admin/feedbacks" },
     { label: "Quit Plans", icon: <CheckCircleOutlined />, path: "/admin/quit-plans" },

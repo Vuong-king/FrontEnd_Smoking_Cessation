@@ -47,6 +47,7 @@ import UserProgress from "./pages/user/UserProgress";
 import UserQuitPlanPage from "./pages/user/UserQuitPlanPage";
 import QuitPlanPage from "./pages/generic/QuitPlanPage";
 import QuitPlanDetailPage from "./pages/generic/QuitPlanDetailPage";
+import Stages from "./pages/admin/Stage";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -101,6 +102,7 @@ function App() {
             <Route path="users" element={<Users />} />
             <Route path="subscriptions" element={<Subscriptions />} />
             <Route path="badges" element={<Badges />} />
+            <Route path="stages" element={<Stages />} />
             <Route path="feedbacks" element={<Feedbacks />} />
             <Route path="leaderboard" element={<Leaderboard />} />
             <Route path="notifications" element={<Notifications />} />

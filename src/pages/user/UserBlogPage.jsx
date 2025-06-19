@@ -15,7 +15,6 @@ function UserBlogPage() {
     createPost,
     tags = [],
     loading,
-    error,
     getPostsByUserId,
   } = usePostData();
   const [currentView, setCurrentView] = useState("home");
@@ -25,8 +24,12 @@ function UserBlogPage() {
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState("");
-
   const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const categories = []; // Placeholder, update as needed
+
+  // If you have samplePosts, define or import them. Otherwise, use apiPosts as the main source.
+  // const samplePosts = [];
 
   useEffect(() => {
     const fetchUserPosts = async () => {
@@ -44,38 +47,38 @@ function UserBlogPage() {
         }
 
         if (userId) {
-          console.log("Calling getPostsByUserId with userId:", userId);
           const posts = await getPostsByUserId(userId);
-          console.log("Fetched posts:", posts);
           setUserPosts(posts);
         } else {
-          console.log("UserId is null or undefined, not fetching posts.");
           setUserPosts([]);
         }
       } catch (error) {
-        console.error("Failed to fetch user posts:", error);
         setUserPosts([]);
       }
     };
 
     if (currentView === "myPosts") {
-      console.log("Current view is myPosts, attempting to fetch user posts.");
       fetchUserPosts();
-    } else {
-      console.log("Current view is not myPosts, not fetching user posts.");
     }
   }, [currentView, getPostsByUserId]);
 
+  // Combine posts (if you have samplePosts, otherwise just use apiPosts)
+  const allPosts = [...(apiPosts || []), ...userPosts];
+
   // Filter posts
-  const filteredPosts = (apiPosts || []).filter((post) => {
+  const filteredPosts = allPosts.filter((post) => {
     const matchesSearch =
       !searchTerm ||
-      post.content.toLowerCase().includes(searchTerm.toLowerCase());
+      (post.title && post.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (post.summary && post.summary.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (post.content && post.content.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesCategory = !selectedCategory || post.category === selectedCategory;
     const matchesTags =
       selectedTags.length === 0 ||
-      post.tags?.some((tag) => selectedTags.includes(tag._id)); // Sửa chỗ này
-
-    return matchesSearch && matchesTags;
+      (post.tags && (Array.isArray(post.tags)
+        ? selectedTags.some((tag) => post.tags.includes(tag) || post.tags.some((t) => t._id === tag))
+        : false));
+    return matchesSearch && matchesCategory && matchesTags;
   });
 
   // Handlers
@@ -96,7 +99,6 @@ function UserBlogPage() {
       setUserPosts([createdPost, ...userPosts]);
       setCurrentView("myPosts");
     } catch (error) {
-      console.error("Failed to create post:", error);
       // Add error handling UI here
     }
   };
@@ -105,33 +107,12 @@ function UserBlogPage() {
     if (filters.searchTerm !== undefined) setSearchTerm(filters.searchTerm);
   };
 
-  const handleTagToggle = (tagId) => {
+  const handleCategoryChange = (category) => setSelectedCategory(category);
+  const handleTagToggle = (tag) => {
     setSelectedTags((prev) =>
-      prev.includes(tagId)
-        ? prev.filter((id) => id !== tagId)
-        : [...prev, tagId]
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
   };
-    if (filters.searchTerm !== undefined) setSearchTerm(filters.searchTerm)
-  }
-
-  const handleCategoryChange = (category) => setSelectedCategory(category)
-  const handleTagToggle = (tag) => {
-    setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]))
-  }
-
-  // Filter posts
-  const allPosts = [...samplePosts, ...userPosts]
-  const filteredPosts = allPosts.filter((post) => {
-    const matchesSearch =
-      !searchTerm ||
-      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.summary.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = !selectedCategory || post.category === selectedCategory
-    const matchesTags = selectedTags.length === 0 || selectedTags.some((tag) => post.tags.includes(tag))
-
-    return matchesSearch && matchesCategory && matchesTags
-  })
 
   // Render views
   if (currentView === "detail" && selectedPost) {
@@ -139,6 +120,8 @@ function UserBlogPage() {
       .filter(
         (post) =>
           post.id !== selectedPost.id &&
+          post.tags &&
+          selectedPost.tags &&
           post.tags.some((tag) => selectedPost.tags.includes(tag))
       )
       .slice(0, 3);
@@ -167,7 +150,6 @@ function UserBlogPage() {
   }
 
   if (currentView === "myPosts") {
-    console.log("Rendering Myposts with userPosts:", userPosts);
     return (
       <MyPosts
         posts={userPosts}
@@ -181,7 +163,6 @@ function UserBlogPage() {
   // Home view with sidebar layout
   return (
     <div className="flex gap-6">
-
       <FilterSidebar
         categories={categories}
         tags={tags}
@@ -192,21 +173,16 @@ function UserBlogPage() {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
-
-
       <div className="flex-1 min-w-0">
         <FilterBar
           onNavigate={handleViewChange}
           onFilterChange={handleFilterChange}
           onToggleSidebar={() => setSidebarOpen(true)}
         />
-
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
           </div>
-        ) : error ? (
-          <div className="text-center text-red-600 p-4">Error: {error}</div>
         ) : (
           <BlogList posts={filteredPosts} onPostClick={handlePostSelect} />
         )}
@@ -215,14 +191,12 @@ function UserBlogPage() {
   );
 }
 
-
-const BlogList = ({ posts, onPostClick }) => {
+function BlogList({ posts, onPostClick }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Bài viết mới nhất ({posts.length})</h2>
       </div>
-
       {posts.length > 0 ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((post) => (
@@ -238,6 +212,6 @@ const BlogList = ({ posts, onPostClick }) => {
       )}
     </div>
   );
-};
+}
 
 export default UserBlogPage;
