@@ -21,11 +21,12 @@ import HomePages from "./pages/generic/home/HomePage";
 import AuthPage from "./pages/auth/AuthPage";
 import NotFoundPage from "./pages/error/404Page";
 import DashBoardUser from "./pages/user/DashBoardUser";
-import BlogPages from "./pages/generic/blogs/BlogPages";
 import UserBlogPage from "./pages/user/UserBlogPage";
 import SmokingStatusPage from "./pages/user/SmokingStatusPage";
 import ProfilePage from "./pages/user/ProfilePage";
 import UserBlogDetail from "./components/user/blog/UserBlogDetail";
+import StagesPage from "./pages/generic/StagesPage";
+import BlogPage from "./pages/generic/BlogPage";
 
 // Admin pages
 import AdminDashboardHome from "./pages/admin/AdminDashboardHome";
@@ -49,7 +50,6 @@ import UserQuitPlanPage from "./pages/user/UserQuitPlanPage";
 import QuitPlanPage from "./pages/generic/QuitPlanPage";
 import QuitPlanDetailPage from "./pages/generic/QuitPlanDetailPage";
 import Stages from "./pages/admin/Stage";
-import StagesPage from "./pages/generic/StagesPage";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -80,10 +80,10 @@ function App() {
           {/* Main layout routes */}
           <Route element={<Layout />}>
             <Route path="/" element={<HomePages />} />
-            <Route path="/blog" element={<BlogPages />} />
             <Route path="/quit-plan" element={<QuitPlanPage />} />
             <Route path="/quit-plan-detail/:id" element={<QuitPlanDetailPage />} />
             <Route path="/stages" element={<StagesPage />} />
+            <Route path="/blog" element={<BlogPage />} />
           </Route>
 
           {/* User routes */}
