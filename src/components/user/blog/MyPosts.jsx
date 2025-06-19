@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { ArrowLeft, Plus, Edit, Trash2, Calendar, Tag } from "lucide-react";
+import {  Plus, Edit, Trash2, Calendar, Tag } from "lucide-react";
 import { Button, Modal, message } from "antd";
 import EditPostModal from "./EditPostModal";
 import { usePostData } from "../../../hook/usePostData";
 
-const MyPosts = ({ posts, onBack, onCreateNew, refetchUserPosts}) => {
+const MyPosts = ({ posts, onCreateNew, refetchUserPosts}) => {
   const [selectedPosts, setSelectedPosts] = useState([]);
   const [editingPost, setEditingPost] = useState(null);
   const [confirmVisible, setConfirmVisible] = useState(false);
@@ -67,16 +67,10 @@ const MyPosts = ({ posts, onBack, onCreateNew, refetchUserPosts}) => {
     }
   };
 
+  
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={onBack}
-          className="flex items-center text-purple-600 hover:text-purple-700"
-        >
-          <ArrowLeft className="h-5 w-5 mr-2" />
-          Quay lại trang chủ
-        </button>
         <button
           onClick={onCreateNew}
           className="flex items-center px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
