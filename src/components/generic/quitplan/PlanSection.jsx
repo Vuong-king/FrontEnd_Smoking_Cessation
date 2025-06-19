@@ -8,7 +8,7 @@ function PlanSection() {
 
   return (
     <section id="resources" className="py-20 bg-gray-50">
-      <div classname="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-800 mb-4">
             <ColourfulText text="Kế Hoạch" />
