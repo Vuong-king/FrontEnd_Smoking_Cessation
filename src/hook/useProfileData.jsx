@@ -38,7 +38,6 @@ export function useProfileData() {
 
   const handleEditProfile = () => {
     form.setFieldsValue({
-      avatar_url: user.avatar_url,
       name: user.name,
       email: user.email,
     });
@@ -48,7 +47,6 @@ export function useProfileData() {
   const handleSaveProfile = async (values) => {
     try {
       const profileData = {
-        avatar_url: values.avatar,
         name: values.name,
         email: values.email,
       };
@@ -59,7 +57,6 @@ export function useProfileData() {
       if (response) {
         setUser({
           ...user,
-          avatar_url: values.avatar,
           name: values.name,
           email: values.email,
         });
@@ -83,10 +80,10 @@ export function useProfileData() {
 
       const response = await editUserProfile(user.id, formData);
 
-
+      // Cập nhật trực tiếp user trong context
       setUser({
         ...user,
-        avatar_url: response.avatar_url, 
+        avatar: response.avatar, // Đã bỏ .data vì response đã là data
       });
 
       message.success("Cập nhật ảnh đại diện thành công!");
