@@ -15,7 +15,7 @@ import {
 import { useParams, useNavigate } from "react-router-dom"
 import { usePostData } from "../../../hook/usePostData"
 
-const BlogDetail = () => {
+const UserBlogDetail = () => {
   const navigate = useNavigate();
   const [liked, setLiked] = useState(false)
   const [bookmarked, setBookmarked] = useState(false)
@@ -239,4 +239,4 @@ const BlogDetail = () => {
   )
 }
 
-export default BlogDetail
+export default UserBlogDetail
