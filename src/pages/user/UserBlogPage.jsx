@@ -17,6 +17,7 @@ function UserBlogPage() {
     loading,
     error,
     getPostsByUserId,
+    fetchPosts,
   } = usePostData();
   const [currentView, setCurrentView] = useState("home");
   const [selectedPost, setSelectedPost] = useState(null);
@@ -64,7 +65,26 @@ function UserBlogPage() {
     } else {
       console.log("Current view is not myPosts, not fetching user posts.");
     }
-  }, [currentView, getPostsByUserId]);
+  }, [currentView]);
+
+  const refreshAllPosts = async () => {
+    await fetchPosts();
+    await refetchUserPosts();
+  };
+  const refetchUserPosts = async () => {
+    try {
+      const userString = localStorage.getItem("user");
+      const userObject = userString ? JSON.parse(userString) : null;
+      const userId = userObject?.id;
+
+      if (userId) {
+        const posts = await getPostsByUserId(userId);
+        setUserPosts(posts);
+      }
+    } catch (error) {
+      console.error("Failed to re-fetch user posts:", error);
+    }
+  };
 
   // Filter posts
   const filteredPosts = (apiPosts || []).filter((post) => {
@@ -94,6 +114,7 @@ function UserBlogPage() {
         comment: 0,
       });
       setUserPosts([createdPost, ...userPosts]);
+      await refetchUserPosts();
       setCurrentView("myPosts");
     } catch (error) {
       console.error("Failed to create post:", error);
@@ -155,6 +176,7 @@ function UserBlogPage() {
         onPostClick={handlePostSelect}
         onBack={() => setCurrentView("home")}
         onCreateNew={() => setCurrentView("create")}
+        refetchUserPosts={refreshAllPosts}
       />
     );
   }
@@ -162,7 +184,6 @@ function UserBlogPage() {
   // Home view with sidebar layout
   return (
     <div className="flex gap-6">
-
       <FilterSidebar
         tags={tags}
         selectedTags={selectedTags}
@@ -170,7 +191,6 @@ function UserBlogPage() {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
-
 
       <div className="flex-1 min-w-0">
         <FilterBar
@@ -193,7 +213,6 @@ function UserBlogPage() {
   );
 }
 
-// Update BlogList component to handle loading states
 const BlogList = ({ posts, onPostClick }) => {
   return (
     <div>
@@ -206,7 +225,7 @@ const BlogList = ({ posts, onPostClick }) => {
       {posts.length > 0 ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((post) => (
-            <BlogCard key={post.id} post={post} onClick={onPostClick} />
+            <BlogCard key={post._id} post={post} onClick={onPostClick} />
           ))}
         </div>
       ) : (
