@@ -25,6 +25,7 @@ import BlogPages from "./pages/generic/blogs/BlogPages";
 import UserBlogPage from "./pages/user/UserBlogPage";
 import SmokingStatusPage from "./pages/user/SmokingStatusPage";
 import ProfilePage from "./pages/user/ProfilePage";
+import UserBlogDetail from "./components/user/blog/UserBlogDetail";
 
 // Admin pages
 import AdminDashboardHome from "./pages/admin/AdminDashboardHome";
@@ -48,6 +49,7 @@ import UserQuitPlanPage from "./pages/user/UserQuitPlanPage";
 import QuitPlanPage from "./pages/generic/QuitPlanPage";
 import QuitPlanDetailPage from "./pages/generic/QuitPlanDetailPage";
 import Stages from "./pages/admin/Stage";
+import StagesPage from "./pages/generic/StagesPage";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -81,6 +83,7 @@ function App() {
             <Route path="/blog" element={<BlogPages />} />
             <Route path="/quit-plan" element={<QuitPlanPage />} />
             <Route path="/quit-plan-detail/:id" element={<QuitPlanDetailPage />} />
+            <Route path="/stages" element={<StagesPage />} />
           </Route>
 
           {/* User routes */}
@@ -90,7 +93,7 @@ function App() {
             <Route path="profile/:id" element={<ProfilePage />} />
             <Route path="blog" element={<UserBlogPage />} />
             <Route path="smoking-status" element={<SmokingStatusPage />} />
-            <Route path="blog/:id" element={<BlogDetail />} />
+            <Route path="blog/:id" element={<UserBlogDetail />} />
             <Route path="progress" element={<UserProgress />} />
             <Route path="achievements" element={<UserAchievement />} />
             <Route path="support" element={<UserSupport />} />

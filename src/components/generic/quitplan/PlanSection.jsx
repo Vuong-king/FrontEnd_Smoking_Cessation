@@ -34,7 +34,7 @@ function PlanSection() {
             {quitPlans.map((plan, index) => (
               <Col xs={24} sm={12} md={8} lg={6} key={plan._id}>
                 <PlanCard
-                  id={plan._id} // Thêm dòng này
+                  id={plan._id}
                   image={plan.image || "/placeholder.svg"}
                   title={plan.name}
                   description={

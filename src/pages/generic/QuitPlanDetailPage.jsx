@@ -1,6 +1,6 @@
-import { Alert, Card, Descriptions, Spin, Badge, Divider } from "antd";
+import { Alert, Card, Descriptions, Spin, Badge, Divider, Button } from "antd";
 import { useEffect, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   CalendarOutlined,
   BulbOutlined,
@@ -154,6 +154,18 @@ function QuitPlanDetailPage() {
                       )}
                     </span>
                   </div>
+                </div>
+
+                <div className="col-span-full flex justify-center mt-6">
+                  <Link to="/stages">
+                    <Button
+                      type="primary"
+                      size="large"
+                      className="px-10 py-5 text-lg"
+                    >
+                      Bắt đầu
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </Card>

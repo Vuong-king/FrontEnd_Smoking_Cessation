@@ -1,4 +1,4 @@
-"use client"
+
 import { Heart, MessageCircle, Calendar, User, Tag } from "lucide-react"
 import { usePostData } from '../../../hook/usePostData'
 import { useNavigate } from 'react-router-dom'

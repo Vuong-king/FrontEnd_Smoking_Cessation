@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePostData } from "../../hook/usePostData";
-import BlogDetail from "../../components/user/blog/BlogDetail";
+import BlogDetail from "../../components/user/blog/UserBlogDetail";
 import CreateBlog from "../../components/user/blog/CreateBlog";
 import MyPosts from "../../components/user/blog/MyPosts";
 import FilterSidebar from "../../components/user/blog/FilterSidbar";
