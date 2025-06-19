@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePostData } from "../../hook/usePostData";
-import BlogDetail from "../../components/user/blog/BlogDetail";
+import BlogDetail from "../../components/user/blog/UserBlogDetail";
 import CreateBlog from "../../components/user/blog/CreateBlog";
 import MyPosts from "../../components/user/blog/MyPosts";
 import FilterSidebar from "../../components/user/blog/FilterSidbar";
@@ -26,10 +26,7 @@ function UserBlogPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const categories = []; // Placeholder, update as needed
 
-  // If you have samplePosts, define or import them. Otherwise, use apiPosts as the main source.
-  // const samplePosts = [];
 
   useEffect(() => {
     const fetchUserPosts = async () => {
@@ -53,6 +50,7 @@ function UserBlogPage() {
           setUserPosts([]);
         }
       } catch (error) {
+        console.error("Error fetching user posts:", error);
         setUserPosts([]);
       }
     };
@@ -100,6 +98,8 @@ function UserBlogPage() {
       setCurrentView("myPosts");
     } catch (error) {
       // Add error handling UI here
+      console.error("Error creating post:", error);
+      alert("Có lỗi xảy ra khi tạo bài viết. Vui lòng thử lại sau.");
     }
   };
 
@@ -164,7 +164,6 @@ function UserBlogPage() {
   return (
     <div className="flex gap-6">
       <FilterSidebar
-        categories={categories}
         tags={tags}
         selectedCategory={selectedCategory}
         selectedTags={selectedTags}
