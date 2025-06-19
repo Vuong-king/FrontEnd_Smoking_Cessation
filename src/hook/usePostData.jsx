@@ -7,15 +7,11 @@ export function usePostData() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchPosts();
-    fetchTags();
-  }, []);
+  // Đưa hai hàm này lên trước useEffect
   const fetchTags = async () => {
     try {
       setLoading(true);
       const response = await api.get("/tags");
-      console.log("Tags API response:", response.data);
       if (Array.isArray(response.data.data)) {
         setTags(response.data.data);
       } else if (Array.isArray(response.data.tags)) {
@@ -26,7 +22,6 @@ export function usePostData() {
         setTags([]);
       }
     } catch (error) {
-      console.error("Error fetching tags:", error);
       setError(error.message);
     } finally {
       setLoading(false);
@@ -39,19 +34,24 @@ export function usePostData() {
       const response = await api.get("/posts");
       setPosts(response.data.posts);
     } catch (err) {
-      console.error("Error fetching posts:", err);
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const createPost = async (postData) => {
+  useEffect(() => {
+    fetchPosts();
+    fetchTags();
+  }, []);
+
+  const createPost = async (postData, onSuccess) => {
     // postData chỉ nên có: content, image, tag
     try {
       setLoading(true);
       const response = await api.post("/posts/create", postData);
-      setPosts((prev) => [...prev, response.data]);
+    await fetchPosts(); // Tự động làm mới danh sách
+    if (onSuccess) onSuccess(response.data);
       return response.data;
     } catch (err) {
       console.error("Error creating post:", err);

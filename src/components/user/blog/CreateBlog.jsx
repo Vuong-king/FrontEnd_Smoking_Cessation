@@ -35,6 +35,7 @@ const CreateBlog = ({ onSubmit, onCancel, tags = [] }) => {
           tags: formData.tag, 
         }
         await onSubmit(postData)
+        onCancel() // Call onCancel to reset the form
       } catch (err) {
         setError(err.message || "Failed to create post")
       } finally {
