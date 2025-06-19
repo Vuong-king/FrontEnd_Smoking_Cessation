@@ -42,15 +42,17 @@ function BlogPage() {
           onTagToggle={handleTagToggle}
         />
 
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
-          </div>
-        ) : error ? (
-          <div className="text-center text-red-600 p-4">Error: {error}</div>
-        ) : (
-          <BlogList posts={filteredPosts} />
-        )}
+        <div className="max-w-screen-xl mx-auto w-full px-4 md:px-8">
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+            </div>
+          ) : error ? (
+            <div className="text-center text-red-600 p-4">Error: {error}</div>
+          ) : (
+            <BlogList posts={filteredPosts} />
+          )}
+        </div>
       </div>
     </div>
   );
