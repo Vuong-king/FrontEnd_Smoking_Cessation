@@ -60,14 +60,20 @@ const UserBlogDetail = () => {
         const formatted = commentList.map((c) => ({
           id: c._id || Date.now(),
           author:
-            (typeof c.userId === "object" && c.userId?.name) // Nếu userId là object
-              ? c.userId.name
-              : (String(c.userId) === String(user._id)) // Nếu userId là id của user hiện tại
+            (typeof c.user_id === "object" && c.user_id?.name)
+              ? c.user_id.name
+              : (String(c.user_id?._id || c.user_id) === String(user._id))
                 ? user.name || "Bạn"
                 : "Ẩn danh",
+          avatar:
+            (typeof c.user_id === "object" && c.user_id?.avatar_url)
+              ? c.user_id.avatar_url
+              : (String(c.user_id?._id || c.user_id) === String(user._id) && user.avatar_url)
+                ? user.avatar_url
+                : "/default-avatar.png",
           comment_text: c.comment_text || "",
           date: c.createdAt || new Date().toISOString(),
-          userId: c.userId,
+          userId: c.user_id?._id || c.user_id,
           replies: [],
         }));
         setComments(formatted);

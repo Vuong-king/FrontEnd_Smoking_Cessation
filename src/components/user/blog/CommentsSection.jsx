@@ -107,9 +107,12 @@ const CommentsSection = ({
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full flex items-center justify-center mr-4 shadow-md">
-                    <User className="h-6 w-6 text-purple-600" />
-                  </div>
+                  <img
+                    src={comment.avatar || "/default-avatar.png"}
+                    alt={comment.author}
+                    className="w-12 h-12 rounded-full object-cover mr-4 shadow-md border border-purple-200 bg-white"
+                    onError={e => { e.target.src = "/default-avatar.png"; }}
+                  />
                   <div>
                     <span className="font-semibold text-gray-800 text-lg">
                       {comment.author}
