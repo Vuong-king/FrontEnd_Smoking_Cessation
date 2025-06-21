@@ -13,7 +13,7 @@ const BlogCard = ({ post }) => {
     navigate(`/user/blog/${post._id}`);
   };
 
-  const hasLiked = post.like_user_ids?.includes(userId);
+  const hasLiked = userId ? post.like_user_ids?.includes(userId) : false;
 
   const handleLikeClick = async (e) => {
     e.stopPropagation(); // Ngăn sự kiện click card

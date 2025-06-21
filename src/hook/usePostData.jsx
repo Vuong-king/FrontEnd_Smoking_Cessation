@@ -32,7 +32,24 @@ export function usePostData() {
     try {
       setLoading(true);
       const response = await api.get("/posts");
-      setPosts(response.data.posts);
+      
+      // Format posts để đảm bảo có đầy đủ dữ liệu
+      const postsData = response.data.posts || response.data.data || response.data || [];
+      const formattedPosts = postsData.map(post => ({
+        _id: post._id || post.id,
+        title: post.title || post.content?.substring(0, 50) || "Untitled",
+        content: post.content || "",
+        image: post.image || post.banner || post.thumbnail || "/placeholder.svg",
+        post_date: post.post_date || post.createdAt || new Date().toISOString(),
+        user_id: post.user_id || { name: "Anonymous" },
+        tags: Array.isArray(post.tags) ? post.tags : [],
+        reaction_count: post.reaction_count || 0,
+        comment_count: post.comment_count || 0,
+        post_type: post.post_type || "blog",
+        like_user_ids: Array.isArray(post.like_user_ids) ? post.like_user_ids : [],
+      }));
+      
+      setPosts(formattedPosts);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -134,6 +151,7 @@ export function usePostData() {
         reaction_count: postData.reaction_count || 0,
         comment_count: postData.comment_count || 0,
         post_type: postData.post_type || "blog",
+        like_user_ids: Array.isArray(postData.like_user_ids) ? postData.like_user_ids : [],
       };
 
       console.log("Formatted post data:", formattedPost);
@@ -187,6 +205,42 @@ export function usePostData() {
       setLoading(false);
     }
   };
+
+  const createComment = async ( commentData, onSuccess) => {
+    try{
+      setLoading(true);
+      const response = await api.post(`/comments/create`, commentData);
+      if (onSuccess) onSuccess(response.data);
+      return response.data;
+    }catch (err) {
+    console.error("Error creating comment:", err);
+    setError(err.message);
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+  }
+
+const getCommentsByPostId = async (postId) => {
+  try {
+    setLoading(true);
+    const response = await api.get(`/comments/post/${postId}`);
+    
+    // Giả sử API trả về danh sách comment trong response.data
+    const commentList = Array.isArray(response.data)
+      ? response.data
+      : response.data.comments || response.data.data || [];
+
+    return commentList;
+  } catch (err) {
+    console.error("Error fetching comments:", err);
+    setError(err.message);
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
+
   return {
     posts,
     tags,
@@ -200,5 +254,7 @@ export function usePostData() {
     getPostsByUserId,
     likePost,
     refetchPosts: fetchPosts,
+    createComment,
+    getCommentsByPostId,
   };
 }
