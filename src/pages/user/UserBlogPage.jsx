@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { usePostData } from "../../hook/usePostData";
 import MyPosts from "../../components/user/blog/MyPosts";
 import CreateBlog from "../../components/user/blog/CreateBlog";
-import BlogDetail from "../../components/user/blog/UserBlogDetail";
+import UserBlogDetail from "../../components/user/blog/UserBlogDetail";
 
 function UserBlogPage() {
   const {
@@ -32,6 +32,22 @@ function UserBlogPage() {
     fetchUserPosts();
   }, [currentView]);
 
+  // Kiểm tra và reload khi có thay đổi like
+  useEffect(() => {
+    const checkForUpdates = () => {
+      const shouldReload = localStorage.getItem("should_reload_blog_list");
+      if (shouldReload === "true") {
+        fetchUserPosts();
+        localStorage.removeItem("should_reload_blog_list");
+      }
+    };
+
+    // Kiểm tra định kỳ mỗi 2 giây
+    const interval = setInterval(checkForUpdates, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const handlePostCreate = async (newPost) => {
     try {
       const createdPost = await createPost({
@@ -43,7 +59,7 @@ function UserBlogPage() {
       });
 
       setUserPosts((prev) => [createdPost, ...prev]);
-      await fetchUserPosts(); 
+      await fetchUserPosts(); // Refresh posts after creation
       setCurrentView("myPosts");
     } catch (error) {
       console.error("Failed to create post:", error);
@@ -52,9 +68,12 @@ function UserBlogPage() {
 
   if (currentView === "detail" && selectedPost) {
     return (
-      <BlogDetail
+      <UserBlogDetail
         post={selectedPost}
-        onBack={() => setCurrentView("myPosts")}
+        onBack={() => {
+          setCurrentView("myPosts");
+          fetchUserPosts(); // Refresh posts khi quay lại
+        }}
         onPostClick={(post) => setSelectedPost(post)}
         relatedPosts={userPosts.filter((p) => p._id !== selectedPost._id)}
       />

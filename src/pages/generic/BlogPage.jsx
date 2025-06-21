@@ -1,12 +1,42 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePostData } from "../../hook/usePostData";
 import FilterBar from "../../components/generic/blog/FilterBar";
 import BlogCard from "../../components/generic/blog/BlogCard";
 
 function BlogPage() {
-  const { posts, loading, error, tags } = usePostData();
+  const { posts, loading, error, tags, refetchPosts } = usePostData(); 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      refetchPosts();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [refetchPosts]);
+
+  // Kiểm tra và reload khi có thay đổi like
+  useEffect(() => {
+    const checkForUpdates = () => {
+      const shouldReload = localStorage.getItem("should_reload_blog_list");
+      if (shouldReload === "true") {
+        refetchPosts();
+        localStorage.removeItem("should_reload_blog_list");
+      }
+    };
+
+    // Kiểm tra ngay khi component mount
+    checkForUpdates();
+
+    // Kiểm tra định kỳ mỗi 2 giây
+    const interval = setInterval(checkForUpdates, 2000);
+
+    return () => clearInterval(interval);
+  }, [refetchPosts]);
 
   const filteredPosts = (posts || []).filter((post) => {
     const matchesSearch =
