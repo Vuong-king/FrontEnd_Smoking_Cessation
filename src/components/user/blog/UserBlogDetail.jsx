@@ -8,12 +8,11 @@ import {
   Tag,
   Facebook,
   Twitter,
-  MessageCircle,
-  Send,
 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { usePostData } from "../../../hook/usePostData";
 import { useAuth } from "../../../context/AuthContext";
+import CommentsSection from "./CommentsSection";
 
 const UserBlogDetail = () => {
   const navigate = useNavigate();
@@ -27,6 +26,8 @@ const UserBlogDetail = () => {
     refetchPosts,
     createComment,
     getCommentsByPostId,
+    updateComment,
+    deleteComment,
   } = usePostData();
 
   const [post, setPost] = useState(null);
@@ -66,6 +67,7 @@ const UserBlogDetail = () => {
                 : "Ẩn danh",
           comment_text: c.comment_text || "",
           date: c.createdAt || new Date().toISOString(),
+          userId: c.userId,
           replies: [],
         }));
         setComments(formatted);
@@ -79,7 +81,6 @@ const UserBlogDetail = () => {
 
   }, [id, user?._id]);
 
-  console.log("comments:", user.name);
   const handleSubmitComment = async (e) => {
     e.preventDefault();
     if (!newComment.trim()) return;
@@ -97,6 +98,7 @@ const UserBlogDetail = () => {
         author: user.name || "Bạn",
         comment_text: newCommentRes.comment_text || newComment,
         date: newCommentRes.createdAt || new Date().toISOString(),
+        userId: user._id,
         replies: [],
       };
       setComments([...comments, commentToShow]);
@@ -105,6 +107,20 @@ const UserBlogDetail = () => {
       console.error("Lỗi khi gửi bình luận:", err);
       alert("Không thể gửi bình luận. Vui lòng thử lại.");
     }
+  };
+
+  const handleEditComment = async (commentId, newText) => {
+    await updateComment(commentId, { comment_text: newText });
+    setComments(comments.map(c => 
+      c.id === commentId 
+        ? { ...c, comment_text: newText }
+        : c
+    ));
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    await deleteComment(commentId);
+    setComments(comments.filter(c => c.id !== commentId));
   };
 
   const handleBack = () => navigate("/blog");
@@ -227,48 +243,16 @@ const UserBlogDetail = () => {
         </div>
       </article>
 
-      <div className="bg-white rounded-lg shadow-lg mt-8 p-8">
-        <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-          <MessageCircle className="h-6 w-6 mr-2" />
-          Bình luận ({comments.length})
-        </h3>
-
-        <form onSubmit={handleSubmitComment} className="mb-8">
-          <textarea
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Viết bình luận của bạn..."
-            className="w-full p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900"
-            rows="4"
-          />
-          <button
-            type="submit"
-            className="mt-3 flex items-center px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            <Send className="h-4 w-4 mr-2" />
-            Gửi bình luận
-          </button>
-        </form>
-
-        <div className="space-y-6">
-          {comments.map((comment) => (
-            <div key={comment.id} className="border-b border-gray-200 pb-6">
-              <div className="flex items-center mb-2">
-                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                  <User className="h-4 w-4 text-purple-600" />
-                </div>
-                <span className="font-medium text-gray-800">
-                  {comment.author}
-                </span>
-                <span className="text-gray-500 text-sm ml-2">
-                  {new Date(comment.date).toLocaleDateString("vi-VN")}
-                </span>
-              </div>
-              <p className="text-gray-700 ml-11">{comment.comment_text}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Comments Section */}
+      <CommentsSection 
+        comments={comments}
+        newComment={newComment}
+        setNewComment={setNewComment}
+        onSubmitComment={handleSubmitComment}
+        onEditComment={handleEditComment}
+        onDeleteComment={handleDeleteComment}
+        currentUser={user}
+      />
     </div>
   );
 };
