@@ -241,6 +241,35 @@ const getCommentsByPostId = async (postId) => {
   }
 };
 
+const updateComment = async (commentId, commentData, onSuccess) => {
+  try {
+    setLoading(true);
+    const response = await api.put(`/comments/${commentId}`, commentData);
+    if (onSuccess) onSuccess(response.data);
+    return response.data;
+  } catch (err) {
+    console.error("Error updating comment:", err);
+    setError(err.message);
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
+
+const deleteComment = async (commentId, onSuccess) => {
+  try {
+    setLoading(true);
+    await api.delete(`/comments/${commentId}`);
+    if (onSuccess) onSuccess();
+  } catch (err) {
+    console.error("Error deleting comment:", err);
+    setError(err.message);
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
+
   return {
     posts,
     tags,
@@ -256,5 +285,7 @@ const getCommentsByPostId = async (postId) => {
     refetchPosts: fetchPosts,
     createComment,
     getCommentsByPostId,
+    updateComment,
+    deleteComment,
   };
 }
