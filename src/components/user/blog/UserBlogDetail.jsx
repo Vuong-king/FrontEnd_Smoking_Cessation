@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState} from "react";
 import {
   ArrowLeft,
   Heart,
@@ -13,20 +13,34 @@ import {
 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { usePostData } from "../../../hook/usePostData";
+import { useAuth } from "../../../context/AuthContext";
 
 const UserBlogDetail = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const { user } = useAuth();
+  const userId = user?._id;
+
+  const {
+    getPostById,
+    likePost,
+    refetchPosts,
+    createComment,
+    getCommentsByPostId,
+  } = usePostData();
+
+  const [post, setPost] = useState(null);
   const [liked, setLiked] = useState(false);
   const [error, setError] = useState(null);
-  const { id } = useParams();
-  const { getPostById, likePost, refetchPosts } = usePostData();
-  const [post, setPost] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
 
   useEffect(() => {
-    const loadPost = async () => {
+    const fetchData = async () => {
       try {
         setError(null);
         setPost(null);
+
         if (!id) {
           setError("Không tìm thấy bài viết");
           return;
@@ -35,56 +49,70 @@ const UserBlogDetail = () => {
         const postData = await getPostById(id);
         setPost(postData);
 
-        const likedPosts = JSON.parse(
-          localStorage.getItem("liked_posts") || "[]"
-        );
-        setLiked(likedPosts.includes(id));
+        // So sánh userId kiểu string để tránh lỗi
+        const hasLiked = user?._id
+          ? postData.like_user_ids?.map(String).includes(String(user?._id))
+          : false;
+        setLiked(hasLiked);
+
+        const commentList = await getCommentsByPostId(id);
+        const formatted = commentList.map((c) => ({
+          id: c._id || Date.now(),
+          author:
+            (typeof c.userId === "object" && c.userId?.name) // Nếu userId là object
+              ? c.userId.name
+              : (String(c.userId) === String(user._id)) // Nếu userId là id của user hiện tại
+                ? user.name || "Bạn"
+                : "Ẩn danh",
+          comment_text: c.comment_text || "",
+          date: c.createdAt || new Date().toISOString(),
+          replies: [],
+        }));
+        setComments(formatted);
       } catch (err) {
-        console.error("Error loading post:", err);
-        setError(err.message || "Có lỗi xảy ra khi tải bài viết");
+        console.error("Lỗi khi tải dữ liệu:", err);
+        setError("Không thể tải bài viết hoặc bình luận.");
       }
     };
 
-    loadPost();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+    fetchData();
 
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      author: "Nguyễn Văn A",
-      content: "Bài viết rất hữu ích! Cảm ơn tác giả đã chia sẻ.",
-      date: "2024-01-15",
-      replies: [],
-    },
-  ]);
-  const [newComment, setNewComment] = useState("");
-  const handleSubmitComment = (e) => {
+  }, [id, user?._id]);
+
+  console.log("comments:", user.name);
+  const handleSubmitComment = async (e) => {
     e.preventDefault();
-    if (newComment.trim()) {
-      const comment = {
-        id: comments.length + 1,
-        author: "Người dùng",
-        content: newComment,
-        date: new Date().toISOString().split("T")[0],
+    if (!newComment.trim()) return;
+
+    const commentData = {
+      comment_text: newComment.trim(),
+      post_id: post._id || post.id,
+      userId: user._id,
+      createdAt: new Date().toISOString(),
+    };
+    try {
+      const newCommentRes = await createComment(commentData);
+      const commentToShow = {
+        id: newCommentRes._id || Date.now(),
+        author: user.name || "Bạn",
+        comment_text: newCommentRes.comment_text || newComment,
+        date: newCommentRes.createdAt || new Date().toISOString(),
         replies: [],
       };
-      setComments([...comments, comment]);
+      setComments([...comments, commentToShow]);
       setNewComment("");
+    } catch (err) {
+      console.error("Lỗi khi gửi bình luận:", err);
+      alert("Không thể gửi bình luận. Vui lòng thử lại.");
     }
   };
 
-  const handleBack = () => {
-    navigate("/blog");
-  };
+  const handleBack = () => navigate("/blog");
 
   if (error) {
     return (
       <div className="max-w-4xl mx-auto p-8">
-        <button
-          onClick={handleBack}
-          className="text-purple-600 hover:text-purple-700 mb-4"
-        >
+        <button onClick={handleBack} className="text-purple-600 hover:text-purple-700 mb-4">
           ← Quay lại
         </button>
         <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>
@@ -95,10 +123,7 @@ const UserBlogDetail = () => {
   if (!post) {
     return (
       <div className="max-w-4xl mx-auto p-8">
-        <button
-          onClick={handleBack}
-          className="text-purple-600 hover:text-purple-700 mb-4"
-        >
+        <button onClick={handleBack} className="text-purple-600 hover:text-purple-700 mb-4">
           ← Quay lại
         </button>
         <div className="flex items-center justify-center h-64">
@@ -110,26 +135,17 @@ const UserBlogDetail = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Sửa nút back */}
-      <button
-        onClick={handleBack}
-        className="flex items-center text-purple-600 hover:text-purple-700 mb-6"
-      >
+      <button onClick={handleBack} className="flex items-center text-purple-600 hover:text-purple-700 mb-6">
         <ArrowLeft className="h-5 w-5 mr-2" />
         Quay lại danh sách
       </button>
 
-      {/* Article Header */}
       <article className="bg-white rounded-lg shadow-lg overflow-hidden">
         <img
-          src={
-            post.image || post.banner || post.thumbnail || "/placeholder.svg"
-          }
+          src={post.image || post.banner || post.thumbnail || "/placeholder.svg"}
           alt={post.title || "Blog image"}
           className="w-full h-64 md:h-96 object-cover"
-          onError={(e) => {
-            e.target.src = "/placeholder.svg";
-          }}
+          onError={(e) => { e.target.src = "/placeholder.svg"; }}
         />
 
         <div className="p-8">
@@ -139,15 +155,9 @@ const UserBlogDetail = () => {
 
           <div className="flex items-center text-gray-600 mb-6">
             <User className="h-5 w-5 mr-2" />
-            <span className="mr-6">
-              {post.user_id?.name || post.author || "Anonymous"}
-            </span>
+            <span className="mr-6">{post.user_id?.name || "Anonymous"}</span>
             <Calendar className="h-5 w-5 mr-2" />
-            <span>
-              {new Date(post.post_date || post.date).toLocaleDateString(
-                "vi-VN"
-              )}
-            </span>
+            <span>{new Date(post.post_date || post.date).toLocaleDateString("vi-VN")}</span>
           </div>
 
           <div className="flex flex-wrap gap-2 mb-6">
@@ -164,7 +174,6 @@ const UserBlogDetail = () => {
               ))}
           </div>
 
-          {/* Content */}
           <div className="prose max-w-none mb-8 text-gray-900">
             {post.content ? (
               <div>{post.content}</div>
@@ -173,44 +182,19 @@ const UserBlogDetail = () => {
             )}
           </div>
 
-          {/* Action Buttons */}
           <div className="flex items-center justify-between border-t border-gray-200 pt-6">
             <div className="flex items-center space-x-4">
               <button
                 onClick={async () => {
-                  const likedPosts = JSON.parse(
-                    localStorage.getItem("liked_posts") || "[]"
-                  );
-
                   try {
-                    // Gọi API để toggle like
                     await likePost(post._id || post.id);
-                    
-                    // Cập nhật trạng thái local
-                    if (liked) {
-                      setLiked(false);
-                      const updated = likedPosts.filter(
-                        (postId) => postId !== id
-                      );
-                      localStorage.setItem(
-                        "liked_posts",
-                        JSON.stringify(updated)
-                      );
-                    } else {
-                      setLiked(true);
-                      localStorage.setItem(
-                        "liked_posts",
-                        JSON.stringify([...new Set([...likedPosts, id])])
-                      );
-                    }
-                    
-                    // Đồng bộ lại dữ liệu từ server để có số like chính xác
                     await refetchPosts();
-                    
-                    // Reload lại post hiện tại để có dữ liệu mới nhất
                     const updatedPost = await getPostById(id);
                     setPost(updatedPost);
-                    
+                    const hasLiked = userId
+                      ? updatedPost.like_user_ids?.includes(userId)
+                      : false;
+                    setLiked(hasLiked);
                     localStorage.setItem("should_reload_blog_list", "true");
                   } catch (error) {
                     console.error("Lỗi khi xử lý like:", error);
@@ -243,20 +227,18 @@ const UserBlogDetail = () => {
         </div>
       </article>
 
-      {/* Comments Section */}
       <div className="bg-white rounded-lg shadow-lg mt-8 p-8">
         <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
           <MessageCircle className="h-6 w-6 mr-2" />
           Bình luận ({comments.length})
         </h3>
 
-        {/* Comment Form */}
         <form onSubmit={handleSubmitComment} className="mb-8">
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Viết bình luận của bạn..."
-            className="w-full p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900"
             rows="4"
           />
           <button
@@ -268,7 +250,6 @@ const UserBlogDetail = () => {
           </button>
         </form>
 
-        {/* Comments List */}
         <div className="space-y-6">
           {comments.map((comment) => (
             <div key={comment.id} className="border-b border-gray-200 pb-6">
@@ -283,7 +264,7 @@ const UserBlogDetail = () => {
                   {new Date(comment.date).toLocaleDateString("vi-VN")}
                 </span>
               </div>
-              <p className="text-gray-700 ml-11">{comment.content}</p>
+              <p className="text-gray-700 ml-11">{comment.comment_text}</p>
             </div>
           ))}
         </div>
