@@ -82,7 +82,7 @@ function App() {
             <Route path="/" element={<HomePages />} />
             <Route path="/quit-plan" element={<QuitPlanPage />} />
             <Route path="/quit-plan-detail/:id" element={<QuitPlanDetailPage />} />
-            <Route path="/stages" element={<StagesPage />} />
+            <Route path="/stages/:id" element={<StagesPage />} />
             <Route path="/blog" element={<BlogPage />} />
           </Route>
 

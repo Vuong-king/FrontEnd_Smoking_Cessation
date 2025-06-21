@@ -1,9 +1,11 @@
-import PlanSection from "../../components/user/quitplan/PlanSection";
+import QuitPlanTable from "../../components/user/quitplan/QuitPlanTable";
+
+
 
 function UserQuitPlanPage() {
   return (
     <div>
-      <PlanSection />
+      <QuitPlanTable />
     </div>
   );
 }

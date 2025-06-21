@@ -78,7 +78,25 @@ export function useQuitPlanData() {
       setLoading(false);
     }
   }
-  
+
+const getStagesByPlanId = async (planId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await api.get(`/stages/plan/${planId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    console.log("Stages by Plan response:", response.data);
+
+    return Array.isArray(response.data?.data) ? response.data.data : response.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy stages của kế hoạch:", error);
+    throw error;
+  }
+};
+
+
 
   return {
     quitPlans,
@@ -86,5 +104,7 @@ export function useQuitPlanData() {
     error,
     fetchQuitPlans,
     getQuitPlanById,
+    getStagesByPlanId,
+
   };
 }

@@ -1,8 +1,10 @@
 export const TaskStatistics = ({ tasks }) => {
+  if (!tasks || tasks.length === 0) return null;
+
   return (
     <div className="mt-6 flex items-center justify-between text-sm text-gray-600">
       <span>
-        Hoàn thành: {tasks.filter(t => t.completed).length}/{tasks.length} công việc
+        Hoàn thành: {tasks.filter(t => t.is_done).length}/{tasks.length} công việc
       </span>
       <div className="flex gap-4">
         <span className="flex items-center gap-1">
