@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Heart,
   Share2,
-  Bookmark,
   Calendar,
   User,
   Tag,
@@ -11,18 +10,17 @@ import {
   Twitter,
   MessageCircle,
   Send,
-} from "lucide-react"
-import { useParams, useNavigate } from "react-router-dom"
-import { usePostData } from "../../../hook/usePostData"
+} from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { usePostData } from "../../../hook/usePostData";
 
 const UserBlogDetail = () => {
   const navigate = useNavigate();
-  const [liked, setLiked] = useState(false)
-  const [bookmarked, setBookmarked] = useState(false)
-  const [error, setError] = useState(null)
-  const { id } = useParams()
-  const { getPostById } = usePostData()
-  const [post, setPost] = useState(null)
+  const [liked, setLiked] = useState(false);
+  const [error, setError] = useState(null);
+  const { id } = useParams();
+  const { getPostById, likePost, refetchPosts } = usePostData();
+  const [post, setPost] = useState(null);
 
   useEffect(() => {
     const loadPost = async () => {
@@ -33,11 +31,16 @@ const UserBlogDetail = () => {
           setError("Không tìm thấy bài viết");
           return;
         }
+
         const postData = await getPostById(id);
-        console.log('Loaded post:', postData);
         setPost(postData);
+
+        const likedPosts = JSON.parse(
+          localStorage.getItem("liked_posts") || "[]"
+        );
+        setLiked(likedPosts.includes(id));
       } catch (err) {
-        console.error('Error loading post:', err);
+        console.error("Error loading post:", err);
         setError(err.message || "Có lỗi xảy ra khi tải bài viết");
       }
     };
@@ -54,10 +57,10 @@ const UserBlogDetail = () => {
       date: "2024-01-15",
       replies: [],
     },
-  ])
-  const [newComment, setNewComment] = useState("")
+  ]);
+  const [newComment, setNewComment] = useState("");
   const handleSubmitComment = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (newComment.trim()) {
       const comment = {
         id: comments.length + 1,
@@ -65,20 +68,23 @@ const UserBlogDetail = () => {
         content: newComment,
         date: new Date().toISOString().split("T")[0],
         replies: [],
-      }
-      setComments([...comments, comment])
-      setNewComment("")
+      };
+      setComments([...comments, comment]);
+      setNewComment("");
     }
-  }
+  };
 
   const handleBack = () => {
-    navigate('/user/blog');
+    navigate("/blog");
   };
 
   if (error) {
     return (
       <div className="max-w-4xl mx-auto p-8">
-        <button onClick={handleBack} className="text-purple-600 hover:text-purple-700 mb-4">
+        <button
+          onClick={handleBack}
+          className="text-purple-600 hover:text-purple-700 mb-4"
+        >
           ← Quay lại
         </button>
         <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>
@@ -89,7 +95,10 @@ const UserBlogDetail = () => {
   if (!post) {
     return (
       <div className="max-w-4xl mx-auto p-8">
-        <button onClick={handleBack} className="text-purple-600 hover:text-purple-700 mb-4">
+        <button
+          onClick={handleBack}
+          className="text-purple-600 hover:text-purple-700 mb-4"
+        >
           ← Quay lại
         </button>
         <div className="flex items-center justify-center h-64">
@@ -102,8 +111,8 @@ const UserBlogDetail = () => {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Sửa nút back */}
-      <button 
-        onClick={handleBack} 
+      <button
+        onClick={handleBack}
         className="flex items-center text-purple-600 hover:text-purple-700 mb-6"
       >
         <ArrowLeft className="h-5 w-5 mr-2" />
@@ -112,12 +121,14 @@ const UserBlogDetail = () => {
 
       {/* Article Header */}
       <article className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <img 
-          src={post.image || post.banner || post.thumbnail || "/placeholder.svg"} 
-          alt={post.title || "Blog image"} 
+        <img
+          src={
+            post.image || post.banner || post.thumbnail || "/placeholder.svg"
+          }
+          alt={post.title || "Blog image"}
           className="w-full h-64 md:h-96 object-cover"
           onError={(e) => {
-            e.target.src = '/placeholder.svg'
+            e.target.src = "/placeholder.svg";
           }}
         />
 
@@ -128,21 +139,29 @@ const UserBlogDetail = () => {
 
           <div className="flex items-center text-gray-600 mb-6">
             <User className="h-5 w-5 mr-2" />
-            <span className="mr-6">{post.user_id?.name || post.author || "Anonymous"}</span>
+            <span className="mr-6">
+              {post.user_id?.name || post.author || "Anonymous"}
+            </span>
             <Calendar className="h-5 w-5 mr-2" />
-            <span>{new Date(post.post_date || post.date).toLocaleDateString("vi-VN")}</span>
+            <span>
+              {new Date(post.post_date || post.date).toLocaleDateString(
+                "vi-VN"
+              )}
+            </span>
           </div>
 
           <div className="flex flex-wrap gap-2 mb-6">
-            {(Array.isArray(post.tags) ? post.tags : [post.tags]).filter(Boolean).map((tag, idx) => (
-              <span
-                key={tag._id || tag || idx}
-                className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full"
-              >
-                <Tag className="h-3 w-3 mr-1" />
-                {tag.title || tag}
-              </span>
-            ))}
+            {(Array.isArray(post.tags) ? post.tags : [post.tags])
+              .filter(Boolean)
+              .map((tag, idx) => (
+                <span
+                  key={tag._id || tag || idx}
+                  className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full"
+                >
+                  <Tag className="h-3 w-3 mr-1" />
+                  {tag.title || tag}
+                </span>
+              ))}
           </div>
 
           {/* Content */}
@@ -158,23 +177,53 @@ const UserBlogDetail = () => {
           <div className="flex items-center justify-between border-t border-gray-200 pt-6">
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => setLiked(!liked)}
+                onClick={async () => {
+                  const likedPosts = JSON.parse(
+                    localStorage.getItem("liked_posts") || "[]"
+                  );
+
+                  try {
+                    // Gọi API để toggle like
+                    await likePost(post._id || post.id);
+                    
+                    // Cập nhật trạng thái local
+                    if (liked) {
+                      setLiked(false);
+                      const updated = likedPosts.filter(
+                        (postId) => postId !== id
+                      );
+                      localStorage.setItem(
+                        "liked_posts",
+                        JSON.stringify(updated)
+                      );
+                    } else {
+                      setLiked(true);
+                      localStorage.setItem(
+                        "liked_posts",
+                        JSON.stringify([...new Set([...likedPosts, id])])
+                      );
+                    }
+                    
+                    // Đồng bộ lại dữ liệu từ server để có số like chính xác
+                    await refetchPosts();
+                    
+                    // Reload lại post hiện tại để có dữ liệu mới nhất
+                    const updatedPost = await getPostById(id);
+                    setPost(updatedPost);
+                    
+                    localStorage.setItem("should_reload_blog_list", "true");
+                  } catch (error) {
+                    console.error("Lỗi khi xử lý like:", error);
+                  }
+                }}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                  liked ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  liked
+                    ? "bg-red-100 text-red-600"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
                 <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
-                <span>{(post.likes || 0) + (liked ? 1 : 0)}</span>
-              </button>
-
-              <button
-                onClick={() => setBookmarked(!bookmarked)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                  bookmarked ? "bg-yellow-100 text-yellow-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                <Bookmark className={`h-5 w-5 ${bookmarked ? "fill-current" : ""}`} />
-                <span>Lưu</span>
+                <span>{post.reaction_count || 0}</span>
               </button>
             </div>
 
@@ -227,8 +276,12 @@ const UserBlogDetail = () => {
                 <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
                   <User className="h-4 w-4 text-purple-600" />
                 </div>
-                <span className="font-medium text-gray-800">{comment.author}</span>
-                <span className="text-gray-500 text-sm ml-2">{new Date(comment.date).toLocaleDateString("vi-VN")}</span>
+                <span className="font-medium text-gray-800">
+                  {comment.author}
+                </span>
+                <span className="text-gray-500 text-sm ml-2">
+                  {new Date(comment.date).toLocaleDateString("vi-VN")}
+                </span>
               </div>
               <p className="text-gray-700 ml-11">{comment.content}</p>
             </div>
@@ -236,7 +289,7 @@ const UserBlogDetail = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default UserBlogDetail
+export default UserBlogDetail;

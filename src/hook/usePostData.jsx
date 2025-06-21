@@ -50,8 +50,8 @@ export function usePostData() {
     try {
       setLoading(true);
       const response = await api.post("/posts/create", postData);
-    await fetchPosts(); // Tự động làm mới danh sách
-    if (onSuccess) onSuccess(response.data);
+      await fetchPosts(); // Tự động làm mới danh sách
+      if (onSuccess) onSuccess(response.data);
       return response.data;
     } catch (err) {
       console.error("Error creating post:", err);
@@ -113,27 +113,33 @@ export function usePostData() {
 
       // Validate post data
       if (!postData) {
-        throw new Error('Post not found');
+        throw new Error("Post not found");
       }
 
       // Ensure required fields exist with proper fallbacks
       const formattedPost = {
         _id: postData._id || postId,
-        title: postData.title || postData.content?.substring(0, 50) || 'Untitled',
-        content: postData.content || '',
-        image: postData.image || postData.banner || postData.thumbnail || '/placeholder.svg',
-        post_date: postData.post_date || postData.createdAt || new Date().toISOString(),
-        user_id: postData.user_id || { name: 'Anonymous' },
+        title:
+          postData.title || postData.content?.substring(0, 50) || "Untitled",
+        content: postData.content || "",
+        image:
+          postData.image ||
+          postData.banner ||
+          postData.thumbnail ||
+          "/placeholder.svg",
+        post_date:
+          postData.post_date || postData.createdAt || new Date().toISOString(),
+        user_id: postData.user_id || { name: "Anonymous" },
         tags: Array.isArray(postData.tags) ? postData.tags : [],
         reaction_count: postData.reaction_count || 0,
         comment_count: postData.comment_count || 0,
-        post_type: postData.post_type || 'blog'
+        post_type: postData.post_type || "blog",
       };
 
       console.log("Formatted post data:", formattedPost);
       return formattedPost;
     } catch (err) {
-      console.error('Error loading post:', err);
+      console.error("Error loading post:", err);
       setError(err.message || "Có lỗi xảy ra khi tải bài viết");
       throw err;
     } finally {
@@ -167,17 +173,32 @@ export function usePostData() {
     }
   };
 
+  const likePost = async (postId) => {
+    try {
+      setLoading(true);
+      const response = await api.post(`/posts/like/${postId}`);
+      await fetchPosts();
+      return response.data;
+    } catch (err) {
+      console.error("Error liking post:", err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
   return {
     posts,
     tags,
     loading,
     error,
-    fetchPosts,
     fetchTags,
     createPost,
     updatePost,
     deletePost,
     getPostById,
     getPostsByUserId,
+    likePost,
+    refetchPosts: fetchPosts,
   };
 }
