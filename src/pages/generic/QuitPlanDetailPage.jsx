@@ -157,7 +157,7 @@ function QuitPlanDetailPage() {
                 </div>
 
                 <div className="col-span-full flex justify-center mt-6">
-                  <Link to="/stages">
+               <Link to={`/stages/${id}`}>
                     <Button
                       type="primary"
                       size="large"
