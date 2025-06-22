@@ -20,6 +20,8 @@ export default function ProfilePage() {
     handleEditProfile,
     handleSaveProfile,
     handleCancel,
+    handleAvatarUpload,
+    avatarPreviewUrl,
   } = useProfileData();
 
   useEffect(() => {
@@ -91,6 +93,8 @@ export default function ProfilePage() {
           onSave={handleSaveProfile}
           user={userData}
           form={form}
+          handleAvatarUpload={handleAvatarUpload}
+          avatarPreviewUrl={avatarPreviewUrl}
         />
       </div>
     </div>

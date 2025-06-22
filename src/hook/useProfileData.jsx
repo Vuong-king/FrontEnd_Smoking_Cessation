@@ -3,11 +3,15 @@ import { Form, message } from "antd";
 import { Trophy, Coins, Heart } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { editUserProfile } from "../api";
+import { storage } from "../firebase/config";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { v4 as uuidv4 } from 'uuid';
 
 export function useProfileData() {
   const { user, setUser } = useAuth();
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [form] = Form.useForm();
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState(null); // State for preview
 
   const achievements = [
     {
@@ -37,9 +41,11 @@ export function useProfileData() {
   ];
 
   const handleEditProfile = () => {
+    setAvatarPreviewUrl(null); // Reset preview state
     form.setFieldsValue({
       name: user.name,
       email: user.email,
+      avatar_url: user.avatar_url,
     });
     setIsEditModalVisible(true);
   };
@@ -49,17 +55,15 @@ export function useProfileData() {
       const profileData = {
         name: values.name,
         email: values.email,
+        avatar_url: values.avatar_url,
       };
 
       console.log("Dữ liệu gửi đi:", profileData);
-      const response = await editUserProfile(user.id, profileData);
+      const response = await editUserProfile(user._id, profileData);
 
       if (response) {
-        setUser({
-          ...user,
-          name: values.name,
-          email: values.email,
-        });
+        const updatedUser = response.user ? { ...user, ...response.user } : { ...user, ...profileData };
+        setUser(updatedUser);
 
         setIsEditModalVisible(false);
         message.success("Cập nhật hồ sơ thành công!");
@@ -72,23 +76,28 @@ export function useProfileData() {
     }
   };
 
-  // Cập nhật hàm handleAvatarUpload
+  // Refactored: Uploads image but does NOT call API. Only updates form state.
   const handleAvatarUpload = async (file) => {
+    if (!file) {
+      message.error("Vui lòng chọn một tệp ảnh.");
+      return;
+    }
+
+    const imageRef = ref(storage, `avatars/${uuidv4()}_${file.name}`);
+    
     try {
-      const formData = new FormData();
-      formData.append("avatar", file);
+      message.loading({ content: 'Đang xử lý ảnh...', key: 'upload' });
 
-      const response = await editUserProfile(user.id, formData);
+      const snapshot = await uploadBytes(imageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
 
-      // Cập nhật trực tiếp user trong context
-      setUser({
-        ...user,
-        avatar: response.avatar, // Đã bỏ .data vì response đã là data
-      });
+      form.setFieldsValue({ avatar_url: downloadURL });
+      setAvatarPreviewUrl(downloadURL);
 
-      message.success("Cập nhật ảnh đại diện thành công!");
+      message.success({ content: 'Ảnh đã sẵn sàng. Nhấn "Lưu thay đổi" để hoàn tất.', key: 'upload', duration: 4 });
+
     } catch (error) {
-      message.error("Có lỗi xảy ra khi cập nhật ảnh đại diện!");
+      message.error({ content: 'Lỗi khi tải ảnh lên!', key: 'upload' });
       console.error("Error uploading avatar:", error);
     }
   };
@@ -96,6 +105,7 @@ export function useProfileData() {
   const handleCancel = () => {
     setIsEditModalVisible(false);
     form.resetFields();
+    setAvatarPreviewUrl(null); // Reset preview state
   };
 
   return {
@@ -107,5 +117,6 @@ export function useProfileData() {
     handleSaveProfile,
     handleCancel,
     handleAvatarUpload,
+    avatarPreviewUrl, // Return the preview URL state
   };
 }

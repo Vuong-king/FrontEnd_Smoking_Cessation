@@ -36,6 +36,30 @@ const UserBlogDetail = () => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
 
+  const formatComment = (comment, currentUser) => {
+    const isOwner =
+      String(comment.user_id?._id || comment.user_id) ===
+      String(currentUser?._id);
+
+    const author = isOwner
+      ? currentUser.name || "Bạn"
+      : comment.user_id?.name || "Ẩn danh";
+    
+    const avatar = isOwner
+      ? currentUser.avatar_url
+      : comment.user_id?.avatar_url;
+
+    return {
+      id: comment._id || Date.now(),
+      author,
+      avatar: avatar || "/default-avatar.png",
+      comment_text: comment.comment_text || "",
+      date: comment.createdAt || new Date().toISOString(),
+      userId: comment.user_id?._id || comment.user_id,
+      replies: [],
+    };
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -57,25 +81,7 @@ const UserBlogDetail = () => {
         setLiked(hasLiked);
 
         const commentList = await getCommentsByPostId(id);
-        const formatted = commentList.map((c) => ({
-          id: c._id || Date.now(),
-          author:
-            (typeof c.user_id === "object" && c.user_id?.name)
-              ? c.user_id.name
-              : (String(c.user_id?._id || c.user_id) === String(user._id))
-                ? user.name || "Bạn"
-                : "Ẩn danh",
-          avatar:
-            (typeof c.user_id === "object" && c.user_id?.avatar_url)
-              ? c.user_id.avatar_url
-              : (String(c.user_id?._id || c.user_id) === String(user._id) && user.avatar_url)
-                ? user.avatar_url
-                : "/default-avatar.png",
-          comment_text: c.comment_text || "",
-          date: c.createdAt || new Date().toISOString(),
-          userId: c.user_id?._id || c.user_id,
-          replies: [],
-        }));
+        const formatted = commentList.map((c) => formatComment(c, user));
         setComments(formatted);
       } catch (err) {
         console.error("Lỗi khi tải dữ liệu:", err);
@@ -94,19 +100,12 @@ const UserBlogDetail = () => {
     const commentData = {
       comment_text: newComment.trim(),
       post_id: post._id || post.id,
-      userId: user._id,
+      user_id: user._id,
       createdAt: new Date().toISOString(),
     };
     try {
       const newCommentRes = await createComment(commentData);
-      const commentToShow = {
-        id: newCommentRes._id || Date.now(),
-        author: user.name || "Bạn",
-        comment_text: newCommentRes.comment_text || newComment,
-        date: newCommentRes.createdAt || new Date().toISOString(),
-        userId: user._id,
-        replies: [],
-      };
+      const commentToShow = formatComment({ ...newCommentRes, user_id: user }, user);
       setComments([...comments, commentToShow]);
       setNewComment("");
     } catch (err) {
