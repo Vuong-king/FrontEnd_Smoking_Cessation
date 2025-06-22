@@ -5,10 +5,10 @@ import  SidebarAdmin  from "./SidebarAdmin";
 
 const AdminLayout = () => {
   return (
-    <div className="flex min-h-screen w-full text-white">
+    <div className="flex min-h-screen w-full ">
 
       <SidebarAdmin />
-      <main className="flex-1 p-8 overflow-y-auto bg-gradient-to-b from-black to-gray-900">
+      <main className="flex-1 p-8 overflow-y-auto bg-white">
         
         <Outlet />
       </main>

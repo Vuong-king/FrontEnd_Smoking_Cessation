@@ -19,9 +19,16 @@ import {
 import { Avatar, Button, Dropdown, Space } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaUser } from "react-icons/fa";
+import { MdLogout } from "react-icons/md";
+import { useAuth } from "../../context/AuthContext";
 
-function SidebarAdmin({ user = {} }) {
+function SidebarAdmin() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
+
   const [collapsed, setCollapsed] = useState(() => {
     const saved = localStorage.getItem("admin-sidebar-collapsed");
     return saved === "true";
@@ -50,16 +57,36 @@ function SidebarAdmin({ user = {} }) {
   ];
 
   const dropdownItems = [
-    { key: "1", label: "My Account", disabled: true },
-    { type: "divider" },
-    { key: "2", label: "Profile", icon: <UserOutlined /> },
-    { key: "3", label: "Settings", icon: <SettingOutlined /> },
+    {
+      key: "1",
+      label: user?.name || "My Account",
+      disabled: true,
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "2",
+      label: "Profile",
+      icon: <FaUser />,
+      onClick: () => navigate(`/user/profile/${user.id}`),
+    },
+    {
+      key: "3",
+      label: "Settings",
+      icon: <SettingOutlined />,
+      onClick: () => navigate("/user/settings"),
+    },
     {
       key: "4",
       label: "Logout",
-      icon: <SettingOutlined />,
-      onClick: () => {
-        console.log("Logout clicked");
+      icon: <MdLogout />,
+      onClick: async () => {
+        try {
+          await logout();
+        } catch (error) {
+          console.error("Logout error:", error);
+        }
       },
     },
   ];

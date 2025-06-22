@@ -39,8 +39,8 @@ const Progress = () => {
       const response = await api.get('/stages');
       setStages(response.data);
     } catch (err) {
-      console.error("Error fetching stages:", err);
-      setError(err.response?.data?.message || "Failed to fetch stages");
+      console.error("Lỗi khi tải danh sách giai đoạn:", err);
+      setError(err.response?.data?.message || "Không thể tải danh sách giai đoạn");
     }
   };
 
@@ -51,8 +51,8 @@ const Progress = () => {
         setUsers(response.data.users);
       }
     } catch (err) {
-      console.error("Error fetching users:", err);
-      setError(err.response?.data?.message || "Failed to fetch users");
+      console.error("Lỗi khi tải danh sách người dùng:", err);
+      setError(err.response?.data?.message || "Không thể tải danh sách người dùng");
     }
   };
 
@@ -63,8 +63,8 @@ const Progress = () => {
       const response = await api.get('/progress');
       setProgress(response.data);
     } catch (err) {
-      console.error("Error fetching progress:", err);
-      setError(err.response?.data?.message || "Failed to fetch progress records");
+      console.error("Lỗi khi tải danh sách tiến trình:", err);
+      setError(err.response?.data?.message || "Không thể tải danh sách tiến trình");
     } finally {
       setLoading(false);
     }
@@ -96,11 +96,11 @@ const Progress = () => {
 
   const handleSaveChanges = async () => {
     const newErrors = {
-      stage_id: !editedProgress.stage_id ? "Please select a stage" : "",
-      date: !editedProgress.date ? "Please select a date" : "",
-      cigarettes_smoked: !editedProgress.cigarettes_smoked ? "Please enter cigarettes smoked" : "",
-      money_saved: !editedProgress.money_saved ? "Please enter money saved" : "",
-      user_id: !editedProgress.user_id ? "Please select a user" : ""
+      stage_id: !editedProgress.stage_id ? "Vui lòng chọn một giai đoạn" : "",
+      date: !editedProgress.date ? "Vui lòng chọn ngày" : "",
+      cigarettes_smoked: !editedProgress.cigarettes_smoked ? "Vui lòng nhập số điếu thuốc đã hút" : "",
+      money_saved: !editedProgress.money_saved ? "Vui lòng nhập số tiền tiết kiệm" : "",
+      user_id: !editedProgress.user_id ? "Vui lòng chọn người dùng" : ""
     };
 
     setErrors(newErrors);
@@ -120,8 +120,8 @@ const Progress = () => {
       setSelectedProgress(null);
       setIsNew(false);
     } catch (err) {
-      console.error("Error saving progress:", err);
-      setError(err.response?.data?.message || "Failed to save progress");
+      console.error("Lỗi khi lưu tiến trình:", err);
+      setError(err.response?.data?.message || "Không thể lưu tiến trình");
     } finally {
       setLoading(false);
     }
@@ -133,8 +133,8 @@ const Progress = () => {
       await api.delete(`/progress/${id}`);
       await fetchProgress();
     } catch (err) {
-      console.error("Error deleting progress:", err);
-      setError(err.response?.data?.message || "Failed to delete progress");
+      console.error("Lỗi khi xóa tiến trình:", err);
+      setError(err.response?.data?.message || "Không thể xóa tiến trình");
     } finally {
       setLoading(false);
     }
@@ -142,184 +142,214 @@ const Progress = () => {
 
   if (loading && progress.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="flex items-center gap-2 text-white text-lg">
+          <svg className="animate-spin h-5 w-5 text-cyan-500" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
+          </svg>
+          Đang tải...
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
-        <div className="text-red-500 text-xl">{error}</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-red-400 text-lg bg-red-900/30 p-4 rounded-lg">{error}</div>
       </div>
     );
   }
 
-  return (
-    <section className="py-20 bg-gradient-to-b from-gray-900 to-black min-h-screen text-white relative">
+    return (
+      <section className="py-16 bg-gray-100 min-h-screen text-gray-800">
       {/* Title */}
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold mb-2">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
-            Progress Tracking
-          </span>
+      <div className="text-center mb-10 max-w-4xl mx-auto">
+        <h2 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
+          Theo dõi tiến trình
         </h2>
-        <p className="text-white/70">
-          Monitor and manage user progress in their quit smoking journey
+        <p className="text-gray-300 text-lg">
+          Theo dõi và quản lý tiến trình của người dùng trong hành trình cai thuốc lá
         </p>
       </div>
 
       {/* Add New Button */}
-      <div className="max-w-4xl mx-auto mb-4 text-right">
+      <div className="max-w-7xl mx-auto mb-8 flex justify-end">
         <button
           onClick={openNewModal}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 transition text-sm font-semibold"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl"
         >
-          <Plus className="w-4 h-4" />
-          Add Progress Record
+          <Plus className="w-5 h-5" />
+          Thêm bản ghi tiến trình
         </button>
       </div>
 
       {/* Table */}
-      <div className="max-w-7xl mx-auto bg-white/5 rounded-xl p-6 shadow-lg ring-1 ring-white/10 overflow-x-auto">
+      <div className="max-w-7xl mx-auto bg-gray-800 rounded-xl p-6 shadow-lg ring-1 ring-gray-700 overflow-x-auto">
         <table className="w-full text-sm text-left table-auto">
           <thead>
-            <tr className="text-white/80 border-b border-white/10">
-              <th className="py-3 px-4">Date</th>
-              <th className="py-3 px-4">Cigarettes Smoked</th>
-              <th className="py-3 px-4">Money Saved</th>
-              <th className="py-3 px-4">Stage ID</th>
-              <th className="py-3 px-4">User ID</th>
-              <th className="py-3 px-4 text-right">Actions</th>
+            <tr className="text-gray-300 border-b border-gray-600">
+              <th className="py-3 px-4">Ngày</th>
+              <th className="py-3 px-4">Số điếu thuốc đã hút</th>
+              <th className="py-3 px-4">Số tiền tiết kiệm</th>
+              <th className="py-3 px-4">Giai đoạn</th>
+              <th className="py-3 px-4">Người dùng</th>
+              <th className="py-3 px-4 text-right">Hành động</th>
             </tr>
           </thead>
           <tbody>
             {progress.map((p) => (
               <tr
                 key={p._id}
-                className="hover:bg-white/10 transition duration-200 border-b border-white/10"
+                className="hover:bg-gray-700 transition duration-200 border-b border-gray-600"
               >
-                <td className="py-3 px-4">{new Date(p.date).toLocaleDateString()}</td>
-                <td className="py-3 px-4">{p.cigarettes_smoked}</td>
-                <td className="py-3 px-4">{p.money_saved} VND</td>
-                <td className="py-3 px-4">{p.stage_id}</td>
-                <td className="py-3 px-4">{p.user_id}</td>
+                <td className="py-3 px-4 text-gray-200">{new Date(p.date).toLocaleDateString('vi-VN')}</td>
+                <td className="py-3 px-4 text-gray-200">{p.cigarettes_smoked}</td>
+                <td className="py-3 px-4 text-gray-200">{p.money_saved} VND</td>
+                <td className="py-3 px-4 text-gray-200">
+                  {stages.find(s => s._id === p.stage_id)?.title || p.stage_id}
+                </td>
+                <td className="py-3 px-4 text-gray-200">
+                  {users.find(u => u.id === p.user_id)?.name || p.user_id}
+                </td>
                 <td className="py-3 px-4 text-right space-x-2">
                   <button
                     onClick={() => openEditModal(p)}
-                    className="inline-flex items-center gap-1 px-3 py-1 rounded bg-white/10 hover:bg-white/20 transition"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-cyan-500 text-white text-xs font-medium transition"
                   >
                     <Pencil className="w-4 h-4" />
-                    Edit
+                    Chỉnh sửa
                   </button>
                   <button
                     onClick={() => {
                       setProgressToDelete(p._id);
                       setShowConfirm(true);
                     }}
-                    className="inline-flex items-center gap-1 px-3 py-1 rounded bg-rose-500 hover:bg-rose-600 transition text-white"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-medium transition"
                   >
                     <Trash className="w-4 h-4" />
-                    Delete
+                    Xóa
                   </button>
                 </td>
               </tr>
             ))}
+            {progress.length === 0 && (
+              <tr>
+                <td colSpan="6" className="text-center py-4 text-gray-400">
+                  Không tìm thấy bản ghi tiến trình nào.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
       {/* Modal for Add/Edit */}
       {selectedProgress && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-gradient-to-r from-purple-900 to-cyan-900 p-6 rounded-xl w-full max-w-md shadow-xl">
-            <h3 className="text-xl font-semibold mb-4 text-center">
-              {isNew ? "Add New Progress" : "Edit Progress"}
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative animate-in fade-in-50 duration-300">
+            <h3 className="text-2xl font-bold mb-6 text-center text-cyan-300">
+              {isNew ? "Thêm tiến trình mới" : "Chỉnh sửa tiến trình"}
             </h3>
 
-            <div className="grid gap-3 mb-6">
+            <div className="space-y-4">
               <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Giai đoạn</label>
                 <select
                   value={editedProgress.stage_id}
                   onChange={(e) => setEditedProgress({ ...editedProgress, stage_id: e.target.value })}
-                  className={`p-2 rounded text-black w-full ${errors.stage_id ? 'border-2 border-red-500' : ''}`}
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.stage_id ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 >
-                  <option value="">Select a stage</option>
+                  <option value="">Chọn một giai đoạn</option>
                   {stages.map(stage => (
                     <option key={stage._id} value={stage._id}>
-                      {stage.title} - Stage {stage.stage_number}
+                      {stage.title} - Giai đoạn {stage.stage_number}
                     </option>
                   ))}
                 </select>
-                {errors.stage_id && <p className="text-red-500 text-sm mt-1">{errors.stage_id}</p>}
+                {errors.stage_id && <p className="text-red-400 text-xs mt-1">{errors.stage_id}</p>}
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Người dùng</label>
                 <select
                   value={editedProgress.user_id}
                   onChange={(e) => setEditedProgress({ ...editedProgress, user_id: e.target.value })}
-                  className={`p-2 rounded text-black w-full ${errors.user_id ? 'border-2 border-red-500' : ''}`}
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.user_id ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 >
-                  <option value="">Select a user</option>
+                  <option value="">Chọn một người dùng</option>
                   {users.map(user => (
                     <option key={user.id} value={user.id}>
                       {user.name} ({user.email})
                     </option>
                   ))}
                 </select>
-                {errors.user_id && <p className="text-red-500 text-sm mt-1">{errors.user_id}</p>}
+                {errors.user_id && <p className="text-red-400 text-xs mt-1">{errors.user_id}</p>}
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Ngày</label>
                 <input
                   type="date"
                   value={editedProgress.date}
                   onChange={(e) => setEditedProgress({ ...editedProgress, date: e.target.value })}
-                  className={`p-2 rounded text-black w-full ${errors.date ? 'border-2 border-red-500' : ''}`}
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.date ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
+                {errors.date && <p className="text-red-400 text-xs mt-1">{errors.date}</p>}
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Số điếu thuốc đã hút</label>
                 <input
                   type="number"
                   value={editedProgress.cigarettes_smoked}
                   onChange={(e) => setEditedProgress({ ...editedProgress, cigarettes_smoked: e.target.value })}
-                  placeholder="Cigarettes Smoked"
-                  className={`p-2 rounded text-black w-full ${errors.cigarettes_smoked ? 'border-2 border-red-500' : ''}`}
+                  placeholder="Nhập số điếu thuốc đã hút"
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.cigarettes_smoked ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.cigarettes_smoked && <p className="text-red-500 text-sm mt-1">{errors.cigarettes_smoked}</p>}
+                {errors.cigarettes_smoked && <p className="text-red-400 text-xs mt-1">{errors.cigarettes_smoked}</p>}
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Số tiền tiết kiệm (VND)</label>
                 <input
                   type="number"
                   value={editedProgress.money_saved}
                   onChange={(e) => setEditedProgress({ ...editedProgress, money_saved: e.target.value })}
-                  placeholder="Money Saved (VND)"
-                  className={`p-2 rounded text-black w-full ${errors.money_saved ? 'border-2 border-red-500' : ''}`}
+                  placeholder="Nhập số tiền tiết kiệm (VND)"
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.money_saved ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.money_saved && <p className="text-red-500 text-sm mt-1">{errors.money_saved}</p>}
+                {errors.money_saved && <p className="text-red-400 text-xs mt-1">{errors.money_saved}</p>}
               </div>
             </div>
 
-            <div className="flex justify-end gap-3">
+            <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => {
                   setSelectedProgress(null);
                   setIsNew(false);
                 }}
-                className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 transition"
+                className="px-5 py-2 rounded-lg bg-gray-600 hover:bg-gray-500 text-gray-200 transition"
               >
-                Cancel
+                Hủy
               </button>
               <button
                 onClick={handleSaveChanges}
                 disabled={loading}
-                className="px-4 py-2 rounded bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 transition text-white font-semibold disabled:opacity-50"
+                className="px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Saving..." : "Save"}
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
+                    </svg>
+                    Đang lưu...
+                  </span>
+                ) : (
+                  "Lưu"
+                )}
               </button>
             </div>
           </div>
@@ -328,7 +358,7 @@ const Progress = () => {
 
       {showConfirm && (
         <ConfirmModal
-          message="Are you sure you want to delete this progress record?"
+          message="Bạn có chắc chắn muốn xóa bản ghi tiến trình này không?"
           onCancel={() => {
             setShowConfirm(false);
             setProgressToDelete(null);

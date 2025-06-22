@@ -1,141 +1,257 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Pencil, Trash } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ConfirmModal } from "../../components/admin/ConfirmModal";
+import api from "../../api";
 
 const BlogPosts = () => {
   const [blogs, setBlogs] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [editingBlog, setEditingBlog] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
-    author: "",
-    summary: "",
-    thumbnail: "",
+    content: "",
+    image: "",
+    tags: [],
+  });
+  const [errors, setErrors] = useState({
+    title: "",
+    content: "",
+    image: "",
+    tags: ""
   });
   const [isNew, setIsNew] = useState(false);
-  const [toast, setToast] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [blogToDelete, setBlogToDelete] = useState(null);
 
-  // ✅ Load từ localStorage khi trang mở
   useEffect(() => {
-    const saved = localStorage.getItem("blogs");
-    if (saved) setBlogs(JSON.parse(saved));
+    fetchBlogs();
+    fetchTags();
   }, []);
 
-  const showToast = (message, type = "success") => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
+  const fetchBlogs = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await api.get('/posts');
+      setBlogs(response.data.posts);
+    } catch (err) {
+      console.error("Error fetching blogs:", err);
+      setError(err.response?.data?.message || "Không thể tải danh sách bài viết");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchTags = async () => {
+    try {
+      const response = await api.get('/tags');
+      let tagsData = [];
+      if (Array.isArray(response.data.data)) {
+        tagsData = response.data.data;
+      } else if (Array.isArray(response.data.tags)) {
+        tagsData = response.data.tags;
+      } else if (Array.isArray(response.data)) {
+        tagsData = response.data;
+      }
+      setTags(tagsData);
+    } catch (err) {
+      console.error("Error fetching tags:", err);
+    }
   };
 
   const handleNew = () => {
-    setIsNew(true);
+    setFormData({ title: "", content: "", image: "", tags: [] });
+    setErrors({ title: "", content: "", image: "", tags: "" });
     setEditingBlog({});
-    setFormData({ title: "", author: "", summary: "", thumbnail: "" });
+    setIsNew(true);
   };
 
   const handleEdit = (blog) => {
     setIsNew(false);
     setEditingBlog(blog);
-    setFormData(blog);
-  };
-
-  const handleSave = () => {
-    if (!formData.title || !formData.author || !formData.summary) return;
-
-    setBlogs((prev) => {
-      const updated = isNew
-        ? [...prev, { ...formData, id: Date.now() }]
-        : prev.map((b) =>
-            b.id === editingBlog.id ? { ...formData, id: b.id } : b
-          );
-      localStorage.setItem("blogs", JSON.stringify(updated));
-      return updated;
+    setFormData({
+      title: blog.title,
+      content: blog.content,
+      image: blog.image,
+      tags: blog.tags?.map(tag => tag._id || tag) || []
     });
-
-    showToast(isNew ? "Blog post added." : "Blog post updated.");
-    setEditingBlog(null);
-    setIsNew(false);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this blog post?")) {
-      setBlogs((prev) => {
-        const updated = prev.filter((b) => b.id !== id);
-        localStorage.setItem("blogs", JSON.stringify(updated));
-        return updated;
-      });
-      showToast("Blog post deleted.", "error");
+  const handleSave = async () => {
+    const newErrors = {
+      title: !formData.title ? "Vui lòng nhập tiêu đề" : "",
+      content: !formData.content ? "Vui lòng nhập nội dung" : "",
+      image: "",
+      tags: ""
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some(error => error !== "")) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      if (isNew) {
+        await api.post('/posts/create', formData);
+      } else {
+        await api.put(`/posts/${editingBlog._id}`, formData);
+      }
+      await fetchBlogs();
+      setEditingBlog(null);
+      setIsNew(false);
+    } catch (err) {
+      console.error("Error saving blog:", err);
+      setError(err.response?.data?.message || "Không thể lưu bài viết");
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
-    <section className="py-20 bg-gradient-to-b from-gray-900 to-black min-h-screen text-white relative">
-      {/* Toast */}
-      {toast && (
-        <div
-          className={`fixed top-6 right-6 px-4 py-2 rounded shadow-lg z-50 text-sm transition-all duration-300
-            ${
-              toast.type === "error" ? "bg-red-600" : "bg-green-600"
-            } text-white`}
-        >
-          {toast.message}
-        </div>
-      )}
+  const handleDelete = async (id) => {
+    try {
+      setLoading(true);
+      await api.delete(`/posts/${id}`);
+      await fetchBlogs();
+    } catch (err) {
+      console.error("Error deleting blog:", err);
+      setError(err.response?.data?.message || "Không thể xóa bài viết");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const getTagTitle = (tagId) => {
+    const tag = tags.find(t => t._id === tagId);
+    return tag ? tag.title : tagId;
+  };
+
+  if (loading && blogs.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="flex items-center gap-2 text-white text-lg">
+          <svg className="animate-spin h-5 w-5 text-cyan-500" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
+          </svg>
+          Đang tải...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-red-400 text-lg bg-red-900/30 p-4 rounded-lg">{error}</div>
+      </div>
+    );
+  }
+
+  return (
+    <section className="py-16 bg-gray-900 min-h-screen text-white">
       {/* Header */}
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold mb-2">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
-            Blog Posts
-          </span>
+      <div className="text-center mb-10 max-w-4xl mx-auto">
+        <h2 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
+          Quản lý Blog
         </h2>
-        <p className="text-white/70">
-          Manage health tips and user experience sharing.
+        <p className="text-gray-300 text-lg">
+          Tạo, chỉnh sửa và quản lý các mẹo sức khỏe và câu chuyện người dùng một cách dễ dàng.
         </p>
       </div>
 
       {/* Add New Button */}
-      <div className="max-w-5xl mx-auto mb-6 text-right">
+      <div className="max-w-6xl mx-auto mb-8 flex justify-end">
         <button
           onClick={handleNew}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 transition text-sm font-semibold"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl"
         >
-          <Plus className="w-4 h-4" />
-          Add Blog
+          <Plus className="w-5 h-5" />
+          Bài viết mới
         </button>
       </div>
 
       {/* Blog List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
         {blogs.map((blog) => (
-          <div key={blog.id} className="relative group">
+          <div
+            key={blog._id}
+            className="relative bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+          >
             <Link
-              to={`/admin/blogs/${blog.id}`}
-              className="block bg-white/5 border border-white/10 rounded-xl p-6 hover:border-cyan-500/50 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.03] cursor-pointer"
+              to={`/admin/blogs/${blog._id}`}
+              className="block p-5"
             >
-              {blog.thumbnail && (
-                <img
-                  src={blog.thumbnail}
-                  alt="Thumbnail"
-                  className="mb-4 w-full h-40 object-cover rounded"
-                />
+              {blog.image && (
+                <div className="relative mb-4">
+                  <img
+                    src={blog.image}
+                    alt={blog.title}
+                    className="w-full h-48 object-cover rounded-lg"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent rounded-lg"></div>
+                </div>
               )}
-              <h3 className="text-lg font-semibold mb-1">{blog.title}</h3>
-              <p className="text-sm text-white/70 mb-2">By {blog.author}</p>
-              <p className="text-sm text-white/50">{blog.summary}</p>
+              <h3 className="text-xl font-semibold mb-2 text-cyan-300">{blog.title}</h3>
+              <p className="text-sm text-gray-400 mb-3">
+                Bởi {blog.user_id?.name || 'Tác giả không xác định'}
+              </p>
+              <p className="text-sm text-gray-500 mb-4 line-clamp-3">
+                {blog.content}
+              </p>
+
+              {/* Tags */}
+              {blog.tags && blog.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {blog.tags.slice(0, 3).map((tag, index) => (
+                    <span
+                      key={tag._id || tag || index}
+                      className="px-2.5 py-1 bg-cyan-500/10 text-cyan-400 text-xs rounded-full border border-cyan-500/20"
+                    >
+                      {getTagTitle(tag._id || tag)}
+                    </span>
+                  ))}
+                  {blog.tags.length > 3 && (
+                    <span className="text-xs text-gray-400">
+                      +{blog.tags.length - 3} thêm
+                    </span>
+                  )}
+                </div>
+              )}
+
+              <div className="flex items-center gap-4 text-xs text-gray-400">
+                <span className="flex items-center gap-1">
+                  <span className="text-red-400">❤️</span> {blog.reaction_count || 0}
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="text-blue-400">💬</span> {blog.comment_count || 0}
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="text-green-400">📅</span> {new Date(blog.post_date).toLocaleDateString()}
+                </span>
+              </div>
             </Link>
 
-            {/* Nút Edit/Delete nằm ngoài Link */}
-            <div className="absolute bottom-4 right-4 flex gap-2 z-10">
+            {/* Edit/Delete Buttons */}
+            <div className="absolute bottom-4 right-4 flex gap-2">
               <button
                 onClick={() => handleEdit(blog)}
-                className="text-xs flex items-center gap-1 px-3 py-1 rounded bg-white/10 hover:bg-white/20"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-cyan-500 text-white text-xs font-medium transition"
               >
-                <Pencil className="w-4 h-4" /> Edit
+                <Pencil className="w-4 h-4" /> Sửa
               </button>
               <button
-                onClick={() => handleDelete(blog.id)}
-                className="text-xs flex items-center gap-1 px-3 py-1 rounded bg-rose-500 hover:bg-rose-600 text-white"
+                onClick={() => {
+                  setBlogToDelete(blog._id);
+                  setShowConfirm(true);
+                }}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-medium transition"
               >
-                <Trash className="w-4 h-4" /> Delete
+                <Trash className="w-4 h-4" /> Xóa
               </button>
             </div>
           </div>
@@ -144,84 +260,141 @@ const BlogPosts = () => {
 
       {/* Modal */}
       {editingBlog && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-gradient-to-r from-purple-900 to-cyan-900 p-6 rounded-xl w-full max-w-md shadow-xl">
-            <h3 className="text-xl font-semibold mb-4 text-center">
-              {isNew ? "Add New Blog" : "Edit Blog"}
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative animate-in fade-in-50 duration-300">
+            <h3 className="text-2xl font-bold mb-6 text-center text-cyan-300">
+              {isNew ? "Tạo bài viết mới" : "Chỉnh sửa bài viết"}
             </h3>
 
-            <div className="grid gap-3 mb-6">
-              <input
-                type="text"
-                placeholder="Title"
-                value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
-                className="p-2 rounded text-black"
-              />
-              <input
-                type="text"
-                placeholder="Author"
-                value={formData.author}
-                onChange={(e) =>
-                  setFormData({ ...formData, author: e.target.value })
-                }
-                className="p-2 rounded text-black"
-              />
-              <textarea
-                placeholder="Summary"
-                value={formData.summary}
-                onChange={(e) =>
-                  setFormData({ ...formData, summary: e.target.value })
-                }
-                className="p-2 rounded text-black"
-              />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (!file) return;
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      thumbnail: reader.result,
-                    }));
-                  };
-                  reader.readAsDataURL(file);
-                }}
-                className="text-sm text-white"
-              />
-              {formData.thumbnail && (
-                <img
-                  src={formData.thumbnail}
-                  alt="Preview"
-                  className="mt-2 w-full h-40 object-cover rounded shadow"
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Tiêu đề</label>
+                <input
+                  type="text"
+                  placeholder="Nhập tiêu đề bài viết"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.title ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-              )}
+                {errors.title && <p className="text-red-400 text-xs mt-1">{errors.title}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Nội dung</label>
+                <textarea
+                  placeholder="Viết nội dung bài viết"
+                  value={formData.content}
+                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  rows={5}
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.content ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                />
+                {errors.content && <p className="text-red-400 text-xs mt-1">{errors.content}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">URL hình ảnh</label>
+                <input
+                  type="text"
+                  placeholder="Nhập URL hình ảnh"
+                  value={formData.image}
+                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.image ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                />
+                {errors.image && <p className="text-red-400 text-xs mt-1">{errors.image}</p>}
+                {formData.image && (
+                  <img
+                    src={formData.image}
+                    alt="Xem trước"
+                    className="mt-3 w-full h-40 object-cover rounded-lg shadow-sm"
+                    onError={(e) => (e.target.src = 'https://via.placeholder.com/300x200?text=Không+tìm+thấy+hình+ảnh')}
+                  />
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Thẻ</label>
+                <div className="max-h-40 overflow-y-auto border border-gray-600 rounded-lg p-3 bg-gray-700">
+                  {tags.map((tag) => (
+                    <label key={tag._id} className="flex items-center mb-2">
+                      <input
+                        type="checkbox"
+                        checked={formData.tags.includes(tag._id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setFormData({
+                              ...formData,
+                              tags: [...formData.tags, tag._id]
+                            });
+                          } else {
+                            setFormData({
+                              ...formData,
+                              tags: formData.tags.filter(id => id !== tag._id)
+                            });
+                          }
+                        }}
+                        className="mr-2 accent-cyan-500"
+                      />
+                      <span className="text-sm text-gray-200">{tag.title}</span>
+                    </label>
+                  ))}
+                </div>
+                {formData.tags.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {formData.tags.map(id => (
+                      <span key={id} className="px-2 py-1 bg-cyan-500/10 text-cyan-400 text-xs rounded-full">
+                        {getTagTitle(id)}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="flex justify-end gap-3">
+            <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => {
                   setEditingBlog(null);
                   setIsNew(false);
                 }}
-                className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 transition"
+                className="px-5 py-2 rounded-lg bg-gray-600 hover:bg-gray-500 text-gray-200 transition"
               >
-                Cancel
+                Hủy
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 rounded bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 transition text-white font-semibold"
+                disabled={loading}
+                className="px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Save
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
+                    </svg>
+                    Đang lưu...
+                  </span>
+                ) : (
+                  "Lưu bài viết"
+                )}
               </button>
             </div>
           </div>
         </div>
+      )}
+
+      {showConfirm && (
+        <ConfirmModal
+          message="Bạn có chắc chắn muốn xóa bài viết này?"
+          onCancel={() => {
+            setShowConfirm(false);
+            setBlogToDelete(null);
+          }}
+          onConfirm={() => {
+            handleDelete(blogToDelete);
+            setShowConfirm(false);
+            setBlogToDelete(null);
+          }}
+        />
       )}
     </section>
   );

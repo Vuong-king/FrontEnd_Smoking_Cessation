@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ShieldCheck, UserCheck, User } from "lucide-react";
+import { ShieldCheck, UserCheck, User, PencilIcon, TrashIcon, PlusIcon } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
 import api from "../../api";
 
@@ -33,8 +33,8 @@ const Users = () => {
         setUsers(response.data.users);
       }
     } catch (err) {
-      console.error("Error fetching users:", err);
-      setError(err.response?.data?.message || "Failed to fetch users");
+      console.error("Lỗi khi tải danh sách người dùng:", err);
+      setError(err.response?.data?.message || "Không thể tải danh sách người dùng");
     } finally {
       setLoading(false);
     }
@@ -44,16 +44,15 @@ const Users = () => {
 
   const handleAddOrUpdate = async () => {
     const newErrors = {
-      email: !newUser.email ? "Please enter an email" : 
-             !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newUser.email) ? "Please enter a valid email" : "",
-      name: !newUser.name ? "Please enter a name" : "",
-      role: editingId && !newUser.role ? "Please select a role" : "",
-      avatar_url: "" // Optional field
+      email: !newUser.email ? "Vui lòng nhập email" : 
+             !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newUser.email) ? "Vui lòng nhập email hợp lệ" : "",
+      name: !newUser.name ? "Vui lòng nhập tên" : "",
+      role: editingId && !newUser.role ? "Vui lòng chọn vai trò" : "",
+      avatar_url: ""
     };
 
     setErrors(newErrors);
 
-    // Check if there are any errors
     if (Object.values(newErrors).some(error => error !== "")) {
       return;
     }
@@ -77,8 +76,8 @@ const Users = () => {
       setEditingId(null);
       setShowModal(false);
     } catch (err) {
-      console.error("Error saving user:", err);
-      setError(err.response?.data?.message || "Failed to save user");
+      console.error("Lỗi khi lưu người dùng:", err);
+      setError(err.response?.data?.message || "Không thể lưu người dùng");
     } finally {
       setLoading(false);
     }
@@ -102,8 +101,8 @@ const Users = () => {
       await api.delete(`/user/${id}`);
       await fetchUsers();
     } catch (err) {
-      console.error("Error deleting user:", err);
-      setError(err.response?.data?.message || "Failed to delete user");
+      console.error("Lỗi khi xóa người dùng:", err);
+      setError(err.response?.data?.message || "Không thể xóa người dùng");
     } finally {
       setLoading(false);
     }
@@ -117,31 +116,40 @@ const Users = () => {
     return <User className="inline w-5 h-5 text-green-400 ml-2" />;
   };
 
+  const roleTranslations = {
+    Admin: "Quản trị viên",
+    Coach: "Huấn luyện viên",
+    User: "Người dùng"
+  };
+
   if (loading && users.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="flex items-center gap-2 text-white text-lg">
+          <svg className="animate-spin h-5 w-5 text-cyan-500" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
+          </svg>
+          Đang tải...
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
-        <div className="text-red-500 text-xl">{error}</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-red-400 text-lg bg-red-900/30 p-4 rounded-lg">{error}</div>
       </div>
     );
   }
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-900 to-black min-h-screen">
-      <div className="text-center mb-10">
-        <h2 className="text-3xl font-bold mb-2">
-          Manage{" "}
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
-            {role}s
-          </span>{" "}
-          <RoleIcon />
+    <section className="py-16 bg-gray-900 min-h-screen text-white">
+      {/* Title */}
+      <div className="text-center mb-10 max-w-4xl mx-auto">
+        <h2 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
+          Quản lý {roleTranslations[role.charAt(0).toUpperCase() + role.slice(1)]} <RoleIcon />
         </h2>
         <div className="flex justify-center gap-4 mt-4">
           {["Admin", "Coach", "User"].map((r) => (
@@ -153,64 +161,67 @@ const Users = () => {
                 setEditingId(null);
                 setShowModal(false);
               }}
-              className={`px-4 py-2 rounded font-medium transition duration-300 transform ${
-                role === r
-                  ? "bg-gradient-to-r from-purple-600 to-cyan-500 text-white shadow-md"
-                  : "bg-white/10 text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-cyan-500 hover:scale-105"
+              className={`px-4 py-2 rounded-lg font-medium transition duration-300 transform ${
+                role === r.toLowerCase()
+                  ? "bg-gradient-to-r from-cyan-500 to-purple-500 text-white shadow-md"
+                  : "bg-gray-700 text-gray-200 hover:bg-gradient-to-r hover:from-cyan-500 hover:to-purple-500 hover:scale-105"
               }`}
             >
-              {r}
+              {roleTranslations[r]}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto bg-white/5 rounded-xl p-6 shadow-xl ring-1 ring-white/10 overflow-x-auto">
-        <table className="w-full text-sm text-left">
+      {/* Table */}
+      <div className="max-w-6xl mx-auto bg-gray-800 rounded-xl p-6 shadow-lg ring-1 ring-gray-700 overflow-x-auto">
+        <table className="w-full text-sm text-left table-auto">
           <thead>
-            <tr className="border-b border-white/10">
-              <th>Avatar</th>
-              <th>Email</th>
-              <th>Name</th>
-              <th>Role</th>
-              {(role === "Coach" || role === "Customer") && <th>Actions</th>}
+            <tr className="text-gray-300 border-b border-gray-600">
+              <th className="py-3 px-4">Ảnh đại diện</th>
+              <th className="py-3 px-4">Email</th>
+              <th className="py-3 px-4">Tên</th>
+              <th className="py-3 px-4">Vai trò</th>
+              {(role === "coach" || role === "user") && <th className="py-3 px-4 text-right">Hành động</th>}
             </tr>
           </thead>
           <tbody>
             {filteredUsers.map((u, index) => (
               <tr
                 key={u.id}
-                className={`border-b border-white/10 hover:bg-white/5 transition duration-200 ${
+                className={`border-b border-gray-600 hover:bg-gray-700 transition duration-200 ${
                   index === 0 ? "rounded-t-lg" : ""
                 }`}
               >
-                <td>
+                <td className="py-3 px-4">
                   <img 
-                    src={u.avatar_url} 
-                    alt={`${u.name}'s avatar`}
+                    src={u.avatar_url || "https://example.com/default-avatar.png"} 
+                    alt={`Ảnh đại diện của ${u.name}`}
                     className="w-10 h-10 rounded-full object-cover"
+                    onError={(e) => (e.target.src = 'https://via.placeholder.com/40?text=Avatar')}
                   />
                 </td>
-                <td>{u.email}</td>
-                <td>{u.name}</td>
-                <td>{u.role}</td>
+                <td className="py-3 px-4 text-gray-200">{u.email}</td>
+                <td className="py-3 px-4 text-gray-200">{u.name}</td>
+                <td className="py-3 px-4 text-gray-200">{roleTranslations[u.role.charAt(0).toUpperCase() + u.role.slice(1)]}</td>
                 {(role === "coach" || role === "user") && (
-                  <td className="space-x-2">
+                  <td className="py-3 px-4 text-right space-x-2">
                     <button
                       onClick={() => handleEdit(u)}
-                      className="px-3 py-1 rounded text-white font-semibold bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 transition"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-cyan-500 text-white text-xs font-medium transition"
                     >
-                      Edit
+                      <PencilIcon className="w-4 h-4" />
+                      Chỉnh sửa
                     </button>
-
                     <button
                       onClick={() => {
                         setUserToDelete(u.id);
                         setShowConfirm(true);
                       }}
-                      className="px-3 py-1 rounded text-white font-semibold bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 transition"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-medium transition"
                     >
-                      Delete
+                      <TrashIcon className="w-4 h-4" />
+                      Xóa
                     </button>
                   </td>
                 )}
@@ -218,8 +229,8 @@ const Users = () => {
             ))}
             {filteredUsers.length === 0 && (
               <tr>
-                <td colSpan="5" className="text-center py-4 text-white/60">
-                  No {role}s found.
+                <td colSpan={role === "admin" ? 4 : 5} className="text-center py-4 text-gray-400">
+                  Không tìm thấy {roleTranslations[role.charAt(0).toUpperCase() + role.slice(1)]}.
                 </td>
               </tr>
             )}
@@ -227,6 +238,7 @@ const Users = () => {
         </table>
       </div>
 
+      {/* Add New Button */}
       {(role === "coach" || role === "user") && (
         <button
           onClick={() => {
@@ -234,111 +246,116 @@ const Users = () => {
             setNewUser({ email: "", name: "", role: "", avatar_url: "" });
             setEditingId(null);
           }}
-          className="fixed bottom-10 right-10 flex items-center gap-3 px-6 py-3 rounded-full 
-             bg-gradient-to-r from-purple-500 to-cyan-500 text-white 
-             hover:from-purple-600 hover:to-cyan-600 
-             shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          className="fixed bottom-10 right-10 flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
         >
-          <span
-            className="text-xl leading-none text-white"
-            style={{ filter: "brightness(0) invert(1)" }}
-          >
-            ➕
-          </span>
-
-          <span className="text-sm font-semibold tracking-wide">
-            Add New {role}
+          <PlusIcon className="w-5 h-5" />
+          <span className="text-sm font-medium">
+            Thêm {roleTranslations[role.charAt(0).toUpperCase() + role.slice(1)]} mới
           </span>
         </button>
       )}
 
+      {/* Modal for Add/Edit */}
       {showModal && (role === "coach" || role === "user") && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-gradient-to-r from-purple-900 to-cyan-900 p-6 rounded-xl w-full max-w-md shadow-xl">
-            <h3 className="text-xl font-semibold mb-4 text-center">
-              {editingId ? "Edit" : "Add"} {role}
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative animate-in fade-in-50 duration-300">
+            <h3 className="text-2xl font-bold mb-6 text-center text-cyan-300">
+              {editingId ? `Chỉnh sửa ${roleTranslations[role.charAt(0).toUpperCase() + role.slice(1)]}` : `Thêm ${roleTranslations[role.charAt(0).toUpperCase() + role.slice(1)]} mới`}
             </h3>
-            <div className="grid grid-cols-1 gap-3">
+            <div className="space-y-4">
               {editingId && (
                 <div className="flex items-center gap-4 mb-4">
                   <img 
                     src={newUser.avatar_url || "https://example.com/default-avatar.png"} 
-                    alt="Current avatar"
+                    alt="Ảnh đại diện hiện tại"
                     className="w-16 h-16 rounded-full object-cover"
+                    onError={(e) => (e.target.src = 'https://via.placeholder.com/64?text=Avatar')}
                   />
                   <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-1">URL ảnh đại diện</label>
                     <input
                       type="text"
-                      placeholder="Avatar URL"
-                      className={`p-2 rounded text-black w-full ${errors.avatar_url ? 'border-2 border-red-500' : ''}`}
+                      placeholder="Nhập URL ảnh đại diện"
+                      className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.avatar_url ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                       value={newUser.avatar_url}
                       onChange={(e) =>
                         setNewUser({ ...newUser, avatar_url: e.target.value })
                       }
                     />
-                    {errors.avatar_url && <p className="text-red-500 text-sm mt-1">{errors.avatar_url}</p>}
+                    {errors.avatar_url && <p className="text-red-400 text-xs mt-1">{errors.avatar_url}</p>}
                   </div>
                 </div>
               )}
               <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
                 <input
                   type="email"
-                  placeholder="Email"
-                  className={`p-2 rounded text-black w-full ${errors.email ? 'border-2 border-red-500' : ''}`}
+                  placeholder="Nhập email"
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.email ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                   value={newUser.email}
                   onChange={(e) =>
                     setNewUser({ ...newUser, email: e.target.value })
                   }
                 />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
               </div>
               <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Tên</label>
                 <input
                   type="text"
-                  placeholder="Name"
-                  className={`p-2 rounded text-black w-full ${errors.name ? 'border-2 border-red-500' : ''}`}
+                  placeholder="Nhập tên"
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.name ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                   value={newUser.name}
                   onChange={(e) =>
                     setNewUser({ ...newUser, name: e.target.value })
                   }
                 />
-                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
               </div>
               {editingId && (
                 <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Vai trò</label>
                   <select
-                    className={`p-2 rounded text-black w-full ${errors.role ? 'border-2 border-red-500' : ''}`}
+                    className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.role ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                     value={newUser.role}
                     onChange={(e) =>
                       setNewUser({ ...newUser, role: e.target.value })
                     }
                   >
-                    <option value="">Select role</option>
-                    <option value="admin">Admin</option>
-                    <option value="coach">Coach</option>
-                    <option value="user">User</option>
+                    <option value="">Chọn vai trò</option>
+                    <option value="admin">Quản trị viên</option>
+                    <option value="coach">Huấn luyện viên</option>
+                    <option value="user">Người dùng</option>
                   </select>
-                  {errors.role && <p className="text-red-500 text-sm mt-1">{errors.role}</p>}
+                  {errors.role && <p className="text-red-400 text-xs mt-1">{errors.role}</p>}
                 </div>
               )}
             </div>
-            <div className="flex justify-end mt-4 space-x-2">
+            <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => {
                   setShowModal(false);
                   setNewUser({ email: "", name: "", role: "", avatar_url: "" });
                   setEditingId(null);
                 }}
-                className="px-4 py-2 rounded shadow-md bg-gradient-to-r from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800 text-white transition duration-300"
+                className="px-5 py-2 rounded-lg bg-gray-600 hover:bg-gray-500 text-gray-200 transition"
               >
-                Cancel
+                Hủy
               </button>
               <button
                 onClick={handleAddOrUpdate}
                 disabled={loading}
-                className="px-4 py-2 rounded shadow-md bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 text-white font-semibold transition duration-300 disabled:opacity-50"
+                className="px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Saving..." : editingId ? "Update" : "Add"}
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
+                    </svg>
+                    Đang lưu...
+                  </span>
+                ) : editingId ? "Cập nhật" : "Thêm"}
               </button>
             </div>
           </div>
@@ -346,7 +363,7 @@ const Users = () => {
       )}
       {showConfirm && (
         <ConfirmModal
-          message="Are you sure you want to delete this user?"
+          message="Bạn có chắc chắn muốn xóa người dùng này không?"
           onCancel={() => {
             setShowConfirm(false);
             setUserToDelete(null);

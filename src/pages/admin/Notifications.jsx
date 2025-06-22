@@ -37,8 +37,8 @@ const Notifications = () => {
       const response = await api.get('/progress');
       setProgresses(response.data);
     } catch (err) {
-      console.error("Error fetching progresses:", err);
-      setError(err.response?.data?.message || "Failed to fetch progresses");
+      console.error("Lỗi khi lấy danh sách tiến độ:", err);
+      setError(err.response?.data?.message || "Không thể lấy danh sách tiến độ");
     }
   };
 
@@ -49,8 +49,8 @@ const Notifications = () => {
       const response = await api.get('/notifications');
       setNotifications(response.data);
     } catch (err) {
-      console.error("Error fetching notifications:", err);
-      setError(err.response?.data?.message || "Failed to fetch notifications");
+      console.error("Lỗi khi lấy danh sách thông báo:", err);
+      setError(err.response?.data?.message || "Không thể lấy danh sách thông báo");
     } finally {
       setLoading(false);
     }
@@ -82,10 +82,10 @@ const Notifications = () => {
 
   const handleSaveChanges = async () => {
     const newErrors = {
-      progress_id: !editedNotification.progress_id ? "Please select a progress" : "",
-      message: !editedNotification.message ? "Please enter a message" : "",
-      type: !editedNotification.type ? "Please select a type" : "",
-      schedule: !editedNotification.schedule ? "Please enter a schedule" : "",
+      progress_id: !editedNotification.progress_id ? "Vui lòng chọn tiến độ" : "",
+      message: !editedNotification.message ? "Vui lòng nhập thông điệp" : "",
+      type: !editedNotification.type ? "Vui lòng chọn loại thông báo" : "",
+      schedule: !editedNotification.schedule ? "Vui lòng nhập thời gian gửi" : "",
     };
 
     setErrors(newErrors);
@@ -105,8 +105,8 @@ const Notifications = () => {
       setSelectedNotification(null);
       setIsNew(false);
     } catch (err) {
-      console.error("Error saving notification:", err);
-      setError(err.response?.data?.message || "Failed to save notification");
+      console.error("Lỗi khi lưu thông báo:", err);
+      setError(err.response?.data?.message || "Không thể lưu thông báo");
     } finally {
       setLoading(false);
     }
@@ -118,8 +118,8 @@ const Notifications = () => {
       await api.delete(`/notifications/${id}`);
       await fetchNotifications();
     } catch (err) {
-      console.error("Error deleting notification:", err);
-      setError(err.response?.data?.message || "Failed to delete notification");
+      console.error("Lỗi khi xóa thông báo:", err);
+      setError(err.response?.data?.message || "Không thể xóa thông báo");
     } finally {
       setLoading(false);
     }
@@ -128,7 +128,7 @@ const Notifications = () => {
   if (loading && notifications.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
-        <div className="text-white text-xl">Loading...</div>
+        <div className="text-white text-xl">Đang tải...</div>
       </div>
     );
   }
@@ -142,16 +142,16 @@ const Notifications = () => {
   }
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-900 to-black min-h-screen text-white relative">
+    <section className="py-20 bg-gray-100 relative text-gray-800">
       {/* Title */}
       <div className="text-center mb-12">
         <h2 className="text-3xl font-bold mb-2">
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
-            Notifications Management
+            Quản Lý Thông Báo
           </span>
         </h2>
-        <p className="text-white/70">
-          Manage and schedule notifications for users
+        <p className="text-gray-800">
+          Quản lý và lên lịch thông báo cho người dùng
         </p>
       </div>
 
@@ -162,7 +162,7 @@ const Notifications = () => {
           className="inline-flex items-center gap-2 px-4 py-2 rounded bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 transition text-sm font-semibold"
         >
           <Plus className="w-4 h-4" />
-          Add Notification
+          Thêm Thông Báo
         </button>
       </div>
 
@@ -171,12 +171,12 @@ const Notifications = () => {
         <table className="w-full text-sm text-left table-auto">
           <thead>
             <tr className="text-white/80 border-b border-white/10">
-              <th className="py-3 px-4">Message</th>
-              <th className="py-3 px-4">Type</th>
-              <th className="py-3 px-4">Schedule</th>
-              <th className="py-3 px-4">Progress</th>
-              <th className="py-3 px-4">Status</th>
-              <th className="py-3 px-4 text-right">Actions</th>
+              <th className="py-3 px-4">Thông Điệp</th>
+              <th className="py-3 px-4">Loại</th>
+              <th className="py-3 px-4">Thời Gian Gửi</th>
+              <th className="py-3 px-4">Tiến Độ</th>
+              <th className="py-3 px-4">Trạng Thái</th>
+              <th className="py-3 px-4 text-right">Hành Động</th>
             </tr>
           </thead>
           <tbody>
@@ -192,7 +192,9 @@ const Notifications = () => {
                       ? "bg-blue-500/20 text-blue-300"
                       : "bg-purple-500/20 text-purple-300"
                   }`}>
-                    {notification.type}
+                    {notification.type === 'daily' ? 'Hàng ngày' : 
+                     notification.type === 'weekly' ? 'Hàng tuần' : 
+                     'Động lực'}
                   </span>
                 </td>
                 <td className="py-3 px-4">{notification.schedule}</td>
@@ -205,7 +207,7 @@ const Notifications = () => {
                       ? "bg-green-500/20 text-green-300"
                       : "bg-yellow-500/20 text-yellow-300"
                   }`}>
-                    {notification.is_sent ? "Sent" : "Pending"}
+                    {notification.is_sent ? "Đã gửi" : "Chưa gửi"}
                   </span>
                 </td>
                 <td className="py-3 px-4 text-right space-x-2">
@@ -214,7 +216,7 @@ const Notifications = () => {
                     className="inline-flex items-center gap-1 px-3 py-1 rounded bg-white/10 hover:bg-white/20 transition"
                   >
                     <Pencil className="w-4 h-4" />
-                    Edit
+                    Sửa
                   </button>
                   <button
                     onClick={() => {
@@ -224,7 +226,7 @@ const Notifications = () => {
                     className="inline-flex items-center gap-1 px-3 py-1 rounded bg-rose-500 hover:bg-rose-600 transition text-white"
                   >
                     <Trash className="w-4 h-4" />
-                    Delete
+                    Xóa
                   </button>
                 </td>
               </tr>
@@ -238,7 +240,7 @@ const Notifications = () => {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-gradient-to-r from-purple-900 to-cyan-900 p-6 rounded-xl w-full max-w-md shadow-xl">
             <h3 className="text-xl font-semibold mb-4 text-center">
-              {isNew ? "Add New Notification" : "Edit Notification"}
+              {isNew ? "Thêm Thông Báo Mới" : "Chỉnh Sửa Thông Báo"}
             </h3>
 
             <div className="grid gap-3 mb-6">
@@ -248,10 +250,10 @@ const Notifications = () => {
                   onChange={(e) => setEditedNotification({ ...editedNotification, progress_id: e.target.value })}
                   className={`p-2 rounded text-black w-full ${errors.progress_id ? 'border-2 border-red-500' : ''}`}
                 >
-                  <option value="">Select a progress</option>
+                  <option value="">Chọn tiến độ</option>
                   {progresses.map(progress => (
                     <option key={progress._id} value={progress._id}>
-                      Stage {progress.stage_id} - {new Date(progress.date).toLocaleDateString()}
+                      Giai đoạn {progress.stage_id} - {new Date(progress.date).toLocaleDateString('vi-VN')}
                     </option>
                   ))}
                 </select>
@@ -262,7 +264,7 @@ const Notifications = () => {
                 <textarea
                   value={editedNotification.message}
                   onChange={(e) => setEditedNotification({ ...editedNotification, message: e.target.value })}
-                  placeholder="Notification Message"
+                  placeholder="Thông điệp thông báo"
                   className={`p-2 rounded text-black w-full ${errors.message ? 'border-2 border-red-500' : ''}`}
                   rows="3"
                 />
@@ -275,9 +277,9 @@ const Notifications = () => {
                   onChange={(e) => setEditedNotification({ ...editedNotification, type: e.target.value })}
                   className={`p-2 rounded text-black w-full ${errors.type ? 'border-2 border-red-500' : ''}`}
                 >
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="motivation">Motivation</option>
+                  <option value="daily">Hàng ngày</option>
+                  <option value="weekly">Hàng tuần</option>
+                  <option value="motivation">Động lực</option>
                 </select>
                 {errors.type && <p className="text-red-500 text-sm mt-1">{errors.type}</p>}
               </div>
@@ -300,7 +302,7 @@ const Notifications = () => {
                     onChange={(e) => setEditedNotification({ ...editedNotification, is_sent: e.target.checked })}
                     className="w-4 h-4 rounded border-gray-300"
                   />
-                  Mark as sent
+                  Đánh dấu đã gửi
                 </label>
               </div>
             </div>
@@ -313,14 +315,14 @@ const Notifications = () => {
                 }}
                 className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 transition"
               >
-                Cancel
+                Hủy
               </button>
               <button
                 onClick={handleSaveChanges}
                 disabled={loading}
                 className="px-4 py-2 rounded bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 transition text-white font-semibold disabled:opacity-50"
               >
-                {loading ? "Saving..." : "Save"}
+                {loading ? "Đang lưu..." : "Lưu"}
               </button>
             </div>
           </div>
@@ -329,7 +331,7 @@ const Notifications = () => {
 
       {showConfirm && (
         <ConfirmModal
-          message="Are you sure you want to delete this notification?"
+          message="Bạn có chắc chắn muốn xóa thông báo này không?"
           onCancel={() => {
             setShowConfirm(false);
             setNotificationToDelete(null);
