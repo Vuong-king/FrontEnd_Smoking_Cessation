@@ -7,21 +7,9 @@ export function EditProfileModal({
   onSave, 
   user, 
   form,
-  handleAvatarUpload 
+  handleAvatarUpload,
+  avatarPreviewUrl, 
 }) {
-  const handleAvatarChange = async (info) => {
-    if (info.file.status === 'uploading') {
-      return;
-    }
-    if (info.file.originFileObj) {
-      try {
-        await handleAvatarUpload(info.file.originFileObj);
-      } catch (error) {
-        console.error("Error uploading avatar:", error);
-      }
-    }
-  }
-
   return (
     <Modal
       title={
@@ -42,13 +30,19 @@ export function EditProfileModal({
           <div style={{ position: "relative", display: "inline-block" }}>
             <Avatar
               size={80}
-              src={user.avatar}
+              src={avatarPreviewUrl || user.avatar_url}
               style={{
                 border: "3px solid #1890ff",
                 boxShadow: "0 4px 12px rgba(24, 144, 255, 0.3)",
               }}
             />
-            <Upload showUploadList={false} beforeUpload={() => false} onChange={handleAvatarChange}>
+            <Upload 
+              showUploadList={false} 
+              beforeUpload={(file) => {
+                handleAvatarUpload(file);
+                return false;
+              }}
+            >
               <div
                 style={{
                   position: "absolute",
@@ -73,6 +67,10 @@ export function EditProfileModal({
             Nhấp vào biểu tượng camera để thay đổi ảnh đại diện
           </div>
         </div>
+
+        <Form.Item name="avatar_url" hidden>
+            <Input />
+        </Form.Item>
 
         <Form.Item
           label={

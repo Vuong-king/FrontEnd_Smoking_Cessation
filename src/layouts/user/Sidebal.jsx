@@ -120,7 +120,7 @@ function Sidebar() {
             <Space>
               <Avatar
                 size={collapsed ? 32 : 40}
-                src={user?.avatar || "https://cdn-media.sforum.vn/storage/app/media/ve-capybara-2.jpg"}
+                src={user?.avatar_url || "https://cdn-media.sforum.vn/storage/app/media/ve-capybara-2.jpg"}
               />
               {!collapsed && (
                 <div>
