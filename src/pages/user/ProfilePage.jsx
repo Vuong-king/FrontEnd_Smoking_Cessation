@@ -1,47 +1,54 @@
-import { AchievementsSection } from "../../components/user/userprofile/AchievementsSection"
-import { EditProfileModal } from "../../components/user/userprofile/EditProfileModal"
-import { ProfileHeader } from "../../components/user/userprofile/ProfileHeader"
-import { StatsSection } from "../../components/user/userprofile/StatsSection"
-import { useProfileData } from "../../hook/useProfileData"
+import { AchievementsSection } from "../../components/user/userprofile/AchievementsSection";
+import { EditProfileModal } from "../../components/user/userprofile/EditProfileModal";
+import { ProfileHeader } from "../../components/user/userprofile/ProfileHeader";
+import { StatsSection } from "../../components/user/userprofile/StatsSection";
+import { useProfileData } from "../../hook/useProfileData";
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getUserById } from '../../api';
 
 export default function ProfilePage() {
   const { id } = useParams();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const {
     achievements,
     isEditModalVisible,
     form,
     handleEditProfile,
-    handleSaveProfile,
     handleCancel,
     handleAvatarUpload,
     avatarPreviewUrl,
+    fetchUserById,
+    handleSaveProfile,
   } = useProfileData();
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const data = await getUserById(id);
-        setUserData(data);
-        setError(null);
-      } catch (error) {
-        console.error('Failed to fetch user data:', error);
-        setError('Failed to load user profile');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Load user data từ API
+  const loadUserData = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchUserById(id);
+      setUserData(data);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to fetch user data:', err);
+      setError('Không thể tải hồ sơ người dùng');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (id) {
-      fetchUserData();
+      loadUserData();
     }
   }, [id]);
+
+  const handleSave = async (values) => {
+    await handleSaveProfile(values);
+    await loadUserData(); // <== cập nhật lại UI sau khi lưu
+  };
 
   if (loading) {
     return (
@@ -70,16 +77,16 @@ export default function ProfilePage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6">
-        <ProfileHeader 
-          user={userData} 
-          onEditProfile={handleEditProfile} 
+        <ProfileHeader
+          user={userData}
+          onEditProfile={handleEditProfile}
         />
 
         <div className="mt-6">
           <StatsSection stats={userData.stats || {
             daysQuit: 0,
             moneySaved: 0,
-            healthScore: 0
+            healthScore: 0,
           }} />
         </div>
 
@@ -90,7 +97,7 @@ export default function ProfilePage() {
         <EditProfileModal
           isVisible={isEditModalVisible}
           onCancel={handleCancel}
-          onSave={handleSaveProfile}
+          onSave={handleSave} 
           user={userData}
           form={form}
           handleAvatarUpload={handleAvatarUpload}
