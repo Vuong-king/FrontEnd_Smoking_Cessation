@@ -170,7 +170,7 @@ const Notifications = () => {
       <div className="max-w-7xl mx-auto bg-white/5 rounded-xl p-6 shadow-lg ring-1 ring-white/10 overflow-x-auto">
         <table className="w-full text-sm text-left table-auto">
           <thead>
-            <tr className="text-white/80 border-b border-white/10">
+            <tr className="text-black/80 border-b border-white/10">
               <th className="py-3 px-4">Thông Điệp</th>
               <th className="py-3 px-4">Loại</th>
               <th className="py-3 px-4">Thời Gian Gửi</th>

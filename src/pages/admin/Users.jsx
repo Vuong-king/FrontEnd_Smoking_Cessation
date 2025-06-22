@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { ShieldCheck, UserCheck, User, PencilIcon, TrashIcon, PlusIcon } from "lucide-react";
+import {
+  ShieldCheck,
+  UserCheck,
+  User,
+  PencilIcon,
+  TrashIcon,
+  PlusIcon,
+} from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
 import api from "../../api";
 
@@ -9,12 +16,17 @@ const Users = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [newUser, setNewUser] = useState({ email: "", name: "", role: "", avatar_url: "" });
+  const [newUser, setNewUser] = useState({
+    email: "",
+    name: "",
+    role: "",
+    avatar_url: "",
+  });
   const [errors, setErrors] = useState({
     email: "",
     name: "",
     role: "",
-    avatar_url: ""
+    avatar_url: "",
   });
   const [editingId, setEditingId] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -28,13 +40,15 @@ const Users = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get('/user');
+      const response = await api.get("/user");
       if (response.data.users) {
         setUsers(response.data.users);
       }
     } catch (err) {
       console.error("Lỗi khi tải danh sách người dùng:", err);
-      setError(err.response?.data?.message || "Không thể tải danh sách người dùng");
+      setError(
+        err.response?.data?.message || "Không thể tải danh sách người dùng"
+      );
     } finally {
       setLoading(false);
     }
@@ -44,16 +58,19 @@ const Users = () => {
 
   const handleAddOrUpdate = async () => {
     const newErrors = {
-      email: !newUser.email ? "Vui lòng nhập email" : 
-             !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newUser.email) ? "Vui lòng nhập email hợp lệ" : "",
+      email: !newUser.email
+        ? "Vui lòng nhập email"
+        : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newUser.email)
+        ? "Vui lòng nhập email hợp lệ"
+        : "",
       name: !newUser.name ? "Vui lòng nhập tên" : "",
       role: editingId && !newUser.role ? "Vui lòng chọn vai trò" : "",
-      avatar_url: ""
+      avatar_url: "",
     };
 
     setErrors(newErrors);
 
-    if (Object.values(newErrors).some(error => error !== "")) {
+    if (Object.values(newErrors).some((error) => error !== "")) {
       return;
     }
 
@@ -61,13 +78,14 @@ const Users = () => {
       setLoading(true);
       if (editingId) {
         await api.put(`/user/${editingId}`, {
-          ...newUser
+          ...newUser,
         });
       } else {
-        await api.post('/user', {
+        await api.post("/user", {
           ...newUser,
           role: role,
-          avatar_url: newUser.avatar_url || "https://example.com/default-avatar.png"
+          avatar_url:
+            newUser.avatar_url || "https://example.com/default-avatar.png",
         });
       }
       await fetchUsers();
@@ -84,11 +102,11 @@ const Users = () => {
   };
 
   const handleEdit = (u) => {
-    setNewUser({ 
-      email: u.email, 
+    setNewUser({
+      email: u.email,
       name: u.name,
       role: u.role,
-      avatar_url: u.avatar_url
+      avatar_url: u.avatar_url,
     });
     setErrors({ email: "", name: "", role: "", avatar_url: "" });
     setEditingId(u.id);
@@ -119,16 +137,31 @@ const Users = () => {
   const roleTranslations = {
     Admin: "Quản trị viên",
     Coach: "Huấn luyện viên",
-    User: "Người dùng"
+    User: "Người dùng",
   };
 
   if (loading && users.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <div className="flex items-center gap-2 text-white text-lg">
-          <svg className="animate-spin h-5 w-5 text-cyan-500" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
+          <svg
+            className="animate-spin h-5 w-5 text-cyan-500"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+              fill="none"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"
+            />
           </svg>
           Đang tải...
         </div>
@@ -139,17 +172,21 @@ const Users = () => {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-red-400 text-lg bg-red-900/30 p-4 rounded-lg">{error}</div>
+        <div className="text-red-400 text-lg bg-red-900/30 p-4 rounded-lg">
+          {error}
+        </div>
       </div>
     );
   }
 
   return (
-    <section className="py-16 bg-gray-900 min-h-screen text-white">
+    <section className="py-16 bg-gray-100 min-h-screen text-gray-800">
       {/* Title */}
       <div className="text-center mb-10 max-w-4xl mx-auto">
         <h2 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
-          Quản lý {roleTranslations[role.charAt(0).toUpperCase() + role.slice(1)]} <RoleIcon />
+          Quản lý{" "}
+          {roleTranslations[role.charAt(0).toUpperCase() + role.slice(1)]}{" "}
+          <RoleIcon />
         </h2>
         <div className="flex justify-center gap-4 mt-4">
           {["Admin", "Coach", "User"].map((r) => (
@@ -182,7 +219,9 @@ const Users = () => {
               <th className="py-3 px-4">Email</th>
               <th className="py-3 px-4">Tên</th>
               <th className="py-3 px-4">Vai trò</th>
-              {(role === "coach" || role === "user") && <th className="py-3 px-4 text-right">Hành động</th>}
+              {(role === "coach" || role === "user") && (
+                <th className="py-3 px-4 text-right">Hành động</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -194,16 +233,27 @@ const Users = () => {
                 }`}
               >
                 <td className="py-3 px-4">
-                  <img 
-                    src={u.avatar_url || "https://example.com/default-avatar.png"} 
+                  <img
+                    src={
+                      u.avatar_url || "https://example.com/default-avatar.png"
+                    }
                     alt={`Ảnh đại diện của ${u.name}`}
                     className="w-10 h-10 rounded-full object-cover"
-                    onError={(e) => (e.target.src = 'https://via.placeholder.com/40?text=Avatar')}
+                    onError={(e) =>
+                      (e.target.src =
+                        "https://via.placeholder.com/40?text=Avatar")
+                    }
                   />
                 </td>
                 <td className="py-3 px-4 text-gray-200">{u.email}</td>
                 <td className="py-3 px-4 text-gray-200">{u.name}</td>
-                <td className="py-3 px-4 text-gray-200">{roleTranslations[u.role.charAt(0).toUpperCase() + u.role.slice(1)]}</td>
+                <td className="py-3 px-4 text-gray-200">
+                  {
+                    roleTranslations[
+                      u.role.charAt(0).toUpperCase() + u.role.slice(1)
+                    ]
+                  }
+                </td>
                 {(role === "coach" || role === "user") && (
                   <td className="py-3 px-4 text-right space-x-2">
                     <button
@@ -229,8 +279,17 @@ const Users = () => {
             ))}
             {filteredUsers.length === 0 && (
               <tr>
-                <td colSpan={role === "admin" ? 4 : 5} className="text-center py-4 text-gray-400">
-                  Không tìm thấy {roleTranslations[role.charAt(0).toUpperCase() + role.slice(1)]}.
+                <td
+                  colSpan={role === "admin" ? 4 : 5}
+                  className="text-center py-4 text-gray-400"
+                >
+                  Không tìm thấy{" "}
+                  {
+                    roleTranslations[
+                      role.charAt(0).toUpperCase() + role.slice(1)
+                    ]
+                  }
+                  .
                 </td>
               </tr>
             )}
@@ -250,7 +309,8 @@ const Users = () => {
         >
           <PlusIcon className="w-5 h-5" />
           <span className="text-sm font-medium">
-            Thêm {roleTranslations[role.charAt(0).toUpperCase() + role.slice(1)]} mới
+            Thêm{" "}
+            {roleTranslations[role.charAt(0).toUpperCase() + role.slice(1)]} mới
           </span>
         </button>
       )}
@@ -260,63 +320,103 @@ const Users = () => {
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative animate-in fade-in-50 duration-300">
             <h3 className="text-2xl font-bold mb-6 text-center text-cyan-300">
-              {editingId ? `Chỉnh sửa ${roleTranslations[role.charAt(0).toUpperCase() + role.slice(1)]}` : `Thêm ${roleTranslations[role.charAt(0).toUpperCase() + role.slice(1)]} mới`}
+              {editingId
+                ? `Chỉnh sửa ${
+                    roleTranslations[
+                      role.charAt(0).toUpperCase() + role.slice(1)
+                    ]
+                  }`
+                : `Thêm ${
+                    roleTranslations[
+                      role.charAt(0).toUpperCase() + role.slice(1)
+                    ]
+                  } mới`}
             </h3>
             <div className="space-y-4">
               {editingId && (
                 <div className="flex items-center gap-4 mb-4">
-                  <img 
-                    src={newUser.avatar_url || "https://example.com/default-avatar.png"} 
+                  <img
+                    src={
+                      newUser.avatar_url ||
+                      "https://example.com/default-avatar.png"
+                    }
                     alt="Ảnh đại diện hiện tại"
                     className="w-16 h-16 rounded-full object-cover"
-                    onError={(e) => (e.target.src = 'https://via.placeholder.com/64?text=Avatar')}
+                    onError={(e) =>
+                      (e.target.src =
+                        "https://via.placeholder.com/64?text=Avatar")
+                    }
                   />
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-300 mb-1">URL ảnh đại diện</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                      URL ảnh đại diện
+                    </label>
                     <input
                       type="text"
                       placeholder="Nhập URL ảnh đại diện"
-                      className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.avatar_url ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                      className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
+                        errors.avatar_url ? "border-red-500" : "border-gray-600"
+                      } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                       value={newUser.avatar_url}
                       onChange={(e) =>
                         setNewUser({ ...newUser, avatar_url: e.target.value })
                       }
                     />
-                    {errors.avatar_url && <p className="text-red-400 text-xs mt-1">{errors.avatar_url}</p>}
+                    {errors.avatar_url && (
+                      <p className="text-red-400 text-xs mt-1">
+                        {errors.avatar_url}
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Email
+                </label>
                 <input
                   type="email"
                   placeholder="Nhập email"
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.email ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
+                    errors.email ? "border-red-500" : "border-gray-600"
+                  } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                   value={newUser.email}
                   onChange={(e) =>
                     setNewUser({ ...newUser, email: e.target.value })
                   }
                 />
-                {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
+                {errors.email && (
+                  <p className="text-red-400 text-xs mt-1">{errors.email}</p>
+                )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Tên</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Tên
+                </label>
                 <input
                   type="text"
                   placeholder="Nhập tên"
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.name ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
+                    errors.name ? "border-red-500" : "border-gray-600"
+                  } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                   value={newUser.name}
                   onChange={(e) =>
                     setNewUser({ ...newUser, name: e.target.value })
                   }
                 />
-                {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
+                {errors.name && (
+                  <p className="text-red-400 text-xs mt-1">{errors.name}</p>
+                )}
               </div>
               {editingId && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Vai trò</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    Vai trò
+                  </label>
                   <select
-                    className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.role ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                    className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
+                      errors.role ? "border-red-500" : "border-gray-600"
+                    } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                     value={newUser.role}
                     onChange={(e) =>
                       setNewUser({ ...newUser, role: e.target.value })
@@ -327,7 +427,9 @@ const Users = () => {
                     <option value="coach">Huấn luyện viên</option>
                     <option value="user">Người dùng</option>
                   </select>
-                  {errors.role && <p className="text-red-400 text-xs mt-1">{errors.role}</p>}
+                  {errors.role && (
+                    <p className="text-red-400 text-xs mt-1">{errors.role}</p>
+                  )}
                 </div>
               )}
             </div>
@@ -349,13 +451,32 @@ const Users = () => {
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
-                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
+                    <svg
+                      className="animate-spin h-4 w-4 text-white"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"
+                      />
                     </svg>
                     Đang lưu...
                   </span>
-                ) : editingId ? "Cập nhật" : "Thêm"}
+                ) : editingId ? (
+                  "Cập nhật"
+                ) : (
+                  "Thêm"
+                )}
               </button>
             </div>
           </div>

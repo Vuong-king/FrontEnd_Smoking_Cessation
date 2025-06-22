@@ -157,13 +157,13 @@ const Stage = () => {
   }
 
   return (
-    <section className="py-16 bg-gray-900 min-h-screen text-white">
+    <section className="py-16 bg-gray-100 min-h-screen text-gray-800">
       {/* Title */}
       <div className="text-center mb-10 max-w-4xl mx-auto">
         <h2 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
           Quản lý giai đoạn
         </h2>
-        <p className="text-gray-300 text-lg">
+        <p className="text-black-300 text-lg">
           Quản lý và tổ chức các giai đoạn cho các kế hoạch cai thuốc lá
         </p>
       </div>

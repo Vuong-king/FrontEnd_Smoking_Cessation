@@ -15,14 +15,14 @@ const Subscriptions = () => {
     start_date: "",
     end_date: "",
     is_active: true,
-    plan_id: ""
+    plan_id: "",
   });
   const [errors, setErrors] = useState({
     name: "",
     price: "",
     start_date: "",
     end_date: "",
-    plan_id: ""
+    plan_id: "",
   });
   const [isNew, setIsNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -35,7 +35,7 @@ const Subscriptions = () => {
 
   const fetchPlans = async () => {
     try {
-      const response = await api.get('/quitPlan');
+      const response = await api.get("/quitPlan");
       setPlans(response.data);
     } catch (err) {
       console.error("Lỗi khi tải danh sách gói:", err);
@@ -47,11 +47,13 @@ const Subscriptions = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get('/subscriptions');
+      const response = await api.get("/subscriptions");
       setSubscriptions(response.data);
     } catch (err) {
       console.error("Lỗi khi tải danh sách đăng ký:", err);
-      setError(err.response?.data?.message || "Không thể tải danh sách đăng ký");
+      setError(
+        err.response?.data?.message || "Không thể tải danh sách đăng ký"
+      );
     } finally {
       setLoading(false);
     }
@@ -63,10 +65,14 @@ const Subscriptions = () => {
     setEditedSub({
       name: sub.name,
       price: sub.price,
-      start_date: sub.start_date ? new Date(sub.start_date).toISOString().split('T')[0] : "",
-      end_date: sub.end_date ? new Date(sub.end_date).toISOString().split('T')[0] : "",
+      start_date: sub.start_date
+        ? new Date(sub.start_date).toISOString().split("T")[0]
+        : "",
+      end_date: sub.end_date
+        ? new Date(sub.end_date).toISOString().split("T")[0]
+        : "",
       is_active: sub.is_active,
-      plan_id: sub.plan_id
+      plan_id: sub.plan_id,
     });
   };
 
@@ -78,7 +84,7 @@ const Subscriptions = () => {
       start_date: "",
       end_date: "",
       is_active: true,
-      plan_id: ""
+      plan_id: "",
     });
     setSelectedSub({});
   };
@@ -89,12 +95,12 @@ const Subscriptions = () => {
       price: !editedSub.price ? "Vui lòng nhập giá" : "",
       start_date: !editedSub.start_date ? "Vui lòng chọn ngày bắt đầu" : "",
       end_date: !editedSub.end_date ? "Vui lòng chọn ngày kết thúc" : "",
-      plan_id: !editedSub.plan_id ? "Vui lòng chọn gói" : ""
+      plan_id: !editedSub.plan_id ? "Vui lòng chọn gói" : "",
     };
 
     setErrors(newErrors);
 
-    if (Object.values(newErrors).some(error => error !== "")) {
+    if (Object.values(newErrors).some((error) => error !== "")) {
       return;
     }
 
@@ -134,9 +140,24 @@ const Subscriptions = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <div className="flex items-center gap-2 text-white text-lg">
-          <svg className="animate-spin h-5 w-5 text-cyan-500" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
+          <svg
+            className="animate-spin h-5 w-5 text-cyan-500"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+              fill="none"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"
+            />
           </svg>
           Đang tải...
         </div>
@@ -147,19 +168,21 @@ const Subscriptions = () => {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-red-400 text-lg bg-red-900/30 p-4 rounded-lg">{error}</div>
+        <div className="text-red-400 text-lg bg-red-900/30 p-4 rounded-lg">
+          {error}
+        </div>
       </div>
     );
   }
 
   return (
-    <section className="py-16 bg-gray-900 min-h-screen text-white">
+    <section className="py-16 bg-gray-100 min-h-screen text-gray-800">
       {/* Title */}
       <div className="text-center mb-10 max-w-4xl mx-auto">
         <h2 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
           Quản lý đăng ký
         </h2>
-        <p className="text-gray-300 text-lg">
+        <p className="text-black-300 text-lg">
           Quản lý và xem xét tất cả các đăng ký hiện tại và đã qua.
         </p>
       </div>
@@ -168,7 +191,7 @@ const Subscriptions = () => {
       <div className="max-w-6xl mx-auto mb-8 flex justify-end">
         <button
           onClick={openNewModal}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl text-black"
         >
           <Plus className="w-5 h-5" />
           Thêm đăng ký
@@ -197,10 +220,15 @@ const Subscriptions = () => {
               >
                 <td className="py-3 px-4 text-gray-200">{sub.name}</td>
                 <td className="py-3 px-4 text-gray-200">{sub.price}</td>
-                <td className="py-3 px-4 text-gray-200">{new Date(sub.start_date).toLocaleDateString('vi-VN')}</td>
-                <td className="py-3 px-4 text-gray-200">{new Date(sub.end_date).toLocaleDateString('vi-VN')}</td>
                 <td className="py-3 px-4 text-gray-200">
-                  {plans.find(p => p._id === sub.plan_id)?.name || sub.plan_id}
+                  {new Date(sub.start_date).toLocaleDateString("vi-VN")}
+                </td>
+                <td className="py-3 px-4 text-gray-200">
+                  {new Date(sub.end_date).toLocaleDateString("vi-VN")}
+                </td>
+                <td className="py-3 px-4 text-gray-200">
+                  {plans.find((p) => p._id === sub.plan_id)?.name ||
+                    sub.plan_id}
                 </td>
                 <td className="py-3 px-4">
                   <span
@@ -248,66 +276,108 @@ const Subscriptions = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Gói</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Gói
+                </label>
                 <select
                   value={editedSub.plan_id}
-                  onChange={(e) => setEditedSub({ ...editedSub, plan_id: e.target.value })}
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.plan_id ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                  onChange={(e) =>
+                    setEditedSub({ ...editedSub, plan_id: e.target.value })
+                  }
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
+                    errors.plan_id ? "border-red-500" : "border-gray-600"
+                  } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 >
                   <option value="">Chọn một gói</option>
-                  {plans.map(plan => (
+                  {plans.map((plan) => (
                     <option key={plan._id} value={plan._id}>
                       {plan.name}
                     </option>
                   ))}
                 </select>
-                {errors.plan_id && <p className="text-red-400 text-xs mt-1">{errors.plan_id}</p>}
+                {errors.plan_id && (
+                  <p className="text-red-400 text-xs mt-1">{errors.plan_id}</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Tên đăng ký</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Tên đăng ký
+                </label>
                 <input
                   type="text"
                   value={editedSub.name}
-                  onChange={(e) => setEditedSub({ ...editedSub, name: e.target.value })}
+                  onChange={(e) =>
+                    setEditedSub({ ...editedSub, name: e.target.value })
+                  }
                   placeholder="Nhập tên đăng ký"
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.name ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
+                    errors.name ? "border-red-500" : "border-gray-600"
+                  } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
+                {errors.name && (
+                  <p className="text-red-400 text-xs mt-1">{errors.name}</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Giá</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Giá
+                </label>
                 <input
                   type="text"
                   value={editedSub.price}
-                  onChange={(e) => setEditedSub({ ...editedSub, price: e.target.value })}
+                  onChange={(e) =>
+                    setEditedSub({ ...editedSub, price: e.target.value })
+                  }
                   placeholder="Nhập giá"
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.price ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
+                    errors.price ? "border-red-500" : "border-gray-600"
+                  } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.price && <p className="text-red-400 text-xs mt-1">{errors.price}</p>}
+                {errors.price && (
+                  <p className="text-red-400 text-xs mt-1">{errors.price}</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Ngày bắt đầu</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Ngày bắt đầu
+                </label>
                 <input
                   type="date"
                   value={editedSub.start_date}
-                  onChange={(e) => setEditedSub({ ...editedSub, start_date: e.target.value })}
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.start_date ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                  onChange={(e) =>
+                    setEditedSub({ ...editedSub, start_date: e.target.value })
+                  }
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
+                    errors.start_date ? "border-red-500" : "border-gray-600"
+                  } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.start_date && <p className="text-red-400 text-xs mt-1">{errors.start_date}</p>}
+                {errors.start_date && (
+                  <p className="text-red-400 text-xs mt-1">
+                    {errors.start_date}
+                  </p>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Ngày kết thúc</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Ngày kết thúc
+                </label>
                 <input
                   type="date"
                   value={editedSub.end_date}
-                  onChange={(e) => setEditedSub({ ...editedSub, end_date: e.target.value })}
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.end_date ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                  onChange={(e) =>
+                    setEditedSub({ ...editedSub, end_date: e.target.value })
+                  }
+                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
+                    errors.end_date ? "border-red-500" : "border-gray-600"
+                  } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.end_date && <p className="text-red-400 text-xs mt-1">{errors.end_date}</p>}
+                {errors.end_date && (
+                  <p className="text-red-400 text-xs mt-1">{errors.end_date}</p>
+                )}
               </div>
 
               <div className="flex items-center justify-between">
@@ -347,9 +417,24 @@ const Subscriptions = () => {
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
-                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
+                    <svg
+                      className="animate-spin h-4 w-4 text-white"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"
+                      />
                     </svg>
                     Đang lưu...
                   </span>
