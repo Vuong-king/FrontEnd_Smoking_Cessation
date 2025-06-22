@@ -180,18 +180,18 @@ const Stage = () => {
       </div>
 
       {/* Table */}
-      <div className="max-w-7xl mx-auto bg-gray-800 rounded-xl p-6 shadow-lg ring-1 ring-gray-700 overflow-x-auto">
-        <table className="w-full text-sm text-left table-auto">
+      <div className="max-w-10xl mx-auto bg-gray-800 rounded-xl p-6 shadow-lg ring-1 ring-gray-700 overflow-x-auto">
+        <table className="w-full text-sm text-left">
           <thead>
             <tr className="text-gray-300 border-b border-gray-600">
-              <th className="py-3 px-4">Giai đoạn #</th>
-              <th className="py-3 px-4">Tiêu đề</th>
-              <th className="py-3 px-4">Mô tả</th>
-              <th className="py-3 px-4">Kế hoạch</th>
-              <th className="py-3 px-4">Ngày bắt đầu</th>
-              <th className="py-3 px-4">Ngày kết thúc</th>
-              <th className="py-3 px-4">Trạng thái</th>
-              <th className="py-3 px-4 text-right">Hành động</th>
+              <th className="py-3 px-4 w-4">Giai đoạn #</th>
+              <th className="py-3 px-4 w-48">Tiêu đề</th>
+              <th className="py-3 px-4 w-64">Mô tả</th>
+              <th className="py-3 px-4 w-40">Kế hoạch</th>
+              <th className="py-3 px-4 w-32">Ngày bắt đầu</th>
+              <th className="py-3 px-4 w-32">Ngày kết thúc</th>
+              <th className="py-3 px-4 w-40">Trạng thái</th>
+              <th className="py-3 px-4 text-right w-48">Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -201,25 +201,25 @@ const Stage = () => {
                 className="hover:bg-gray-700 transition duration-200 border-b border-gray-600"
               >
                 <td className="py-3 px-4 text-gray-200">{stage.stage_number}</td>
-                <td className="py-3 px-4 text-gray-200">{stage.title}</td>
-                <td className="py-3 px-4 max-w-xs truncate text-gray-200">{stage.description}</td>
-                <td className="py-3 px-4 text-gray-200">
+                <td className="py-3 px-4 text-gray-200 truncate">{stage.title}</td>
+                <td className="py-3 px-4 text-gray-200 truncate">{stage.description}</td>
+                <td className="py-3 px-4 text-gray-200 truncate">
                   {plans.find(p => p._id === stage.plan_id)?.name || stage.plan_id}
                 </td>
                 <td className="py-3 px-4 text-gray-200">{new Date(stage.start_date).toLocaleDateString('vi-VN')}</td>
                 <td className="py-3 px-4 text-gray-200">{new Date(stage.end_date).toLocaleDateString('vi-VN')}</td>
                 <td className="py-3 px-4">
                   <span
-                    className={`px-3 py-1 text-xs rounded-full font-semibold ${
+                    className={`inline-block px-4 py-2 text-sm rounded-full font-semibold min-w-[120px] text-center ${
                       stage.is_completed
-                        ? "bg-green-500/20 text-green-300"
-                        : "bg-yellow-500/20 text-yellow-300"
+                        ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                        : "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
                     }`}
                   >
                     {stage.is_completed ? "Hoàn thành" : "Đang thực hiện"}
                   </span>
                 </td>
-                <td className="py-3 px-4 text-right space-x-2">
+                <td className="py-3 px-4 text-right space-x-2 flex">
                   <button
                     onClick={() => openEditModal(stage)}
                     className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-cyan-500 text-white text-xs font-medium transition"
