@@ -5,6 +5,7 @@ import { MotivationBox } from "../../components/generic/milestones/MotivationBox
 import { useQuitPlanData } from "../../hook/useQuitPlanData";
 
 
+
 const StagesPage = () => {
   const { id: planId } = useParams(); 
   const [expandedMilestone, setExpandedMilestone] = useState(null);

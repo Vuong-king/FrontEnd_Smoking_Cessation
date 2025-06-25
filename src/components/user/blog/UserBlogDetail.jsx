@@ -10,9 +10,10 @@ import {
   Twitter,
 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
-import { usePostData } from "../../../hook/usePostData";
+
 import { useAuth } from "../../../context/AuthContext";
 import CommentsSection from "./CommentsSection";
+import { usePostData } from "../../../hook/usePostData";
 
 const UserBlogDetail = () => {
   const navigate = useNavigate();

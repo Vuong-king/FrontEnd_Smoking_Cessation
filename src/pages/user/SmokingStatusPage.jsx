@@ -3,8 +3,9 @@ import { message } from "antd";
 import SmokingHeader from "../../components/user/smokingstatus/SmokingHeader";
 import SmokingTable from "../../components/user/smokingstatus/SmokingTable";
 import SmokingModal from "../../components/user/smokingstatus/SmokingModal";
-import useSmokingStatus from "../../hook/useSmokingStatus";
+
 import { useAuth } from "../../context/AuthContext";
+import useSmokingStatus from "../../hook/useSmokingStatus";
 
 export default function SmokingStatusPage() {
   const { 

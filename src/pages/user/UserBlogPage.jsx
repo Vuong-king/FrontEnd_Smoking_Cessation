@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { usePostData } from "../../hook/usePostData";
+
 import MyPosts from "../../components/user/blog/MyPosts";
 import CreateBlog from "../../components/user/blog/CreateBlog";
 import UserBlogDetail from "../../components/user/blog/UserBlogDetail";
+import { usePostData } from "../../hook/usePostData";
 
 function UserBlogPage() {
   const {

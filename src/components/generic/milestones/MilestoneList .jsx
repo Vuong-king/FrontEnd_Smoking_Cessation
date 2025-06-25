@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useQuitPlanData } from "../hooks/useQuitPlanData";
+import { useQuitPlanData } from "../../../hook/useQuitPlanData";
 import { MilestoneHeader } from "./MilestoneHeader";
+import { CheckCircle } from "lucide-react";
 
 export const MilestoneList = ({ planId }) => {
   const { getStagesByPlanId } = useQuitPlanData();
