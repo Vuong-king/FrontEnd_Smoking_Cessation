@@ -37,24 +37,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// export const getUserById = async (userId) => {
-//   try {
-//     const response = await api.get(`/user/${userId}`);
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error fetching user by ID:", error);
-//     throw error;
-//   }
-// };
 
-// export const editUserProfile = async (userId, profileData) => {
-//   try{
-//     const response = await api.put(`/user/edit-profile/${userId}`, profileData);
-//     return response.data;
-//   }catch(error){
-//    console.error("Error updating user profile:", error);
-//     throw error;
-//   }
-// }
 
 export default api;

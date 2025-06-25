@@ -1,37 +1,23 @@
-
 import { Modal, Form, Input, DatePicker, Button, Space } from 'antd';
-import dayjs from 'dayjs';
-import { useEffect } from 'react';
 
-const QuitPlanModal = ({ visible, onCancel, onSubmit, editingRecord, coach }) => {
+const QuitPlanModal = ({ visible, onCancel, onSubmit, coach }) => {
   const [form] = Form.useForm();
 
-  
-  useEffect(() => {
-    if (editingRecord) {
-      form.setFieldsValue({
-        ...editingRecord,
-        start_date: dayjs(editingRecord.start_date),
-        target_quit_date: dayjs(editingRecord.target_quit_date),
-      });
-    } else {
-      form.resetFields();
-    }
-  }, [editingRecord, form]);
-
   const handleFinish = (values) => {
+    console.log("Form values gửi lên:", values);
     const formatted = {
       ...values,
-      start_date: values.start_date.format('YYYY-MM-DD'),
-      target_quit_date: values.target_quit_date.format('YYYY-MM-DD'),
+      start_date: values.start_date ? values.start_date.format('YYYY-MM-DD') : undefined,
+      target_quit_date: values.target_quit_date ? values.target_quit_date.format('YYYY-MM-DD') : undefined,
     };
+    console.log("Formatted gửi đi:", formatted);
     onSubmit(formatted);
     form.resetFields();
   };
 
   return (
     <Modal
-      title={editingRecord ? 'Chỉnh sửa kế hoạch' : 'Thêm mới kế hoạch'}
+      title="Yêu cầu kế hoạch mới"
       open={visible}
       onCancel={onCancel}
       footer={null}
@@ -80,7 +66,7 @@ const QuitPlanModal = ({ visible, onCancel, onSubmit, editingRecord, coach }) =>
           <Space>
             <Button onClick={onCancel}>Hủy</Button>
             <Button type="primary" htmlType="submit">
-              {editingRecord ? 'Cập nhật' : 'Thêm mới'}
+              Gửi yêu cầu
             </Button>
           </Space>
         </Form.Item>
