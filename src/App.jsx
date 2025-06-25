@@ -54,6 +54,7 @@ import Stages from "./pages/admin/Stage";
 import CoachLayout from "./components/coach/CoachLayout";
 import CoachQuitPlan from "./pages/coach/CoachQuitPlan";
 import RequestQuitPlan from "./pages/coach/RequestQuitPlan";
+import StagesCoach from "./pages/coach/StagesCoach";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -129,6 +130,7 @@ function App() {
           <Route path='/coach' element={<CoachLayout />}>
             <Route path='my-quit-plans' element={<CoachQuitPlan />} />
             <Route path='quit-plans-request' element={<RequestQuitPlan />} />
+            <Route path='stages' element={<StagesCoach />} />
           </Route>
 
           {/* 404 route */}
