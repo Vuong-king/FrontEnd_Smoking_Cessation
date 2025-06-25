@@ -3,26 +3,27 @@ import { message } from "antd";
 import SmokingHeader from "../../components/user/smokingstatus/SmokingHeader";
 import SmokingTable from "../../components/user/smokingstatus/SmokingTable";
 import SmokingModal from "../../components/user/smokingstatus/SmokingModal";
-import { useSmokingData } from "../../hook/useSmokingData";
 import useSmokingStatus from "../../hook/useSmokingStatus";
 import { useAuth } from "../../context/AuthContext";
 
 export default function SmokingStatusPage() {
-  const {
-    statusData,
-    loading,
-    error,
-    fetchSmokingStatus,
+  const { 
+    statusData, 
+    loading, 
+    error, 
+    fetchSmokingStatus, 
+    createSmokingStatus, 
+    updateSmokingStatus, 
+    deleteSmokingStatus 
   } = useSmokingStatus();
 
-  console.log("records", statusData); // Thêm dòng này ngay sau khi destructuring
-
-  const { addRecord, updateRecord, deleteRecord } = useSmokingData();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
 
   const { user } = useAuth();
-  const handleSubmit = (values) => {
+  const userId = user.id;
+
+  const handleSubmit = async (values) => {
     const recordData = {
       frequency: values.frequency,
       cigarettes_per_day: values.cigarettes_per_day,
@@ -30,25 +31,35 @@ export default function SmokingStatusPage() {
       start_date: values.start_date.format("YYYY-MM-DD"),
     };
 
-    if (editingRecord) {
-      updateRecord(editingRecord.id, recordData);
-      message.success("Record updated successfully!");
-    } else {
-      addRecord(recordData);
-      message.success("Record added successfully!");
+    try {
+      if (editingRecord) {
+        await updateSmokingStatus(userId, recordData);
+        message.success("Record updated successfully!");
+      } else {
+        await createSmokingStatus(userId, recordData);
+        message.success("Record added successfully!");
+      }
+      await fetchSmokingStatus(userId);
+      handleCloseModal();
+    } catch (err) {
+      message.error(`Operation failed: ${err.message}`);
     }
-
-    handleCloseModal();
   };
+
 
   const handleEdit = (record) => {
     setEditingRecord(record);
     setIsModalVisible(true);
   };
 
-  const handleDelete = (id) => {
-    deleteRecord(id);
-    message.success("Record deleted successfully!");
+  const handleDelete = async () => {
+    try {
+      await deleteSmokingStatus(userId);
+      message.success("Record deleted successfully!");
+      await fetchSmokingStatus(userId);
+    } catch (err) {
+      message.error(`Delete failed: ${err.message}`);
+    }
   };
 
   const handleCloseModal = () => {
@@ -56,9 +67,6 @@ export default function SmokingStatusPage() {
     setEditingRecord(null);
   };
 
-  const userId = user.id;
-  console.log("aaa", userId);
-  
   useEffect(() => {
     fetchSmokingStatus(userId);
   }, [userId]);
@@ -70,7 +78,13 @@ export default function SmokingStatusPage() {
       {loading && <div>Loading...</div>}
       {error && <div>Error: {error.message}</div>}
       <SmokingTable
-        records={statusData ? [{ ...statusData, id: statusData._id }] : []}
+        records={
+          Array.isArray(statusData)
+            ? statusData.map((r) => ({ ...r, id: r._id }))
+            : statusData
+            ? [{ ...statusData, id: statusData._id }]
+            : []
+        }
         onEdit={handleEdit}
         onDelete={handleDelete}
       />

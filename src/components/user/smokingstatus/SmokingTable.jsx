@@ -11,27 +11,28 @@ import {
 } from "lucide-react"
 
 // Helper functions
-const getFrequencyColor = (frequency) => {
-  const colors = {
-    1: "green",     // Low
-    2: "orange",    // Medium  
-    3: "red",       // High
-    4: "volcano",   // Very High
-    5: "magenta"    // Extreme
-  }
-  return colors[frequency] || "default"
-}
+const frequencyMap = {
+  1: { label: "Thấp", color: "green" },
+  2: { label: "Trung bình", color: "orange" },
+  3: { label: "Cao", color: "red" },
+  4: { label: "Rất cao", color: "volcano" },
+  5: { label: "Cực kỳ", color: "magenta" },
+  daily: { label: "Hàng ngày", color: "green" },
+  "Hàng ngày": { label: "Hàng ngày", color: "green" },
+  weekly: { label: "Hàng tuần", color: "orange" },
+  "Hàng tuần": { label: "Hàng tuần", color: "orange" },
+  monthly: { label: "Hàng tháng", color: "red" },
+  "Hàng tháng": { label: "Hàng tháng", color: "red" },
+  // Thêm các trạng thái khác nếu có
+};
 
 const getFrequencyLabel = (frequency) => {
-  const labels = {
-    1: "Thấp",
-    2: "Trung bình", 
-    3: "Cao",
-    4: "Rất cao",
-    5: "Cực kỳ"
-  }
-  return labels[frequency] || "Không xác định"
-}
+  return frequencyMap[frequency]?.label || "";
+};
+
+const getFrequencyColor = (frequency) => {
+  return frequencyMap[frequency]?.color || "default";
+};
 
 const calculateDays = (startDate) => {
   const start = new Date(startDate)
@@ -66,12 +67,16 @@ export default function SmokingTable({ records, onEdit, onDelete }) {
       title: "Tần suất",
       dataIndex: "frequency",
       key: "frequency",
-      render: (frequency) => (
-        <Badge 
-          color={getFrequencyColor(frequency)} 
-          text={`${frequency} - ${getFrequencyLabel(frequency)}`} 
-        />
-      ),
+      render: (frequency) => {
+        const label = getFrequencyLabel(frequency);
+        if (!label) return null;
+        return (
+          <Badge 
+            color={getFrequencyColor(frequency)} 
+            text={label}
+          />
+        );
+      },
     },
     {
       title: (
@@ -152,7 +157,7 @@ export default function SmokingTable({ records, onEdit, onDelete }) {
           />
           <Popconfirm
             title="Bạn có chắc chắn muốn xóa bản ghi này không?"
-            onConfirm={() => onDelete(record.id)}
+            onConfirm={onDelete}
             okText="Có"
             cancelText="Không"
           >

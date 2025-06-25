@@ -27,7 +27,11 @@ const useSmokingStatus = () => {
     setError(null);
     try {
       const data = await SmokingStatusService.createStatus(id, payload);
-      setStatusData(data);
+      if (data.smokingStatus) {
+        setStatusData(data.smokingStatus);
+      } else {
+        await fetchSmokingStatus(id);
+      }
     } catch (err) {
       setError(err);
     } finally {
@@ -36,12 +40,16 @@ const useSmokingStatus = () => {
   };
 
   // Cập nhật
-  const updateSmokingStatus = async (id, payload) => {
+  const updateSmokingStatus = async (userId, payload) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await SmokingStatusService.updateStatus(id, payload);
-      setStatusData(data);
+      const data = await SmokingStatusService.updateStatus(userId, payload);
+      if (data.updatedSmokingStatus) {
+        setStatusData(data.updatedSmokingStatus);
+      } else {
+        await fetchSmokingStatus(userId);
+      }
     } catch (err) {
       setError(err);
     } finally {
@@ -50,11 +58,11 @@ const useSmokingStatus = () => {
   };
 
   // Xóa
-  const deleteSmokingStatus = async (id) => {
+  const deleteSmokingStatus = async (recordId) => {
     setLoading(true);
     setError(null);
     try {
-      await SmokingStatusService.deleteStatus(id);
+      await SmokingStatusService.deleteStatus(recordId);
       setStatusData(null);
     } catch (err) {
       setError(err);
