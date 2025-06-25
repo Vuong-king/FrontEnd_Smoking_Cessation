@@ -1,11 +1,9 @@
-import QuitPlanTable from "../../components/user/quitplan/QuitPlanTable";
-
-
+import CoachCardList from "../../components/user/quitplan/CoachCardList";
 
 function UserQuitPlanPage() {
   return (
     <div>
-      <QuitPlanTable />
+      <CoachCardList />
     </div>
   );
 }
