@@ -1,15 +1,12 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
-import  SidebarAdmin  from "./SidebarAdmin";
-
+import SidebarAdmin from "./SidebarAdmin";
 
 const AdminLayout = () => {
   return (
-    <div className="flex min-h-screen w-full ">
-
+    <div className="flex w-screen h-screen overflow-hidden text-white bg-transparent">
       <SidebarAdmin />
-      <main className="flex-1 p-8 overflow-y-auto bg-white">
-        
+      <main className="flex-1 h-full overflow-y-auto">
         <Outlet />
       </main>
     </div>

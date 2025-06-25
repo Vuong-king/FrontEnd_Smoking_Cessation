@@ -38,18 +38,16 @@ import BlogDetail from "./pages/admin/BlogDetail";
 import Feedbacks from "./pages/admin/Feedbacks";
 import Leaderboard from "./pages/admin/Leaderboard";
 import Notifications from "./pages/admin/Notifications";
-import Permissions from "./pages/admin/Permissions";
 import Progress from "./pages/admin/Progress";
 import QuitPlans from "./pages/admin/QuitPlans";
-import Reports from "./pages/admin/Reports";
-import Settings from "./pages/admin/Settings";
-import Coaches from "./pages/admin/Coaches";import UserAchievement from "./pages/user/UserAchievement";
+import UserAchievement from "./pages/user/UserAchievement";
 import UserSupport from "./pages/user/UserSupport";
 import UserProgress from "./pages/user/UserProgress";
 import UserQuitPlanPage from "./pages/user/UserQuitPlanPage";
 import QuitPlanPage from "./pages/generic/QuitPlanPage";
 import QuitPlanDetailPage from "./pages/generic/QuitPlanDetailPage";
 import Stages from "./pages/admin/Stage";
+import Request from "./pages/admin/Request";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -112,11 +110,9 @@ function App() {
             <Route path="roles" element={<Permissions />} />
             <Route path="progress" element={<Progress />} />
             <Route path="quit-plans" element={<QuitPlans />} />
-            <Route path="reports" element={<Reports />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="coaches" element={<Coaches />} />
             <Route path="blogs" element={<BlogPosts />} />
             <Route path="blogs/:id" element={<BlogDetail />} />
+            <Route path="/admin/request" element={<Request />} />
           </Route>
 
           {/* 404 route */}

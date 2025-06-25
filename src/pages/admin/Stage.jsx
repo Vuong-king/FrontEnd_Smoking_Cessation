@@ -157,41 +157,42 @@ const Stage = () => {
   }
 
   return (
-    <section className="py-16 bg-gray-100 min-h-screen text-gray-800">
-      {/* Title */}
-      <div className="text-center mb-10 max-w-4xl mx-auto">
-        <h2 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
-          Quản lý giai đoạn
-        </h2>
-        <p className="text-black-300 text-lg">
-          Quản lý và tổ chức các giai đoạn cho các kế hoạch cai thuốc lá
-        </p>
-      </div>
+  <section className="py-16 bg-gray-100 min-h-screen text-gray-800">
+    {/* Title */}
+    <div className="text-center mb-10 max-w-4xl mx-auto">
+      <h2 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
+        Quản lý giai đoạn
+      </h2>
+      <p className="text-black-300 text-lg">
+        Quản lý và tổ chức các giai đoạn cho các kế hoạch cai thuốc lá
+      </p>
+    </div>
 
-      {/* Add New Button */}
-      <div className="max-w-7xl mx-auto mb-8 flex justify-end">
-        <button
-          onClick={openNewModal}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl"
-        >
-          <Plus className="w-5 h-5" />
-          Thêm giai đoạn
-        </button>
-      </div>
+    {/* Add New Button */}
+    <div className="max-w-6xl mx-auto mb-8 flex justify-end">
+      <button
+        onClick={openNewModal}
+        className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl"
+      >
+        <Plus className="w-5 h-5" />
+        Thêm giai đoạn
+      </button>
+    </div>
 
-      {/* Table */}
-      <div className="max-w-10xl mx-auto bg-gray-800 rounded-xl p-6 shadow-lg ring-1 ring-gray-700 overflow-x-auto">
+    {/* Table */}
+    <div className="max-w-6xl mx-auto bg-gray-800 rounded-xl p-6 shadow-lg ring-1 ring-gray-700 overflow-x-auto">
+      <div className="min-w-[1000px]">
         <table className="w-full text-sm text-left">
           <thead>
             <tr className="text-gray-300 border-b border-gray-600">
-              <th className="py-3 px-4 w-4">Giai đoạn #</th>
-              <th className="py-3 px-4 w-48">Tiêu đề</th>
-              <th className="py-3 px-4 w-64">Mô tả</th>
-              <th className="py-3 px-4 w-40">Kế hoạch</th>
-              <th className="py-3 px-4 w-32">Ngày bắt đầu</th>
-              <th className="py-3 px-4 w-32">Ngày kết thúc</th>
-              <th className="py-3 px-4 w-40">Trạng thái</th>
-              <th className="py-3 px-4 text-right w-48">Hành động</th>
+              <th className="py-3 px-4">Giai đoạn #</th>
+              <th className="py-3 px-4">Tiêu đề</th>
+              <th className="py-3 px-4">Mô tả</th>
+              <th className="py-3 px-4">Kế hoạch</th>
+              <th className="py-3 px-4">Ngày bắt đầu</th>
+              <th className="py-3 px-4">Ngày kết thúc</th>
+              <th className="py-3 px-4">Trạng thái</th>
+              <th className="py-3 px-4 text-right">Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -219,7 +220,7 @@ const Stage = () => {
                     {stage.is_completed ? "Hoàn thành" : "Đang thực hiện"}
                   </span>
                 </td>
-                <td className="py-3 px-4 text-right space-x-2 flex">
+                <td className="py-3 px-4 text-right space-x-2">
                   <button
                     onClick={() => openEditModal(stage)}
                     className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-cyan-500 text-white text-xs font-medium transition"
@@ -250,6 +251,7 @@ const Stage = () => {
           </tbody>
         </table>
       </div>
+    </div>
 
       {/* Modal for Add/Edit */}
       {selectedStage && (
