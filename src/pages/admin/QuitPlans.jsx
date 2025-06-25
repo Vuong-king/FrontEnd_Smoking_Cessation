@@ -14,7 +14,6 @@ const QuitPlans = () => {
   const [planToDelete, setPlanToDelete] = useState(null);
   const [dateError, setDateError] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
-
   const [formData, setFormData] = useState({
     user: "",
     reason: "",
@@ -99,10 +98,9 @@ const QuitPlans = () => {
   };
 
   const handleEdit = (plan) => {
-    console.log("Chỉnh sửa kế hoạch:", plan);
     setIsNew(false);
     setEditingPlan(plan);
-    const user = users.find(u => u._id === plan.user_id);
+    const user = users.find(u => u.id === plan.user_id);
     setSelectedUser(user);
     setFormData({
       user: plan.user_id,
@@ -116,7 +114,7 @@ const QuitPlans = () => {
 
   const handleUserChange = (e) => {
     const userId = e.target.value;
-    const user = users.find(u => u._id === userId);
+    const user = users.find(u => u.id === userId);
     setSelectedUser(user);
     setFormData({ ...formData, user: userId });
   };
@@ -214,40 +212,56 @@ const QuitPlans = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {plans.map((plan) => (
-            <div
-              key={plan._id}
-              className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
-            >
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">{plan.name}</h3>
-              <p className="text-sm text-gray-500 mb-2">{plan.reason}</p>
-              <p className="text-sm text-gray-500 mb-2">
-                Bắt đầu: {new Date(plan.start_date).toLocaleDateString('vi-VN')} → Mục tiêu: {new Date(plan.target_quit_date).toLocaleDateString('vi-VN')}
-              </p>
-              <p className="text-sm text-gray-400 mb-4">
-                ID Người dùng: {plan.user_id}
-              </p>
-
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => handleEdit(plan)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white rounded-xl shadow-md">
+            <thead>
+              <tr className="bg-gray-200 text-gray-600 text-sm font-semibold">
+                <th className="py-3 px-4 text-left">Tên Kế Hoạch</th>
+                <th className="py-3 px-4 text-left">Lý Do</th>
+                <th className="py-3 px-4 text-left">Ngày Bắt Đầu</th>
+                <th className="py-3 px-4 text-left">Ngày Mục Tiêu</th>
+                <th className="py-3 px-4 text-left">ID Người Dùng</th>
+                <th className="py-3 px-4 text-left">Hành Động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {plans.map((plan) => (
+                <tr
+                  key={plan._id}
+                  className="border-b hover:bg-gray-50 transition duration-200"
                 >
-                  <Pencil className="w-4 h-4" /> Sửa
-                </button>
-                <button
-                  onClick={() => {
-                    setPlanToDelete(plan._id);
-                    setShowConfirm(true);
-                  }}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 text-sm"
-                >
-                  <Trash className="w-4 h-4" /> Xóa
-                </button>
-              </div>
-            </div>
-          ))}
+                  <td className="py-3 px-4 text-sm text-gray-800">{plan.name}</td>
+                  <td className="py-3 px-4 text-sm text-gray-500">{plan.reason}</td>
+                  <td className="py-3 px-4 text-sm text-gray-500">
+                    {new Date(plan.start_date).toLocaleDateString('vi-VN')}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-500">
+                    {new Date(plan.target_quit_date).toLocaleDateString('vi-VN')}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-400">{plan.user_id._id}</td>
+                  <td className="py-3 px-4 text-sm">
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => handleEdit(plan)}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
+                      >
+                        <Pencil className="w-4 h-4" /> Sửa
+                      </button>
+                      <button
+                        onClick={() => {
+                          setPlanToDelete(plan._id);
+                          setShowConfirm(true);
+                        }}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 text-sm"
+                      >
+                        <Trash className="w-4 h-4" /> Xóa
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         {editingPlan && (
@@ -266,15 +280,15 @@ const QuitPlans = () => {
                   >
                     <option value="">Chọn người dùng</option>
                     {users.map(user => (
-                      <option key={user._id} value={user._id}>
-                        {user.name} ({user.email})
+                      <option key={user.id} value={user.id}>
+                        {user.responses?.name || user.name} ({user.responses?.email || user.email})
                       </option>
                     ))}
                   </select>
                   {errors.user && <p className="text-red-500 text-sm mt-1">{errors.user}</p>}
                   {selectedUser && (
                     <div className="mt-2 text-sm text-gray-500">
-                      Đã chọn: {selectedUser.name} ({selectedUser.email})
+                      Đã chọn: {selectedUser.responses?.name || selectedUser.name} ({selectedUser.responses?.email || selectedUser.email})
                     </div>
                   )}
                 </div>

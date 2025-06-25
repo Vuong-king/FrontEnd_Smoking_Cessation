@@ -81,19 +81,6 @@ const Feedbacks = () => {
     }
   };
 
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case 'approved':
-        return 'Đã duyệt';
-      case 'hidden':
-        return 'Đã ẩn';
-      case 'pending':
-        return 'Chờ duyệt';
-      default:
-        return status;
-    }
-  };
-
   const handleEdit = (feedback) => {
     setEditingFeedback(feedback);
     setNewData({
@@ -275,7 +262,7 @@ const Feedbacks = () => {
                 <p className="text-blue-300 text-sm font-medium">Tổng số phản hồi</p>
                 <p className="text-2xl font-bold text-white">{feedbacks.length}</p>
               </div>
-              <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+              <div className="w Chapters-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
                 <MessageCircle className="w-6 h-6 text-blue-400" />
               </div>
             </div>
@@ -319,7 +306,7 @@ const Feedbacks = () => {
         </div>
       </div>
 
-      {/* Feedbacks Grid */}
+      {/* Feedbacks Table */}
       <div className="max-w-7xl mx-auto px-4">
         {filteredFeedbacks.length === 0 ? (
           <div className="text-center py-16">
@@ -328,108 +315,95 @@ const Feedbacks = () => {
             <p className="text-white/40 mt-2">Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredFeedbacks.map((feedback) => (
-              <div
-                key={feedback._id}
-                className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-300 transform hover:scale-[1.02] relative overflow-hidden"
-              >
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                <div className="relative z-10">
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-white/10 rounded-xl">
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-white/10 text-left text-sm text-white/70">
+                  <th className="py-4 px-6">Loại phản hồi</th>
+                  <th className="py-4 px-6">Ngày</th>
+                  <th className="py-4 px-6">Đánh giá</th>
+                  <th className="py-4 px-6">Nội dung</th>
+                  <th className="py-4 px-6">Người gửi</th>
+                  <th className="py-4 px-6">Huấn luyện viên</th>
+                  <th className="py-4 px-6">Trạng thái</th>
+                  <th className="py-4 px-6">Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredFeedbacks.map((feedback) => (
+                  <tr
+                    key={feedback._id}
+                    className="border-t border-white/10 hover:bg-white/10 transition-all duration-200"
+                  >
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-2">
                         {getFeedbackTypeIcon(feedback.feedback_type)}
+                        <span className="text-sm">{getFeedbackTypeLabel(feedback.feedback_type)}</span>
                       </div>
-                      <div>
-                        <span className="text-sm font-medium text-white">
-                          {getFeedbackTypeLabel(feedback.feedback_type)}
-                        </span>
-                        <p className="text-xs text-white/50">
-                          {new Date(feedback.createdAt || Date.now()).toLocaleDateString('vi-VN')}
-                        </p>
+                    </td>
+                    <td className="py-4 px-6 text-sm text-white/70">
+                      {new Date(feedback.createdAt || Date.now()).toLocaleDateString('vi-VN')}
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-4 h-4 ${
+                                i < (feedback.rating || 0) ? "text-yellow-400 fill-current" : "text-gray-400"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-sm text-white/70">({feedback.rating || 0}/5)</span>
                       </div>
-                    </div>
-                    <span className={`text-xs px-3 py-1 rounded-full border ${getStatusColor(feedback.status)}`}>
-                      {getStatusLabel(feedback.status)}
-                    </span>
-                  </div>
-
-                  {/* Rating */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="flex items-center gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-5 h-5 ${
-                            i < (feedback.rating || 0) ? "text-yellow-400 fill-current" : "text-gray-400"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-white/70 font-medium">({feedback.rating || 0}/5)</span>
-                  </div>
-
-                  {/* Content */}
-                  <div className="mb-4">
-                    <p className="text-sm text-white/90 leading-relaxed line-clamp-4">
+                    </td>
+                    <td className="py-4 px-6 text-sm text-white/90 max-w-xs truncate">
                       {feedback.content}
-                    </p>
-                  </div>
-
-                  {/* User Info */}
-                  <div className="space-y-2 mb-4">
-                    {feedback.user_id && (
-                      <div className="flex items-center gap-2 text-xs text-white/60">
-                        <User className="w-3 h-3" />
-                        <span>Từ: {feedback.user_id.name || feedback.user_id.email}</span>
-                      </div>
-                    )}
-
-                    {feedback.coach_id && (
-                      <div className="flex items-center gap-2 text-xs text-white/60">
-                        <MessageCircle className="w-3 h-3" />
-                        <span>Huấn luyện viên: {feedback.coach_id.name}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex justify-between items-center pt-4 border-t border-white/10">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEdit(feedback)}
-                        className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-xs font-medium"
+                    </td>
+                    <td className="py-4 px-6 text-sm text-white/70">
+                      {feedback.user_id?.name || feedback.user_id?.email || 'N/A'}
+                    </td>
+                    <td className="py-4 px-6 text-sm text-white/70">
+                      {feedback.coach_id?.name || 'N/A'}
+                    </td>
+                    <td className="py-4 px-6">
+                      <select
+                        value={feedback.status || "pending"}
+                        onChange={(e) => handleStatusUpdate(feedback._id, e.target.value)}
+                        className={`text-xs px-3 py-1 rounded-full border ${getStatusColor(feedback.status)} bg-transparent focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
                       >
-                        <Pencil className="w-3 h-3" /> Chỉnh sửa
-                      </button>
-                      <button
-                        onClick={() => {
-                          setFeedbackToDelete(feedback._id);
-                          setShowConfirm(true);
-                        }}
-                        className="flex items-center gap-1 px-3 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-colors text-xs font-medium"
-                      >
-                        <Trash className="w-3 h-3" /> Xóa
-                      </button>
-                    </div>
-
-                    <select
-                      value={feedback.status || "pending"}
-                      onChange={(e) => handleStatusUpdate(feedback._id, e.target.value)}
-                      className="text-xs px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    >
-                      <option value="pending">Chờ duyệt</option>
-                      <option value="approved">Đã duyệt</option>
-                      <option value="hidden">Đã ẩn</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            ))}
+                        <option value="pending">Chờ duyệt</option>
+                        <option value="approved">Đã duyệt</option>
+                        <option value="hidden">Đã ẩn</option>
+                      </select>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEdit(feedback)}
+                          className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                          title="Chỉnh sửa"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setFeedbackToDelete(feedback._id);
+                            setShowConfirm(true);
+                          }}
+                          className="p-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-colors"
+                          title="Xóa"
+                        >
+                          <Trash className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

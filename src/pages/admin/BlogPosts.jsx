@@ -185,6 +185,7 @@ const BlogPosts = () => {
             <Link
               to={`/admin/blogs/${blog._id}`}
               className="block p-5"
+              state={{ blog }}
             >
               {blog.image && (
                 <div className="relative mb-4">
