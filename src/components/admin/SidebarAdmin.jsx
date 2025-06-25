@@ -15,21 +15,13 @@ import {
   BarChartOutlined,
   StarOutlined,
   CheckCircleOutlined,
-  FileDoneOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Space } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FaUser } from "react-icons/fa";
-import { MdLogout } from "react-icons/md";
-import { useAuth } from "../../context/AuthContext";
 
-function SidebarAdmin() {
+function SidebarAdmin({ user = {} }) {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { logout, user } = useAuth();
-
   const [collapsed, setCollapsed] = useState(() => {
     const saved = localStorage.getItem("admin-sidebar-collapsed");
     return saved === "true";
@@ -45,50 +37,29 @@ function SidebarAdmin() {
     { label: "Subscriptions", icon: <CreditCardOutlined />, path: "/admin/subscriptions" },
     { label: "Badges", icon: <StarOutlined />, path: "/admin/badges" },
     { label: "Stages", icon: <BarChartOutlined />, path: "/admin/stages" },
-    // { label: "Reports", icon: <BarChartOutlined />, path: "/admin/reports" },
+    { label: "Reports", icon: <BarChartOutlined />, path: "/admin/reports" },
     { label: "Feedbacks", icon: <MessageOutlined />, path: "/admin/feedbacks" },
     { label: "Quit Plans", icon: <CheckCircleOutlined />, path: "/admin/quit-plans" },
     { label: "Progress", icon: <FieldTimeOutlined />, path: "/admin/progress" },
     { label: "Blog Posts", icon: <FileTextOutlined />, path: "/admin/blogs" },
     { label: "Leaderboard", icon: <TrophyOutlined />, path: "/admin/leaderboard" },
     { label: "Notifications", icon: <BellOutlined />, path: "/admin/notifications" },
-    // { label: "Coaches", icon: <TeamOutlined />, path: "/admin/coaches" },
-    // { label: "Permissions", icon: <SafetyOutlined />, path: "/admin/roles" },
-    // { label: "Settings", icon: <SettingOutlined />, path: "/admin/settings" },
-    { label: "Request", icon: <FileDoneOutlined />, path: "/admin/request" },
+    { label: "Coaches", icon: <TeamOutlined />, path: "/admin/coaches" },
+    { label: "Permissions", icon: <SafetyOutlined />, path: "/admin/roles" },
+    { label: "Settings", icon: <SettingOutlined />, path: "/admin/settings" },
   ];
 
   const dropdownItems = [
-    {
-      key: "1",
-      label: user?.name || "My Account",
-      disabled: true,
-    },
-    {
-      type: "divider",
-    },
-    {
-      key: "2",
-      label: "Profile",
-      icon: <FaUser />,
-      onClick: () => navigate(`/user/profile/${user.id}`),
-    },
-    {
-      key: "3",
-      label: "Settings",
-      icon: <SettingOutlined />,
-      onClick: () => navigate("/user/settings"),
-    },
+    { key: "1", label: "My Account", disabled: true },
+    { type: "divider" },
+    { key: "2", label: "Profile", icon: <UserOutlined /> },
+    { key: "3", label: "Settings", icon: <SettingOutlined /> },
     {
       key: "4",
       label: "Logout",
-      icon: <MdLogout />,
-      onClick: async () => {
-        try {
-          await logout();
-        } catch (error) {
-          console.error("Logout error:", error);
-        }
+      icon: <SettingOutlined />,
+      onClick: () => {
+        console.log("Logout clicked");
       },
     },
   ];
