@@ -39,8 +39,9 @@ function SidebarCoach({ user = {} }) {
       icon: <CheckCircleOutlined />,
       path: "/coach/quit-plans-request",
     },
+    { label: "Giai Đoạn", icon: <BarChartOutlined />, path: "/coach/stages" }, // Xem các giai đoạn cai thuốc
     { label: "Progress", icon: <FieldTimeOutlined />, path: "/coach/progress" }, // Theo dõi tiến độ người dùng
-    { label: "Stages", icon: <BarChartOutlined />, path: "/coach/stages" }, // Xem các giai đoạn cai thuốc
+
     { label: "Feedbacks", icon: <MessageOutlined />, path: "/coach/feedbacks" }, // Đọc phản hồi từ user
     { label: "Blog Posts", icon: <FileTextOutlined />, path: "/coach/blogs" }, // Đăng bài chia sẻ
     {
