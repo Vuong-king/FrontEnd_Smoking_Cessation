@@ -1,17 +1,22 @@
-import { useState, useEffect } from "react";
-import { createQuitPlanAPI, fetchQuitPlansAPI, getMyQuitPlanRequestsAPI, getQuitPlanByIdAPI, getStagesByPlanIdAPI, sendQuitPlanRequestAPI } from "../services/quitPlanService";
-
+import { useState, useCallback } from "react";
+import {
+  createQuitPlanAPI,
+  fetchQuitPlansAPI,
+  getMyQuitPlanRequestsAPI,
+  getQuitPlanByIdAPI,
+  getStagesByPlanIdAPI,
+  sendQuitPlanRequestAPI,
+  getPublicQuitPlansAPI,
+} from "../services/quitPlanService";
 
 export function useQuitPlanData() {
   const [quitPlans, setQuitPlans] = useState([]);
+  const [publicQuitPlans, setPublicQuitPlans] = useState([]); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchQuitPlans();
-  }, []);
-
-  const fetchQuitPlans = async () => {
+  //  Gọi tất cả kế hoạch của user
+  const fetchQuitPlans = useCallback(async () => {
     try {
       setLoading(true);
       const data = await fetchQuitPlansAPI();
@@ -29,9 +34,30 @@ export function useQuitPlanData() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const createQuitPlan = async (planData) => {
+  //  Gọi tất cả kế hoạch công khai
+  const fetchPublicQuitPlans = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getPublicQuitPlansAPI();
+
+      if (Array.isArray(data)) {
+        setPublicQuitPlans(data);
+      } else if (Array.isArray(data.data)) {
+        setPublicQuitPlans(data.data);
+      } else {
+        setPublicQuitPlans([]);
+      }
+    } catch (err) {
+      console.error("Error fetching public quit plans:", err);
+      setError(err.message || "Lỗi khi tải kế hoạch công khai");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const createQuitPlan = useCallback(async (planData) => {
     try {
       setLoading(true);
       const created = await createQuitPlanAPI(planData);
@@ -43,9 +69,9 @@ export function useQuitPlanData() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchQuitPlans]);
 
-  const getQuitPlanById = async (id) => {
+  const getQuitPlanById = useCallback(async (id) => {
     try {
       setLoading(true);
       const raw = await getQuitPlanByIdAPI(id);
@@ -73,9 +99,9 @@ export function useQuitPlanData() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const getStagesByPlanId = async (planId) => {
+  const getStagesByPlanId = useCallback(async (planId) => {
     try {
       const result = await getStagesByPlanIdAPI(planId);
       return Array.isArray(result?.data) ? result.data : result;
@@ -83,18 +109,18 @@ export function useQuitPlanData() {
       console.error("Lỗi khi lấy stages của kế hoạch:", error);
       throw error;
     }
-  };
+  }, []);
 
-  const sendQuitPlanRequest = async (data) => {
+  const sendQuitPlanRequest = useCallback(async (data) => {
     try {
       return await sendQuitPlanRequestAPI(data);
     } catch (error) {
       setError(error.response?.data?.message || "Không thể gửi yêu cầu kế hoạch");
       throw error;
     }
-  };
+  }, []);
 
-  const getMyQuitPlanRequests = async () => {
+  const getMyQuitPlanRequests = useCallback(async () => {
     try {
       const result = await getMyQuitPlanRequestsAPI();
       return Array.isArray(result?.data) ? result.data : result;
@@ -102,13 +128,17 @@ export function useQuitPlanData() {
       console.error("Không thể lấy danh sách yêu cầu của tôi:", error);
       throw error;
     }
-  };
+  }, []);
 
   return {
+    // State
     quitPlans,
+    publicQuitPlans,
     loading,
     error,
+    // API functions
     fetchQuitPlans,
+    fetchPublicQuitPlans,
     getQuitPlanById,
     getStagesByPlanId,
     createQuitPlan,
