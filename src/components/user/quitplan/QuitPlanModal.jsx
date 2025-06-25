@@ -1,12 +1,13 @@
-import React from 'react';
+
 import { Modal, Form, Input, DatePicker, Button, Space } from 'antd';
 import dayjs from 'dayjs';
+import { useEffect } from 'react';
 
-const QuitPlanFormModal = ({ visible, onCancel, onSubmit, editingRecord }) => {
+const QuitPlanModal = ({ visible, onCancel, onSubmit, editingRecord, coach }) => {
   const [form] = Form.useForm();
 
-  // Nếu đang chỉnh sửa thì set giá trị ban đầu
-  React.useEffect(() => {
+  
+  useEffect(() => {
     if (editingRecord) {
       form.setFieldsValue({
         ...editingRecord,
@@ -35,6 +36,13 @@ const QuitPlanFormModal = ({ visible, onCancel, onSubmit, editingRecord }) => {
       onCancel={onCancel}
       footer={null}
     >
+      {coach && (
+        <div style={{ marginBottom: 16 }}>
+          <strong>Huấn luyện viên đã chọn:</strong>{' '}
+          <span style={{ color: '#1890ff' }}>{coach.coach_id?.name || 'Ẩn danh'}</span>
+        </div>
+      )}
+
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Form.Item
           label="Tên kế hoạch"
@@ -53,7 +61,7 @@ const QuitPlanFormModal = ({ visible, onCancel, onSubmit, editingRecord }) => {
         </Form.Item>
 
         <Form.Item
-          label="Ngày két thúc"
+          label="Ngày kết thúc"
           name="target_quit_date"
           rules={[{ required: true, message: 'Vui lòng chọn ngày mục tiêu' }]}
         >
@@ -68,7 +76,6 @@ const QuitPlanFormModal = ({ visible, onCancel, onSubmit, editingRecord }) => {
           <Input.TextArea rows={3} />
         </Form.Item>
 
-
         <Form.Item style={{ textAlign: 'right' }}>
           <Space>
             <Button onClick={onCancel}>Hủy</Button>
@@ -82,4 +89,4 @@ const QuitPlanFormModal = ({ visible, onCancel, onSubmit, editingRecord }) => {
   );
 };
 
-export default QuitPlanFormModal;
+export default QuitPlanModal;
