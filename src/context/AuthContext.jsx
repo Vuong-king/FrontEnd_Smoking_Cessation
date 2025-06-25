@@ -39,11 +39,12 @@ export const AuthProvider = ({ children }) => {
     setUser(userToSave);
     localStorage.setItem("user", JSON.stringify(userToSave));
 
-
     if (userData.role === "admin") {
       navigate("/admin");
+    } else if (userData.role === "coach") {
+      navigate("/coach");
     } else {
-      navigate("/"); 
+      navigate("/");
     }
   };
 
@@ -61,7 +62,9 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data.user && response.data.user.token) {
         const userData = response.data.user;
-        api.defaults.headers.common["Authorization"] = `Bearer ${userData.token}`;
+        api.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${userData.token}`;
         setUser(userData);
         setIsAuthModalOpen(false);
         handleSuccessfulAuth(userData);
@@ -81,13 +84,13 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      console.log("Google Response:", credentialResponse); 
+      console.log("Google Response:", credentialResponse);
 
       const response = await api.post("/auth/google", {
         credential: credentialResponse.credential,
       });
 
-      console.log("Server Response:", response.data); 
+      console.log("Server Response:", response.data);
       console.log(response.data.user);
       handleSuccessfulAuth(response.data.user);
       return response.data.user;
@@ -160,9 +163,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
-
-
   // Wrap setUser để luôn cập nhật localStorage
   const updateUserWithLocalStorage = (data) => {
     if (typeof data === "function") {
@@ -192,8 +192,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         error,
         isAuthenticated: () => !!user,
-      }}
-    >
+      }}>
       {children}
     </AuthContext.Provider>
   );

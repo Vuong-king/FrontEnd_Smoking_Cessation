@@ -50,15 +50,19 @@ import UserQuitPlanPage from "./pages/user/UserQuitPlanPage";
 import QuitPlanPage from "./pages/generic/QuitPlanPage";
 import QuitPlanDetailPage from "./pages/generic/QuitPlanDetailPage";
 import Stages from "./pages/admin/Stage";
+import CoachLayout from "./components/coach/CoachLayout";
+import CoachQuitPlan from "./pages/coach/CoachQuitPlan";
+import RequestQuitPlan from "./pages/coach/RequestQuitPlan";
+import StagesCoach from "./pages/coach/StagesCoach";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className='min-h-screen bg-black text-white'>
       {user ? <UserHeader /> : <Navbar />}
-      <main className="mt-16">
+      <main className='mt-16'>
         <Outlet />
       </main>
       <Footer />
@@ -69,6 +73,7 @@ const Layout = () => {
 // ===== App with Routing =====
 function App() {
   return (
+
     <div className="bg-white min-h-screen">
       <Router>
         <AuthProvider>
@@ -126,6 +131,8 @@ function App() {
         </AuthProvider>
       </Router>
     </div>
+
+   
   );
 }
 
