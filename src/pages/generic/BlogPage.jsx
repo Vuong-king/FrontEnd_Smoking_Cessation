@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import FilterBar from "../../components/generic/blog/FilterBar";
 import BlogCard from "../../components/generic/blog/BlogCard";
 import { usePostData } from "../../hook/usePostData";
+import BlogDetail from "../../components/generic/blog/BlogDetail";
 
 function BlogPage() {
   const { posts, loading, error, tags, refetchPosts } = usePostData(); 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedPost, setSelectedPost] = useState(null);
 
   useEffect(() => {
     const handleFocus = () => {
@@ -63,6 +65,12 @@ function BlogPage() {
     );
   };
 
+  if (selectedPost) {
+    return (
+      <BlogDetail post={selectedPost} onBack={() => setSelectedPost(null)} />
+    );
+  }
+
   return (
     <div className="flex flex-col bg-white">
       <div className="flex-1 min-w-0 pt-6">
@@ -81,7 +89,7 @@ function BlogPage() {
           ) : error ? (
             <div className="text-center text-red-600 p-4">Error: {error}</div>
           ) : (
-            <BlogList posts={filteredPosts} />
+            <BlogList posts={filteredPosts} onPostClick={setSelectedPost} />
           )}
         </div>
       </div>
@@ -89,7 +97,7 @@ function BlogPage() {
   );
 }
 
-const BlogList = ({ posts }) => {
+const BlogList = ({ posts, onPostClick }) => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -101,7 +109,7 @@ const BlogList = ({ posts }) => {
       {posts.length > 0 ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((post) => (
-            <BlogCard key={post._id} post={post} />
+            <BlogCard key={post._id} post={post} onClick={onPostClick} />
           ))}
         </div>
       ) : (
