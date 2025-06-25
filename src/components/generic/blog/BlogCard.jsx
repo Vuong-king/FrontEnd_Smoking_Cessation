@@ -4,14 +4,18 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { usePostData } from "../../../hook/usePostData";
 
-const BlogCard = ({ post }) => {
+const BlogCard = ({ post, onClick }) => {
   const { likePost, refetchPosts } = usePostData();
   const { user } = useAuth();
   const userId = user?._id;
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    navigate(`/user/blog/${post._id}`);
+    if (onClick) {
+      onClick(post);
+    } else {
+      navigate(`/blog/${post._id}`);
+    }
   };
 
   const hasLiked = userId ? post.like_user_ids?.includes(userId) : false;
