@@ -55,6 +55,7 @@ import RequestQuitPlan from "./pages/coach/RequestQuitPlan";
 import StagesCoach from "./pages/coach/StagesCoach";
 import Request from "./pages/admin/Request";
 import QuitPlanDetailPageAdmin from "./pages/admin/QuitPlansDetail";
+import Permissions from "./pages/admin/Permissions";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -124,6 +125,7 @@ function App() {
               <Route path="settings" element={<Settings />} />
               <Route path="coaches" element={<Coaches />} />
               <Route path="blogs" element={<BlogPosts />} />
+              <Route path="permissions" element={<Permissions />} />
               <Route path="blogs/:id" element={<BlogDetail />} />
               <Route path="/admin/request" element={<Request />} />
             </Route>
