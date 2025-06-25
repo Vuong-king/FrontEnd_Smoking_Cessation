@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Modal, Form, Input, Select, Button, Space, Typography, DatePicker } from "antd"
+import { Modal, Form, Input, InputNumber, Select, Button, Space, Typography, DatePicker } from "antd"
 import { Plus, Cigarette, DollarSign, Calendar, BarChart3 } from "lucide-react"
 import dayjs from "dayjs"
 
@@ -121,11 +121,11 @@ export default function SmokingModal({ visible, editingRecord, onSubmit, onCance
             { type: "number", min: 1, message: "Phải lớn hơn hoặc bằng 1!" },
           ]}
         >
-          <Input
-            type="number"
+          <InputNumber
             placeholder="VD: 10"
             size="large"
             min={1}
+            style={{ width: "100%" }}
             prefix={<Cigarette size={14} style={{ color: "#d9d9d9" }} />}
           />
         </Form.Item>
@@ -143,12 +143,12 @@ export default function SmokingModal({ visible, editingRecord, onSubmit, onCance
             { type: "number", min: 0, message: "Phải là số dương!" },
           ]}
         >
-          <Input
-            type="number"
+          <InputNumber
             placeholder="VD: 25000"
             size="large"
             min={0}
             step={1000}
+            style={{ width: "100%" }}
             prefix={<DollarSign size={14} style={{ color: "#d9d9d9" }} />}
           />
         </Form.Item>
