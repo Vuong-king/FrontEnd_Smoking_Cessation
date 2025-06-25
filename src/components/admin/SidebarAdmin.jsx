@@ -37,16 +37,17 @@ function SidebarAdmin({ user = {} }) {
     { label: "Subscriptions", icon: <CreditCardOutlined />, path: "/admin/subscriptions" },
     { label: "Badges", icon: <StarOutlined />, path: "/admin/badges" },
     { label: "Stages", icon: <BarChartOutlined />, path: "/admin/stages" },
-    { label: "Reports", icon: <BarChartOutlined />, path: "/admin/reports" },
+    // { label: "Reports", icon: <BarChartOutlined />, path: "/admin/reports" },
     { label: "Feedbacks", icon: <MessageOutlined />, path: "/admin/feedbacks" },
     { label: "Quit Plans", icon: <CheckCircleOutlined />, path: "/admin/quit-plans" },
     { label: "Progress", icon: <FieldTimeOutlined />, path: "/admin/progress" },
     { label: "Blog Posts", icon: <FileTextOutlined />, path: "/admin/blogs" },
     { label: "Leaderboard", icon: <TrophyOutlined />, path: "/admin/leaderboard" },
     { label: "Notifications", icon: <BellOutlined />, path: "/admin/notifications" },
-    { label: "Coaches", icon: <TeamOutlined />, path: "/admin/coaches" },
-    { label: "Permissions", icon: <SafetyOutlined />, path: "/admin/roles" },
-    { label: "Settings", icon: <SettingOutlined />, path: "/admin/settings" },
+    // { label: "Coaches", icon: <TeamOutlined />, path: "/admin/coaches" },
+    // { label: "Permissions", icon: <SafetyOutlined />, path: "/admin/roles" },
+    // { label: "Settings", icon: <SettingOutlined />, path: "/admin/settings" },
+    { label: "Request", icon: <SettingOutlined />, path: "/admin/request" },
   ];
 
   const dropdownItems = [
