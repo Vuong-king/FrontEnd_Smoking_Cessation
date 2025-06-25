@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Plus, Pencil, Trash } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
 import api from "../../api";
+import { useNavigate } from "react-router-dom";
 
 const QuitPlans = () => {
   const [plans, setPlans] = useState([]);
@@ -14,6 +15,7 @@ const QuitPlans = () => {
   const [planToDelete, setPlanToDelete] = useState(null);
   const [dateError, setDateError] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     user: "",
     reason: "",
@@ -229,6 +231,7 @@ const QuitPlans = () => {
                 <tr
                   key={plan._id}
                   className="border-b hover:bg-gray-50 transition duration-200"
+                  onClick={() => navigate(`/admin/quit-plans/${plan._id}`, { state: { plan } })}
                 >
                   <td className="py-3 px-4 text-sm text-gray-800">{plan.name}</td>
                   <td className="py-3 px-4 text-sm text-gray-500">{plan.reason}</td>

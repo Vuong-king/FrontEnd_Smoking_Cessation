@@ -39,9 +39,9 @@ import Leaderboard from "./pages/admin/Leaderboard";
 import Notifications from "./pages/admin/Notifications";
 import Progress from "./pages/admin/Progress";
 import QuitPlans from "./pages/admin/QuitPlans";
-import Reports from "./pages/admin/Reports";
-import Settings from "./pages/admin/Settings";
-import Coaches from "./pages/admin/Coaches";
+// import Reports from "./pages/admin/Reports";
+// import Settings from "./pages/admin/Settings";
+// import Coaches from "./pages/admin/Coaches";
 import UserAchievement from "./pages/user/UserAchievement";
 import UserSupport from "./pages/user/UserSupport";
 import UserProgress from "./pages/user/UserProgress";
@@ -54,6 +54,7 @@ import CoachQuitPlan from "./pages/coach/CoachQuitPlan";
 import RequestQuitPlan from "./pages/coach/RequestQuitPlan";
 import StagesCoach from "./pages/coach/StagesCoach";
 import Request from "./pages/admin/Request";
+import QuitPlanDetailPageAdmin from "./pages/admin/QuitPlansDetail";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -118,9 +119,10 @@ function App() {
               <Route path="roles" element={<Permissions />} />
               <Route path="progress" element={<Progress />} />
               <Route path="quit-plans" element={<QuitPlans />} />
-              <Route path="reports" element={<Reports />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="coaches" element={<Coaches />} />
+              <Route path="quit-plans/:id" element={<QuitPlanDetailPageAdmin />} />
+              {/* <Route path="reports" element={<Reports />} /> */}
+              {/* <Route path="settings" element={<Settings />} /> */}
+              {/* <Route path="coaches" element={<Coaches />} /> */}
               <Route path="blogs" element={<BlogPosts />} />
               <Route path="blogs/:id" element={<BlogDetail />} />
               <Route path="/admin/request" element={<Request />} />
