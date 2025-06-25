@@ -1,11 +1,12 @@
 import { useState } from "react";
-import {  Plus, Edit, Trash2, Calendar, Tag } from "lucide-react";
+import { Plus, Edit, Trash2, Calendar, Tag } from "lucide-react";
 import { Button, Modal, message } from "antd";
 import EditPostModal from "./EditPostModal";
 import { usePostData } from "../../../hook/usePostData";
+import { useNavigate } from "react-router-dom";
 
 
-const MyPosts = ({ posts, onCreateNew, refetchUserPosts}) => {
+const MyPosts = ({ posts, onCreateNew, refetchUserPosts }) => {
   const [selectedPosts, setSelectedPosts] = useState([]);
   const [editingPost, setEditingPost] = useState(null);
   const [confirmVisible, setConfirmVisible] = useState(false);
@@ -13,6 +14,7 @@ const MyPosts = ({ posts, onCreateNew, refetchUserPosts}) => {
   const [postToDelete, setPostToDelete] = useState(null);
 
   const { deletePost } = usePostData();
+  const navigate = useNavigate();
 
   const handleSelectPost = (postId) => {
     setSelectedPosts((prev) =>
@@ -68,7 +70,7 @@ const MyPosts = ({ posts, onCreateNew, refetchUserPosts}) => {
     }
   };
 
-  
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
@@ -138,7 +140,7 @@ const MyPosts = ({ posts, onCreateNew, refetchUserPosts}) => {
             {posts.map((post) => (
               <div
                 key={post._id}
-                className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
               >
                 <div className="flex items-start space-x-4">
                   <input
@@ -155,8 +157,12 @@ const MyPosts = ({ posts, onCreateNew, refetchUserPosts}) => {
                   />
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1 hover:-translate-y-2 hover:scale-[1.02]"
+                      onClick={() => navigate(`/blog/${post._id}`)}
+
+                    >
                       {post.title}
+
                     </h3>
                     <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                       {post.content}
@@ -242,7 +248,7 @@ const MyPosts = ({ posts, onCreateNew, refetchUserPosts}) => {
             setSelectedPosts([]);
             await refetchUserPosts();
           } catch (err) {
-            message.error("Có lỗi xảy ra khi xóa nhiều bài",err);
+            message.error("Có lỗi xảy ra khi xóa nhiều bài", err);
           } finally {
             setMultiDeleteVisible(false);
           }
