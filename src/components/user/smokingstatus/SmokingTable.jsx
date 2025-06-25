@@ -61,7 +61,7 @@ const formatDateTime = (dateTimeString) => {
   }
 }
 
-export default function SmokingTable({ records, onEdit, onDelete }) {
+export default function SmokingTable({ records,  onDelete }) {
   const columns = [
     {
       title: "Tần suất",
@@ -146,15 +146,8 @@ export default function SmokingTable({ records, onEdit, onDelete }) {
     {
       title: "Thao tác",
       key: "actions",
-      render: (_, record) => (
+      render: () => (
         <Space>
-          <Button
-            type="default"
-            icon={<Edit size={14} />}
-            size="small"
-            onClick={() => onEdit(record)}
-            title="Chỉnh sửa"
-          />
           <Popconfirm
             title="Bạn có chắc chắn muốn xóa bản ghi này không?"
             onConfirm={onDelete}
