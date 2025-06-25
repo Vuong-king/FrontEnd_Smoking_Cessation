@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { usePostData } from "../../hook/usePostData";
+
 import MyPosts from "../../components/user/blog/MyPosts";
 import CreateBlog from "../../components/user/blog/CreateBlog";
-import UserBlogDetail from "../../components/user/blog/UserBlogDetail";
+// import BlogDetail from "../../components/generic/blog/BlogDetail";
+import { usePostData } from "../../hook/usePostData";
 
 function UserBlogPage() {
   const {
@@ -66,19 +67,19 @@ function UserBlogPage() {
     }
   };
 
-  if (currentView === "detail" && selectedPost) {
-    return (
-      <UserBlogDetail
-        post={selectedPost}
-        onBack={() => {
-          setCurrentView("myPosts");
-          fetchUserPosts(); // Refresh posts khi quay lại
-        }}
-        onPostClick={(post) => setSelectedPost(post)}
-        relatedPosts={userPosts.filter((p) => p._id !== selectedPost._id)}
-      />
-    );
-  }
+  // if (currentView === "detail" && selectedPost) {
+  //   return (
+  //     <BlogDetail
+  //       post={selectedPost}
+  //       onBack={() => {
+  //         setCurrentView("myPosts");
+  //         fetchUserPosts(); // Refresh posts khi quay lại
+  //       }}
+  //       onPostClick={(post) => setSelectedPost(post)}
+  //       relatedPosts={userPosts.filter((p) => p._id !== selectedPost._id)}
+  //     />
+  //   );
+  // }
 
   if (currentView === "create") {
     return (

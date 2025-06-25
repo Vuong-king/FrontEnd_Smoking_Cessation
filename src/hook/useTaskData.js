@@ -1,5 +1,8 @@
 import { useState } from "react";
-import api from "../api";
+import {
+  fetchAllTasksAPI,
+  fetchTasksByStageIdAPI,
+} from "../services/taskService";
 
 export function useTaskData() {
   const [tasks, setTasks] = useState([]);
@@ -9,7 +12,7 @@ export function useTaskData() {
   const fetchAllTasks = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/tasks");
+      const response = await fetchAllTasksAPI();
 
       const taskList = Array.isArray(response.data)
         ? response.data
@@ -31,12 +34,7 @@ export function useTaskData() {
   const fetchTasksByStageId = async (stageId) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      const response = await api.get(`/tasks/stage/${stageId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetchTasksByStageIdAPI(stageId);
 
       const taskList = Array.isArray(response.data)
         ? response.data

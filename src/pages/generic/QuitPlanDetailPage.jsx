@@ -7,7 +7,8 @@ import {
   TrophyOutlined,
 } from "@ant-design/icons";
 import { useQuitPlanData } from "../../hook/useQuitPlanData";
-import ColourfulText from "../../components/ui/ColourfulText";
+
+
 
 function QuitPlanDetailPage() {
   const { id } = useParams();

@@ -1,40 +1,34 @@
-import React from 'react';
 import { Modal, Form, Input, DatePicker, Button, Space } from 'antd';
-import dayjs from 'dayjs';
 
-const QuitPlanFormModal = ({ visible, onCancel, onSubmit, editingRecord }) => {
+const QuitPlanModal = ({ visible, onCancel, onSubmit, coach }) => {
   const [form] = Form.useForm();
 
-  // Nếu đang chỉnh sửa thì set giá trị ban đầu
-  React.useEffect(() => {
-    if (editingRecord) {
-      form.setFieldsValue({
-        ...editingRecord,
-        start_date: dayjs(editingRecord.start_date),
-        target_quit_date: dayjs(editingRecord.target_quit_date),
-      });
-    } else {
-      form.resetFields();
-    }
-  }, [editingRecord, form]);
-
   const handleFinish = (values) => {
+    console.log("Form values gửi lên:", values);
     const formatted = {
       ...values,
-      start_date: values.start_date.format('YYYY-MM-DD'),
-      target_quit_date: values.target_quit_date.format('YYYY-MM-DD'),
+      start_date: values.start_date ? values.start_date.format('YYYY-MM-DD') : undefined,
+      target_quit_date: values.target_quit_date ? values.target_quit_date.format('YYYY-MM-DD') : undefined,
     };
+    console.log("Formatted gửi đi:", formatted);
     onSubmit(formatted);
     form.resetFields();
   };
 
   return (
     <Modal
-      title={editingRecord ? 'Chỉnh sửa kế hoạch' : 'Thêm mới kế hoạch'}
+      title="Yêu cầu kế hoạch mới"
       open={visible}
       onCancel={onCancel}
       footer={null}
     >
+      {coach && (
+        <div style={{ marginBottom: 16 }}>
+          <strong>Huấn luyện viên đã chọn:</strong>{' '}
+          <span style={{ color: '#1890ff' }}>{coach.coach_id?.name || 'Ẩn danh'}</span>
+        </div>
+      )}
+
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Form.Item
           label="Tên kế hoạch"
@@ -53,7 +47,7 @@ const QuitPlanFormModal = ({ visible, onCancel, onSubmit, editingRecord }) => {
         </Form.Item>
 
         <Form.Item
-          label="Ngày két thúc"
+          label="Ngày kết thúc"
           name="target_quit_date"
           rules={[{ required: true, message: 'Vui lòng chọn ngày mục tiêu' }]}
         >
@@ -68,12 +62,11 @@ const QuitPlanFormModal = ({ visible, onCancel, onSubmit, editingRecord }) => {
           <Input.TextArea rows={3} />
         </Form.Item>
 
-
         <Form.Item style={{ textAlign: 'right' }}>
           <Space>
             <Button onClick={onCancel}>Hủy</Button>
             <Button type="primary" htmlType="submit">
-              {editingRecord ? 'Cập nhật' : 'Thêm mới'}
+              Gửi yêu cầu
             </Button>
           </Space>
         </Form.Item>
@@ -82,4 +75,4 @@ const QuitPlanFormModal = ({ visible, onCancel, onSubmit, editingRecord }) => {
   );
 };
 
-export default QuitPlanFormModal;
+export default QuitPlanModal;
