@@ -15,14 +15,16 @@ const Progress = () => {
     date: "",
     cigarettes_smoked: "",
     money_saved: "",
-    user_id: ""
+    user_id: "",
+    health_stat: ""
   });
   const [errors, setErrors] = useState({
     stage_id: "",
     date: "",
     cigarettes_smoked: "",
     money_saved: "",
-    user_id: ""
+    user_id: "",
+    health_stat: ""
   });
   const [isNew, setIsNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -78,7 +80,8 @@ const Progress = () => {
       date: progress.date ? new Date(progress.date).toISOString().split('T')[0] : "",
       cigarettes_smoked: progress.cigarettes_smoked,
       money_saved: progress.money_saved,
-      user_id: progress.user_id
+      user_id: progress.user_id,
+      health_stat: progress.health_stat || ""
     });
   };
 
@@ -89,7 +92,8 @@ const Progress = () => {
       date: "",
       cigarettes_smoked: "",
       money_saved: "",
-      user_id: ""
+      user_id: "",
+      health_stat: ""
     });
     setSelectedProgress({});
   };
@@ -100,7 +104,8 @@ const Progress = () => {
       date: !editedProgress.date ? "Vui lòng chọn ngày" : "",
       cigarettes_smoked: !editedProgress.cigarettes_smoked ? "Vui lòng nhập số điếu thuốc đã hút" : "",
       money_saved: !editedProgress.money_saved ? "Vui lòng nhập số tiền tiết kiệm" : "",
-      user_id: !editedProgress.user_id ? "Vui lòng chọn người dùng" : ""
+      user_id: !editedProgress.user_id ? "Vui lòng chọn người dùng" : "",
+      health_stat: !editedProgress.health_stat ? "Vui lòng nhập trạng thái hút thuốc ban đầu" : ""
     };
 
     setErrors(newErrors);
@@ -298,6 +303,18 @@ const Progress = () => {
                 />
                 {errors.date && <p className="text-red-400 text-xs mt-1">{errors.date}</p>}
               </div>
+
+              <div>
+  <label className="block text-sm font-medium text-gray-300 mb-1">Trạng thái hút thuốc ban đầu</label>
+  <input
+    type="text"
+    value={editedProgress.health_stat || ""}
+    onChange={(e) => setEditedProgress({ ...editedProgress, health_stat: e.target.value })}
+    placeholder="Nhập trạng thái hút thuốc ban đầu"
+    className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.health_stat ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+  />
+  {errors.health_stat && <p className="text-red-400 text-xs mt-1">{errors.health_stat}</p>}
+</div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Số điếu thuốc đã hút</label>
