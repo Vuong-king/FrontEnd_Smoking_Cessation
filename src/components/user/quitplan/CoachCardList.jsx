@@ -22,7 +22,8 @@ import {
   CheckOutlined,
 } from "@ant-design/icons";
 import QuitPlanModal from "./QuitPlanModal";
-
+import { useQuitPlanData } from "../../../hook/useQuitPlanData";
+import { message } from "antd";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -145,15 +146,26 @@ const CoachCardList = () => {
   const { coaches, loading, error } = useCoachData();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedCoach, setSelectedCoach] = useState(null);
+  const { sendQuitPlanRequest } = useQuitPlanData();
+
+  const handleSubmit = async (formData) => {
+    try {
+      const coachId = selectedCoach?.coach_id?._id || selectedCoach?.coach_id || selectedCoach?._id;
+      if (!coachId) {
+        message.error("Không xác định được coach!");
+        return;
+      }
+      await sendQuitPlanRequest({ coach_id: coachId, ...formData });
+      message.success("Gửi yêu cầu cho coach thành công!");
+      setIsModalVisible(false);
+    } catch (err) {
+      message.error("Gửi yêu cầu cho coach thất bại! " + (err?.message || ""));
+    }
+  };
 
   const handleSelectCoach = (coach) => {
     setSelectedCoach(coach);
     setIsModalVisible(true);
-  };
-
-  const handleSubmit = (planData) => {
-    console.log("Dữ liệu kế hoạch:", { ...planData, coach: selectedCoach });
-    setIsModalVisible(false);
   };
 
   if (loading) return <LoadingSkeleton />;
@@ -204,8 +216,7 @@ const CoachCardList = () => {
           visible={isModalVisible}
           onCancel={() => setIsModalVisible(false)}
           onSubmit={handleSubmit}
-          editingRecord={null}
-          coach={selectedCoach} 
+          coach={selectedCoach}
         />
       </div>
     </div>
