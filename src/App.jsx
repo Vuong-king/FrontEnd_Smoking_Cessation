@@ -39,8 +39,8 @@ import Leaderboard from "./pages/admin/Leaderboard";
 import Notifications from "./pages/admin/Notifications";
 import Progress from "./pages/admin/Progress";
 import QuitPlans from "./pages/admin/QuitPlans";
-// import Reports from "./pages/admin/Reports";
-// import Settings from "./pages/admin/Settings";
+import Reports from "./pages/admin/Reports";
+import Settings from "./pages/admin/Settings";
 // import Coaches from "./pages/admin/Coaches";
 import UserAchievement from "./pages/user/UserAchievement";
 import UserSupport from "./pages/user/UserSupport";
@@ -120,8 +120,8 @@ function App() {
               <Route path="progress" element={<Progress />} />
               <Route path="quit-plans" element={<QuitPlans />} />
               <Route path="quit-plans/:id" element={<QuitPlanDetailPageAdmin />} />
-              {/* <Route path="reports" element={<Reports />} /> */}
-              {/* <Route path="settings" element={<Settings />} /> */}
+              <Route path="reports" element={<Reports />} />
+              <Route path="settings" element={<Settings />} />
               {/* <Route path="coaches" element={<Coaches />} /> */}
               <Route path="blogs" element={<BlogPosts />} />
               <Route path="blogs/:id" element={<BlogDetail />} />
