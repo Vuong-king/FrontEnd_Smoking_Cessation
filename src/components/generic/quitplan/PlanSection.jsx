@@ -1,11 +1,16 @@
 import { Alert ,Col, Row, Spin } from "antd";
+ import { useEffect } from "react";
 import ColourfulText from "../../ui/ColourfulText";
 import PlanCard from "./PlanCard";
 import { useQuitPlanData } from "../../../hook/useQuitPlanData";
 
 
 function PlanSection() {
-  const { quitPlans, loading, error } = useQuitPlanData();
+  const { publicQuitPlans, loading, error, fetchPublicQuitPlans } = useQuitPlanData();
+
+  useEffect(() => {
+    fetchPublicQuitPlans();
+  }, [fetchPublicQuitPlans]);
 
   return (
     <section id="resources" className="py-20 bg-gray-50">
@@ -32,7 +37,7 @@ function PlanSection() {
           />
         ) : (
           <Row gutter={[24, 24]} justify="center">
-            {quitPlans.map((plan, index) => (
+            {publicQuitPlans.map((plan, index) => (
               <Col xs={24} sm={12} md={8} lg={6} key={plan._id}>
                 <PlanCard
                   id={plan._id}

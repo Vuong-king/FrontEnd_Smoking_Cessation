@@ -1,6 +1,8 @@
 // services/quitPlanService.js
 import api from "../api";
 
+// ... các hàm đã có ở trên
+
 export const fetchQuitPlansAPI = async () => {
   const response = await api.get("/quitPlan");
   return response.data;
@@ -28,5 +30,11 @@ export const sendQuitPlanRequestAPI = async (data) => {
 
 export const getMyQuitPlanRequestsAPI = async () => {
   const response = await api.get("/quitPlan/request/mine");
+  return response.data;
+};
+
+
+export const getPublicQuitPlansAPI = async () => {
+  const response = await api.get("/quitPlan/public");
   return response.data;
 };
