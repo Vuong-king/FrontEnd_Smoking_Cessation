@@ -1,7 +1,8 @@
 import { Alert ,Col, Row, Spin } from "antd";
-import { useQuitPlanData } from "../../../hook/useQuitPlanData";
 import ColourfulText from "../../ui/ColourfulText";
 import PlanCard from "./PlanCard";
+import { useQuitPlanData } from "../../../hook/useQuitPlanData";
+
 
 function PlanSection() {
   const { quitPlans, loading, error } = useQuitPlanData();

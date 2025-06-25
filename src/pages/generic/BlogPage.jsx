@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { usePostData } from "../../hook/usePostData";
+
 import FilterBar from "../../components/generic/blog/FilterBar";
 import BlogCard from "../../components/generic/blog/BlogCard";
+import { usePostData } from "../../hook/usePostData";
 
 function BlogPage() {
   const { posts, loading, error, tags, refetchPosts } = usePostData(); 

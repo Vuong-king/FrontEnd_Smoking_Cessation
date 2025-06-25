@@ -1,28 +1,25 @@
 import { useState, useEffect } from "react";
-import api from "../api";
+import { createQuitPlanAPI, fetchQuitPlansAPI, getMyQuitPlanRequestsAPI, getQuitPlanByIdAPI, getStagesByPlanIdAPI, sendQuitPlanRequestAPI } from "../services/quitPlanService";
+
 
 export function useQuitPlanData() {
   const [quitPlans, setQuitPlans] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-
   useEffect(() => {
     fetchQuitPlans();
   }, []);
 
-
   const fetchQuitPlans = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/quitPlan");
+      const data = await fetchQuitPlansAPI();
 
-      console.log("QuitPlan API response:", response.data);
-
-      if (Array.isArray(response.data)) {
-        setQuitPlans(response.data);
-      } else if (Array.isArray(response.data.data)) {
-        setQuitPlans(response.data.data);
+      if (Array.isArray(data)) {
+        setQuitPlans(data);
+      } else if (Array.isArray(data.data)) {
+        setQuitPlans(data.data);
       } else {
         setQuitPlans([]);
       }
@@ -34,13 +31,12 @@ export function useQuitPlanData() {
     }
   };
 
-  // Tạo kế hoạch bỏ thuốc
   const createQuitPlan = async (planData) => {
     try {
       setLoading(true);
-      const response = await api.post("/quitPlan", planData);
+      const created = await createQuitPlanAPI(planData);
       await fetchQuitPlans();
-      return response.data;
+      return created;
     } catch (err) {
       setError(err.message || "Có lỗi khi tạo kế hoạch");
       throw err;
@@ -49,14 +45,12 @@ export function useQuitPlanData() {
     }
   };
 
-  // Lấy kế hoạch theo ID
   const getQuitPlanById = async (id) => {
     try {
       setLoading(true);
-      const response = await api.get(`/quitPlan/${id}`);
-      console.log("Raw QuitPlan response:", response.data);
+      const raw = await getQuitPlanByIdAPI(id);
+      const data = raw?.data || raw;
 
-      const data = response.data?.data || response.data;
       if (!data) throw new Error("Không tìm thấy kế hoạch bỏ thuốc");
 
       const formattedPlan = {
@@ -81,27 +75,31 @@ export function useQuitPlanData() {
     }
   };
 
-  // Lấy danh sách các giai đoạn (stages) theo kế hoạch
   const getStagesByPlanId = async (planId) => {
     try {
-      const response = await api.get(`/stages/plan/${planId}`);
-      console.log("Stages by Plan response:", response.data);
-
-      return Array.isArray(response.data?.data) ? response.data.data : response.data;
+      const result = await getStagesByPlanIdAPI(planId);
+      return Array.isArray(result?.data) ? result.data : result;
     } catch (error) {
       console.error("Lỗi khi lấy stages của kế hoạch:", error);
       throw error;
     }
   };
 
-  // Gửi yêu cầu kế hoạch đến coach 
   const sendQuitPlanRequest = async (data) => {
     try {
-      const response = await api.post("/quitPlan/request", data);
-      console.log("Yêu cầu đã gửi:", response.data);
-      return response.data;
+      return await sendQuitPlanRequestAPI(data);
     } catch (error) {
       setError(error.response?.data?.message || "Không thể gửi yêu cầu kế hoạch");
+      throw error;
+    }
+  };
+
+  const getMyQuitPlanRequests = async () => {
+    try {
+      const result = await getMyQuitPlanRequestsAPI();
+      return Array.isArray(result?.data) ? result.data : result;
+    } catch (error) {
+      console.error("Không thể lấy danh sách yêu cầu của tôi:", error);
       throw error;
     }
   };
@@ -114,6 +112,7 @@ export function useQuitPlanData() {
     getQuitPlanById,
     getStagesByPlanId,
     createQuitPlan,
-    sendQuitPlanRequest, 
+    sendQuitPlanRequest,
+    getMyQuitPlanRequests,
   };
 }

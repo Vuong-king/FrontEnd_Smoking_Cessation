@@ -1,12 +1,17 @@
-
 import { useState } from "react";
 import { Form, message } from "antd";
 import { Trophy, Coins, Heart } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import api from "../api";
 import { storage } from "../firebase/config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
+
+import {
+  fetchUserByIdAPI,
+  updateUserProfileAPI,
+  changePasswordAPI,
+  deleteUserAPI,
+} from "../services/userService";
 
 export function useProfileData() {
   const { user, setUser } = useAuth();
@@ -60,8 +65,7 @@ export function useProfileData() {
       };
 
       console.log("Dữ liệu gửi đi:", profileData);
-
-      const response = await api.put(`/user/edit-profile/${user._id}`, profileData);
+      const response = await updateUserProfileAPI(user._id, profileData);
 
       if (response) {
         const updatedUser = response.data?.user
@@ -114,11 +118,9 @@ export function useProfileData() {
     setAvatarPreviewUrl(null);
   };
 
-  // --- Thêm các API khác ---
-
   const fetchUserById = async (userId) => {
     try {
-      const response = await api.get(`/user/${userId}`);
+      const response = await fetchUserByIdAPI(userId);
       return response.data;
     } catch (error) {
       message.error("Không thể lấy thông tin người dùng");
@@ -128,10 +130,7 @@ export function useProfileData() {
 
   const changePassword = async (oldPassword, newPassword) => {
     try {
-      const response = await api.post(`/user/change-password`, {
-        oldPassword,
-        newPassword,
-      });
+      const response = await changePasswordAPI(oldPassword, newPassword);
       message.success("Đổi mật khẩu thành công!");
       return response.data;
     } catch (error) {
@@ -143,7 +142,7 @@ export function useProfileData() {
 
   const deleteUser = async () => {
     try {
-      await api.delete(`/user/${user._id}`);
+      await deleteUserAPI(user._id);
       message.success("Tài khoản đã được xóa!");
       localStorage.removeItem("user");
       setUser(null);

@@ -1,4 +1,4 @@
-import React from 'react'
+
 import PlanSection from '../../components/generic/quitplan/PlanSection'
 
 function QuitPlanPage() {

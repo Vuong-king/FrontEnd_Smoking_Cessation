@@ -2,9 +2,9 @@ import { AchievementsSection } from "../../components/user/userprofile/Achieveme
 import { EditProfileModal } from "../../components/user/userprofile/EditProfileModal";
 import { ProfileHeader } from "../../components/user/userprofile/ProfileHeader";
 import { StatsSection } from "../../components/user/userprofile/StatsSection";
-import { useProfileData } from "../../hook/useProfileData";
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useProfileData } from "../../hook/useProfileData";
 
 export default function ProfilePage() {
   const { id } = useParams();

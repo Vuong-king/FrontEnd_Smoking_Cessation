@@ -22,8 +22,9 @@ import {
   CheckOutlined,
 } from "@ant-design/icons";
 import QuitPlanModal from "./QuitPlanModal";
-import { useQuitPlanData } from "../../../hook/useQuitPlanData";
+
 import { message } from "antd";
+import { useQuitPlanData } from "../../../hook/useQuitPlanData";
 
 const { Title, Paragraph, Text } = Typography;
 
