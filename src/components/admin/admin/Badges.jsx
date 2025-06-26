@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Pencil,
   Trash2,
@@ -8,19 +8,25 @@ import {
   Gem,
 } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
-import api from "../../api";
+import useBadges from "../../../hook/useBadges";
 
 const Badges = () => {
-  const [badges, setBadges] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const {
+    badges,
+    loading,
+    error,
+    createBadge,
+    updateBadge,
+    deleteBadge,
+  } = useBadges();
+
   const [editingBadge, setEditingBadge] = useState(null);
-  const [newData, setNewData] = useState({ 
-    name: "", 
-    condition: "", 
-    tier: "Bronze", 
+  const [newData, setNewData] = useState({
+    name: "",
+    condition: "",
+    tier: "Bronze",
     point_value: 0,
-    url_image: "" 
+    url_image: ""
   });
   const [errors, setErrors] = useState({
     name: "",
@@ -32,24 +38,6 @@ const Badges = () => {
   const [isNew, setIsNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [badgeToDelete, setBadgeToDelete] = useState(null);
-
-  useEffect(() => {
-    fetchBadges();
-  }, []);
-
-  const fetchBadges = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get('/badges');
-      setBadges(response.data);
-    } catch (err) {
-      console.error("Error fetching badges:", err);
-      setError(err.response?.data?.message || "Failed to fetch badges");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const iconByLevel = {
     Bronze: <Shield className="w-6 h-6 text-amber-700" />,
@@ -74,56 +62,34 @@ const Badges = () => {
       name: !newData.name ? "Please enter a badge name" : "",
       condition: !newData.condition ? "Please enter a condition" : "",
       tier: !newData.tier ? "Please select a tier" : "",
-      point_value: !newData.point_value && newData.point_value !== 0 ? "Please enter point value" : 
-                  newData.point_value < 0 ? "Point value cannot be negative" : "",
+      point_value: !newData.point_value && newData.point_value !== 0 ? "Please enter point value" :
+        newData.point_value < 0 ? "Point value cannot be negative" : "",
       url_image: ""
     };
-
     setErrors(newErrors);
-
-    // Check if there are any errors
     if (Object.values(newErrors).some(error => error !== "")) {
       return;
     }
-
-    try {
-      setLoading(true);
-      if (isNew) {
-        await api.post('/badges/create', newData);
-      } else {
-        await api.put(`/badges/${editingBadge._id}`, newData);
-      }
-      await fetchBadges();
-      setEditingBadge(null);
-      setIsNew(false);
-    } catch (err) {
-      console.error("Error saving badge:", err);
-      setError(err.response?.data?.message || "Failed to save badge");
-    } finally {
-      setLoading(false);
+    if (isNew) {
+      await createBadge(newData);
+    } else {
+      await updateBadge(editingBadge._id, newData);
     }
+    setEditingBadge(null);
+    setIsNew(false);
   };
 
   const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/badges/${id}`);
-      await fetchBadges();
-    } catch (err) {
-      console.error("Error deleting badge:", err);
-      setError(err.response?.data?.message || "Failed to delete badge");
-    } finally {
-      setLoading(false);
-    }
+    await deleteBadge(id);
   };
 
   const handleNew = () => {
-    setNewData({ 
-      name: "", 
-      condition: "", 
-      tier: "Bronze", 
+    setNewData({
+      name: "",
+      condition: "",
+      tier: "Bronze",
       point_value: 0,
-      url_image: "" 
+      url_image: ""
     });
     setErrors({
       name: "",
@@ -183,8 +149,8 @@ const Badges = () => {
           >
             <div className="flex items-center justify-center mb-4">
               {badge.url_image ? (
-                <img 
-                  src={badge.url_image} 
+                <img
+                  src={badge.url_image}
                   alt={badge.name}
                   className="w-16 h-16 object-contain"
                 />

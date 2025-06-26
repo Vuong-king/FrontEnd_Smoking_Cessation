@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Plus, Pencil, Trash } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
+import useQuitPlans from "../../../hook/useQuitPlans";
 import api from "../../api";
 
 const QuitPlans = () => {
-  const [plans, setPlans] = useState([]);
+  const {
+    plans,
+    loading,
+    error,
+    createPlan,
+    updatePlan,
+    deletePlan,
+  } = useQuitPlans();
+
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [editingPlan, setEditingPlan] = useState(null);
   const [isNew, setIsNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -32,7 +39,6 @@ const QuitPlans = () => {
   });
 
   useEffect(() => {
-    fetchPlans();
     fetchUsers();
   }, []);
 
@@ -42,23 +48,8 @@ const QuitPlans = () => {
       if (response.data.users) {
         setUsers(response.data.users);
       }
-    } catch (err) {
-      console.error("Error fetching users:", err);
-      setError(err.response?.data?.message || "Failed to fetch users");
-    }
-  };
-
-  const fetchPlans = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get('/quitPlan');
-      setPlans(response.data);
-    } catch (err) {
-      console.error("Error fetching plans:", err);
-      setError(err.response?.data?.message || "Failed to fetch quit plans");
-    } finally {
-      setLoading(false);
+    } catch {
+      setUsers([]);
     }
   };
 
@@ -72,11 +63,9 @@ const QuitPlans = () => {
   const handleDateChange = (field, value) => {
     const newFormData = { ...formData, [field]: value };
     setFormData(newFormData);
-
     if (field === 'start_date' || field === 'target_quit_date') {
       const start = field === 'start_date' ? value : formData.start_date;
       const end = field === 'target_quit_date' ? value : formData.target_quit_date;
-      
       if (!validateDates(start, end)) {
         setDateError("End date must be after start date");
       } else {
@@ -99,7 +88,6 @@ const QuitPlans = () => {
   };
 
   const handleEdit = (plan) => {
-    console.log("Editing plan:", plan);
     setIsNew(false);
     setEditingPlan(plan);
     const user = users.find(u => u._id === plan.user_id);
@@ -129,54 +117,30 @@ const QuitPlans = () => {
       start_date: !formData.start_date ? "Please select a start date" : "",
       target_quit_date: !formData.target_quit_date ? "Please select a target date" : "",
     };
-
     if (!validateDates(formData.start_date, formData.target_quit_date)) {
       newErrors.target_quit_date = "End date must be after start date";
     }
-
     setErrors(newErrors);
-
-    // Check if there are any errors
     if (Object.values(newErrors).some(error => error !== "")) {
       return;
     }
-
-    try {
-      setLoading(true);
-      const dataToSend = {
-        ...formData,
-        user_id: formData.user,
-        start_date: new Date(formData.start_date).toISOString(),
-        target_quit_date: new Date(formData.target_quit_date).toISOString(),
-      };
-
-      if (isNew) {
-        await api.post('/quitPlan', dataToSend);
-      } else {
-        await api.put(`/quitPlan/${editingPlan._id}`, dataToSend);
-      }
-      await fetchPlans();
-      setEditingPlan(null);
-      setIsNew(false);
-    } catch (err) {
-      console.error("Error saving plan:", err);
-      setError(err.response?.data?.message || "Failed to save quit plan");
-    } finally {
-      setLoading(false);
+    const dataToSend = {
+      ...formData,
+      user_id: formData.user,
+      start_date: new Date(formData.start_date).toISOString(),
+      target_quit_date: new Date(formData.target_quit_date).toISOString(),
+    };
+    if (isNew) {
+      await createPlan(dataToSend);
+    } else {
+      await updatePlan(editingPlan._id, dataToSend);
     }
+    setEditingPlan(null);
+    setIsNew(false);
   };
 
   const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/quitPlan/${id}`);
-      await fetchPlans();
-    } catch (err) {
-      console.error("Error deleting plan:", err);
-      setError(err.response?.data?.message || "Failed to delete quit plan");
-    } finally {
-      setLoading(false);
-    }
+    await deletePlan(id);
   };
 
   if (loading && plans.length === 0) {

@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Pencil, Plus, Trash, Calendar, DollarSign, Activity } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
+import useProgress from "../../../hook/useProgress";
 import api from "../../api";
 
 const Progress = () => {
-  const [progress, setProgress] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const {
+    progress,
+    loading,
+    error,
+    createProgress,
+    updateProgress,
+    deleteProgress,
+  } = useProgress();
+
   const [selectedProgress, setSelectedProgress] = useState(null);
   const [stages, setStages] = useState([]);
   const [users, setUsers] = useState([]);
@@ -29,7 +36,6 @@ const Progress = () => {
   const [progressToDelete, setProgressToDelete] = useState(null);
 
   useEffect(() => {
-    fetchProgress();
     fetchStages();
     fetchUsers();
   }, []);
@@ -38,9 +44,8 @@ const Progress = () => {
     try {
       const response = await api.get('/stages');
       setStages(response.data);
-    } catch (err) {
-      console.error("Error fetching stages:", err);
-      setError(err.response?.data?.message || "Failed to fetch stages");
+    } catch {
+      setStages([]);
     }
   };
 
@@ -50,23 +55,8 @@ const Progress = () => {
       if (response.data.users) {
         setUsers(response.data.users);
       }
-    } catch (err) {
-      console.error("Error fetching users:", err);
-      setError(err.response?.data?.message || "Failed to fetch users");
-    }
-  };
-
-  const fetchProgress = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get('/progress');
-      setProgress(response.data);
-    } catch (err) {
-      console.error("Error fetching progress:", err);
-      setError(err.response?.data?.message || "Failed to fetch progress records");
-    } finally {
-      setLoading(false);
+    } catch {
+      setUsers([]);
     }
   };
 
@@ -102,42 +92,21 @@ const Progress = () => {
       money_saved: !editedProgress.money_saved ? "Please enter money saved" : "",
       user_id: !editedProgress.user_id ? "Please select a user" : ""
     };
-
     setErrors(newErrors);
-
     if (Object.values(newErrors).some(error => error !== "")) {
       return;
     }
-
-    try {
-      setLoading(true);
-      if (isNew) {
-        await api.post('/progress', editedProgress);
-      } else {
-        await api.put(`/progress/${selectedProgress._id}`, editedProgress);
-      }
-      await fetchProgress();
-      setSelectedProgress(null);
-      setIsNew(false);
-    } catch (err) {
-      console.error("Error saving progress:", err);
-      setError(err.response?.data?.message || "Failed to save progress");
-    } finally {
-      setLoading(false);
+    if (isNew) {
+      await createProgress(editedProgress);
+    } else {
+      await updateProgress(selectedProgress._id, editedProgress);
     }
+    setSelectedProgress(null);
+    setIsNew(false);
   };
 
   const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/progress/${id}`);
-      await fetchProgress();
-    } catch (err) {
-      console.error("Error deleting progress:", err);
-      setError(err.response?.data?.message || "Failed to delete progress");
-    } finally {
-      setLoading(false);
-    }
+    await deleteProgress(id);
   };
 
   if (loading && progress.length === 0) {

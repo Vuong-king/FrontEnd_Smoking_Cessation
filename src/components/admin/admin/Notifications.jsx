@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Trash, Pencil, Calendar, Clock } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
+import useNotifications from "../../../hook/useNotifications";
 import api from "../../api";
 
 const Notifications = () => {
-  const [notifications, setNotifications] = useState([]);
+  const {
+    notifications,
+    loading,
+    error,
+    createNotification,
+    updateNotification,
+    deleteNotification,
+  } = useNotifications();
+
   const [progresses, setProgresses] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [editedNotification, setEditedNotification] = useState({
     progress_id: "",
@@ -28,7 +35,6 @@ const Notifications = () => {
   const [notificationToDelete, setNotificationToDelete] = useState(null);
 
   useEffect(() => {
-    fetchNotifications();
     fetchProgresses();
   }, []);
 
@@ -36,23 +42,8 @@ const Notifications = () => {
     try {
       const response = await api.get('/progress');
       setProgresses(response.data);
-    } catch (err) {
-      console.error("Error fetching progresses:", err);
-      setError(err.response?.data?.message || "Failed to fetch progresses");
-    }
-  };
-
-  const fetchNotifications = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get('/notifications');
-      setNotifications(response.data);
-    } catch (err) {
-      console.error("Error fetching notifications:", err);
-      setError(err.response?.data?.message || "Failed to fetch notifications");
-    } finally {
-      setLoading(false);
+    } catch {
+      setProgresses([]);
     }
   };
 
@@ -87,42 +78,21 @@ const Notifications = () => {
       type: !editedNotification.type ? "Please select a type" : "",
       schedule: !editedNotification.schedule ? "Please enter a schedule" : "",
     };
-
     setErrors(newErrors);
-
     if (Object.values(newErrors).some(error => error !== "")) {
       return;
     }
-
-    try {
-      setLoading(true);
-      if (isNew) {
-        await api.post('/notifications', editedNotification);
-      } else {
-        await api.put(`/notifications/${selectedNotification._id}`, editedNotification);
-      }
-      await fetchNotifications();
-      setSelectedNotification(null);
-      setIsNew(false);
-    } catch (err) {
-      console.error("Error saving notification:", err);
-      setError(err.response?.data?.message || "Failed to save notification");
-    } finally {
-      setLoading(false);
+    if (isNew) {
+      await createNotification(editedNotification);
+    } else {
+      await updateNotification(selectedNotification._id, editedNotification);
     }
+    setSelectedNotification(null);
+    setIsNew(false);
   };
 
   const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/notifications/${id}`);
-      await fetchNotifications();
-    } catch (err) {
-      console.error("Error deleting notification:", err);
-      setError(err.response?.data?.message || "Failed to delete notification");
-    } finally {
-      setLoading(false);
-    }
+    await deleteNotification(id);
   };
 
   if (loading && notifications.length === 0) {

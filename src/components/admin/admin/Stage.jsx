@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Pencil, Plus, Trash, Calendar, ListOrdered } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
+import useStages from "../../../hook/useStages";
 import api from "../../api";
 
 const Stage = () => {
-  const [stages, setStages] = useState([]);
+  const {
+    stages,
+    loading,
+    error,
+    createStage,
+    updateStage,
+    deleteStage,
+  } = useStages();
+
   const [plans, setPlans] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [selectedStage, setSelectedStage] = useState(null);
   const [editedStage, setEditedStage] = useState({
     plan_id: "",
@@ -31,7 +38,6 @@ const Stage = () => {
   const [stageToDelete, setStageToDelete] = useState(null);
 
   useEffect(() => {
-    fetchStages();
     fetchPlans();
   }, []);
 
@@ -39,23 +45,8 @@ const Stage = () => {
     try {
       const response = await api.get('/quitPlan');
       setPlans(response.data);
-    } catch (err) {
-      console.error("Error fetching plans:", err);
-      setError(err.response?.data?.message || "Failed to fetch plans");
-    }
-  };
-
-  const fetchStages = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get('/stages');
-      setStages(response.data);
-    } catch (err) {
-      console.error("Error fetching stages:", err);
-      setError(err.response?.data?.message || "Failed to fetch stages");
-    } finally {
-      setLoading(false);
+    } catch {
+      setPlans([]);
     }
   };
 
@@ -96,42 +87,21 @@ const Stage = () => {
       start_date: !editedStage.start_date ? "Please select a start date" : "",
       end_date: !editedStage.end_date ? "Please select an end date" : ""
     };
-
     setErrors(newErrors);
-
     if (Object.values(newErrors).some(error => error !== "")) {
       return;
     }
-
-    try {
-      setLoading(true);
-      if (isNew) {
-        await api.post('/stages', editedStage);
-      } else {
-        await api.put(`/stages/${selectedStage._id}`, editedStage);
-      }
-      await fetchStages();
-      setSelectedStage(null);
-      setIsNew(false);
-    } catch (err) {
-      console.error("Error saving stage:", err);
-      setError(err.response?.data?.message || "Failed to save stage");
-    } finally {
-      setLoading(false);
+    if (isNew) {
+      await createStage(editedStage);
+    } else {
+      await updateStage(selectedStage._id, editedStage);
     }
+    setSelectedStage(null);
+    setIsNew(false);
   };
 
   const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/stages/${id}`);
-      await fetchStages();
-    } catch (err) {
-      console.error("Error deleting stage:", err);
-      setError(err.response?.data?.message || "Failed to delete stage");
-    } finally {
-      setLoading(false);
-    }
+    await deleteStage(id);
   };
 
   if (loading && stages.length === 0) {

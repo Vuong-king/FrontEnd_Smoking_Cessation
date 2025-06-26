@@ -1,28 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Trash } from "lucide-react";
+import useFeedbacks from "../../../hook/useFeedbacks";
 
 const Feedbacks = () => {
-  const [feedbacks, setFeedbacks] = useState([]);
-  const [toast, setToast] = useState(null);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("feedbacks");
-    if (saved) setFeedbacks(JSON.parse(saved));
-  }, []);
-
-  const showToast = (message, type = "success") => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this feedback?")) {
-      const updated = feedbacks.filter((f) => f.id !== id);
-      localStorage.setItem("feedbacks", JSON.stringify(updated));
-      setFeedbacks(updated);
-      showToast("Feedback deleted.", "error");
-    }
-  };
+  const { feedbacks, toast, deleteFeedback } = useFeedbacks();
 
   return (
     <section className="py-20 bg-gradient-to-b from-gray-900 to-black min-h-screen text-white relative">
@@ -60,7 +41,7 @@ const Feedbacks = () => {
               <p className="text-sm mb-4">{f.message}</p>
               <div className="text-right">
                 <button
-                  onClick={() => handleDelete(f.id)}
+                  onClick={() => deleteFeedback(f.id)}
                   className="text-xs flex items-center gap-1 px-3 py-1 rounded bg-rose-500 hover:bg-rose-600 text-white"
                 >
                   <Trash className="w-4 h-4" /> Delete

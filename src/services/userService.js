@@ -14,3 +14,24 @@ export const changePasswordAPI = (oldPassword, newPassword) =>
 
 // Xóa tài khoản
 export const deleteUserAPI = (userId) => api.delete(`/user/${userId}`);
+
+const UserService = {
+  getAllUsers: async () => {
+    const response = await api.get('/user');
+    return response.data;
+  },
+  createUser: async (data) => {
+    const response = await api.post('/user', data);
+    return response.data;
+  },
+  updateUser: async (id, data) => {
+    const response = await api.put(`/user/${id}`, data);
+    return response.data;
+  },
+  deleteUser: async (id) => {
+    const response = await api.delete(`/user/${id}`);
+    return response.data;
+  },
+};
+
+export default UserService;

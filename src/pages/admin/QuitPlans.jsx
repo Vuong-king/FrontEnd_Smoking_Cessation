@@ -193,7 +193,7 @@ const QuitPlans = () => {
       </div>
     );
   }
-
+  console.log(plans);
   return (
     <section className="py-16 bg-gray-100 min-h-screen text-gray-800">
       <div className="container mx-auto px-4">
@@ -241,17 +241,25 @@ const QuitPlans = () => {
                   <td className="py-3 px-4 text-sm text-gray-500">
                     {new Date(plan.target_quit_date).toLocaleDateString('vi-VN')}
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-400">{plan.user_id._id}</td>
+                  <td className="py-3 px-4 text-sm text-gray-400">
+                    {plan.user_id && typeof plan.user_id === 'object'
+                      ? plan.user_id._id
+                      : plan.user_id || "Không có"}
+                  </td>
                   <td className="py-3 px-4 text-sm">
                     <div className="flex gap-3">
                       <button
-                        onClick={() => handleEdit(plan)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(plan);
+                        }}
                         className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
                       >
                         <Pencil className="w-4 h-4" /> Sửa
                       </button>
                       <button
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setPlanToDelete(plan._id);
                           setShowConfirm(true);
                         }}

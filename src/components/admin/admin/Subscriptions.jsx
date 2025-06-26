@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { BadgeCheck, XCircle, Pencil, Plus, Trash } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
+import useSubscriptions from "../../../hook/useSubscriptions";
 import api from "../../api";
 
 const Subscriptions = () => {
-  const [subscriptions, setSubscriptions] = useState([]);
+  const {
+    subscriptions,
+    loading,
+    error,
+    createSubscription,
+    updateSubscription,
+    deleteSubscription,
+  } = useSubscriptions();
+
   const [plans, setPlans] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [selectedSub, setSelectedSub] = useState(null);
   const [editedSub, setEditedSub] = useState({
     name: "",
@@ -29,7 +36,6 @@ const Subscriptions = () => {
   const [subToDelete, setSubToDelete] = useState(null);
 
   useEffect(() => {
-    fetchSubscriptions();
     fetchPlans();
   }, []);
 
@@ -37,23 +43,8 @@ const Subscriptions = () => {
     try {
       const response = await api.get('/quitPlan');
       setPlans(response.data);
-    } catch (err) {
-      console.error("Error fetching plans:", err);
-      setError(err.response?.data?.message || "Failed to fetch plans");
-    }
-  };
-
-  const fetchSubscriptions = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get('/subscriptions');
-      setSubscriptions(response.data);
-    } catch (err) {
-      console.error("Error fetching subscriptions:", err);
-      setError(err.response?.data?.message || "Failed to fetch subscriptions");
-    } finally {
-      setLoading(false);
+    } catch {
+      setPlans([]);
     }
   };
 
@@ -91,43 +82,22 @@ const Subscriptions = () => {
       end_date: !editedSub.end_date ? "Please select an end date" : "",
       plan_id: !editedSub.plan_id ? "Please select a plan" : ""
     };
-
     setErrors(newErrors);
-
     if (Object.values(newErrors).some(error => error !== "")) {
       return;
     }
-
-    try {
-      setLoading(true);
-      if (isNew) {
-        const { plan_id, ...subscriptionData } = editedSub;
-        await api.post(`/subscriptions/${plan_id}`, subscriptionData);
-      } else {
-        await api.put(`/subscriptions/${selectedSub._id}`, editedSub);
-      }
-      await fetchSubscriptions();
-      setSelectedSub(null);
-      setIsNew(false);
-    } catch (err) {
-      console.error("Error saving subscription:", err);
-      setError(err.response?.data?.message || "Failed to save subscription");
-    } finally {
-      setLoading(false);
+    if (isNew) {
+      const { plan_id, ...subscriptionData } = editedSub;
+      await createSubscription(plan_id, subscriptionData);
+    } else {
+      await updateSubscription(selectedSub._id, editedSub);
     }
+    setSelectedSub(null);
+    setIsNew(false);
   };
 
   const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/subscriptions/${id}`);
-      await fetchSubscriptions();
-    } catch (err) {
-      console.error("Error deleting subscription:", err);
-      setError(err.response?.data?.message || "Failed to delete subscription");
-    } finally {
-      setLoading(false);
-    }
+    await deleteSubscription(id);
   };
 
   if (loading && subscriptions.length === 0) {

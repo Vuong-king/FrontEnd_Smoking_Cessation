@@ -17,8 +17,9 @@ import {
   CheckCircleOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Space } from "antd";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 function SidebarAdmin({ user = {} }) {
   const location = useLocation();
@@ -26,7 +27,16 @@ function SidebarAdmin({ user = {} }) {
     const saved = localStorage.getItem("admin-sidebar-collapsed");
     return saved === "true";
   });
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
   useEffect(() => {
     localStorage.setItem("admin-sidebar-collapsed", collapsed);
   }, [collapsed]);
@@ -53,15 +63,13 @@ function SidebarAdmin({ user = {} }) {
   const dropdownItems = [
     { key: "1", label: "My Account", disabled: true },
     { type: "divider" },
-    { key: "2", label: "Profile", icon: <UserOutlined /> },
+    { key: "2", label: "Profile", icon: <UserOutlined />, onClick: () => navigate(`/user/profile/${user?.id}`),},
     { key: "3", label: "Settings", icon: <SettingOutlined /> },
     {
       key: "4",
       label: "Logout",
       icon: <SettingOutlined />,
-      onClick: () => {
-        console.log("Logout clicked");
-      },
+      onClick: handleLogout,
     },
   ];
 

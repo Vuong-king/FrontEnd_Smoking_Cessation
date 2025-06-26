@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ShieldCheck, UserCheck, User } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
-import api from "../../api";
+import useUsers from "../../../hook/useUsers";
 
 const Users = () => {
   const [role, setRole] = useState("admin");
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [newUser, setNewUser] = useState({ email: "", name: "", role: "", avatar_url: "" });
   const [errors, setErrors] = useState({
@@ -20,73 +17,47 @@ const Users = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
 
-  useEffect(() => {
-    fetchUsers();
-  }, [role]);
-
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get('/user');
-      if (response.data.users) {
-        setUsers(response.data.users);
-      }
-    } catch (err) {
-      console.error("Error fetching users:", err);
-      setError(err.response?.data?.message || "Failed to fetch users");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    users,
+    loading,
+    error,
+    createUser,
+    updateUser,
+    deleteUser,
+  } = useUsers(role);
 
   const filteredUsers = users.filter((u) => u.role === role);
 
   const handleAddOrUpdate = async () => {
     const newErrors = {
-      email: !newUser.email ? "Please enter an email" : 
-             !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newUser.email) ? "Please enter a valid email" : "",
+      email: !newUser.email ? "Please enter an email" :
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newUser.email) ? "Please enter a valid email" : "",
       name: !newUser.name ? "Please enter a name" : "",
       role: editingId && !newUser.role ? "Please select a role" : "",
-      avatar_url: "" // Optional field
+      avatar_url: ""
     };
-
     setErrors(newErrors);
-
-    // Check if there are any errors
     if (Object.values(newErrors).some(error => error !== "")) {
       return;
     }
-
-    try {
-      setLoading(true);
-      if (editingId) {
-        await api.put(`/user/${editingId}`, {
-          ...newUser
-        });
-      } else {
-        await api.post('/user', {
-          ...newUser,
-          role: role,
-          avatar_url: newUser.avatar_url || "https://example.com/default-avatar.png"
-        });
-      }
-      await fetchUsers();
-      setNewUser({ email: "", name: "", role: "", avatar_url: "" });
-      setErrors({ email: "", name: "", role: "", avatar_url: "" });
-      setEditingId(null);
-      setShowModal(false);
-    } catch (err) {
-      console.error("Error saving user:", err);
-      setError(err.response?.data?.message || "Failed to save user");
-    } finally {
-      setLoading(false);
+    if (editingId) {
+      await updateUser(editingId, { ...newUser });
+    } else {
+      await createUser({
+        ...newUser,
+        role: role,
+        avatar_url: newUser.avatar_url || "https://example.com/default-avatar.png"
+      });
     }
+    setNewUser({ email: "", name: "", role: "", avatar_url: "" });
+    setErrors({ email: "", name: "", role: "", avatar_url: "" });
+    setEditingId(null);
+    setShowModal(false);
   };
 
   const handleEdit = (u) => {
-    setNewUser({ 
-      email: u.email, 
+    setNewUser({
+      email: u.email,
       name: u.name,
       role: u.role,
       avatar_url: u.avatar_url
@@ -97,16 +68,7 @@ const Users = () => {
   };
 
   const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/user/${id}`);
-      await fetchUsers();
-    } catch (err) {
-      console.error("Error deleting user:", err);
-      setError(err.response?.data?.message || "Failed to delete user");
-    } finally {
-      setLoading(false);
-    }
+    await deleteUser(id);
   };
 
   const RoleIcon = () => {
@@ -154,7 +116,7 @@ const Users = () => {
                 setShowModal(false);
               }}
               className={`px-4 py-2 rounded font-medium transition duration-300 transform ${
-                role === r
+                role === r.toLowerCase()
                   ? "bg-gradient-to-r from-purple-600 to-cyan-500 text-white shadow-md"
                   : "bg-white/10 text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-cyan-500 hover:scale-105"
               }`}
@@ -173,7 +135,7 @@ const Users = () => {
               <th>Email</th>
               <th>Name</th>
               <th>Role</th>
-              {(role === "Coach" || role === "Customer") && <th>Actions</th>}
+              {(role === "coach" || role === "user") && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -185,8 +147,8 @@ const Users = () => {
                 }`}
               >
                 <td>
-                  <img 
-                    src={u.avatar_url} 
+                  <img
+                    src={u.avatar_url}
                     alt={`${u.name}'s avatar`}
                     className="w-10 h-10 rounded-full object-cover"
                   />
@@ -261,8 +223,8 @@ const Users = () => {
             <div className="grid grid-cols-1 gap-3">
               {editingId && (
                 <div className="flex items-center gap-4 mb-4">
-                  <img 
-                    src={newUser.avatar_url || "https://example.com/default-avatar.png"} 
+                  <img
+                    src={newUser.avatar_url || "https://example.com/default-avatar.png"}
                     alt="Current avatar"
                     className="w-16 h-16 rounded-full object-cover"
                   />

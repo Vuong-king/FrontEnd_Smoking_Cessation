@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Plus, Pencil, Trash } from "lucide-react";
 import { Link } from "react-router-dom";
+import useBlogs from "../../../hook/useBlogs";
 
 const BlogPosts = () => {
-  const [blogs, setBlogs] = useState([]);
+  const { blogs, toast, createBlog, updateBlog, deleteBlog } = useBlogs();
   const [editingBlog, setEditingBlog] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
@@ -12,18 +13,6 @@ const BlogPosts = () => {
     thumbnail: "",
   });
   const [isNew, setIsNew] = useState(false);
-  const [toast, setToast] = useState(null);
-
-  // ✅ Load từ localStorage khi trang mở
-  useEffect(() => {
-    const saved = localStorage.getItem("blogs");
-    if (saved) setBlogs(JSON.parse(saved));
-  }, []);
-
-  const showToast = (message, type = "success") => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
 
   const handleNew = () => {
     setIsNew(true);
@@ -39,31 +28,13 @@ const BlogPosts = () => {
 
   const handleSave = () => {
     if (!formData.title || !formData.author || !formData.summary) return;
-
-    setBlogs((prev) => {
-      const updated = isNew
-        ? [...prev, { ...formData, id: Date.now() }]
-        : prev.map((b) =>
-            b.id === editingBlog.id ? { ...formData, id: b.id } : b
-          );
-      localStorage.setItem("blogs", JSON.stringify(updated));
-      return updated;
-    });
-
-    showToast(isNew ? "Blog post added." : "Blog post updated.");
+    if (isNew) {
+      createBlog(formData);
+    } else {
+      updateBlog(editingBlog.id, formData);
+    }
     setEditingBlog(null);
     setIsNew(false);
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this blog post?")) {
-      setBlogs((prev) => {
-        const updated = prev.filter((b) => b.id !== id);
-        localStorage.setItem("blogs", JSON.stringify(updated));
-        return updated;
-      });
-      showToast("Blog post deleted.", "error");
-    }
   };
 
   return (
@@ -72,9 +43,7 @@ const BlogPosts = () => {
       {toast && (
         <div
           className={`fixed top-6 right-6 px-4 py-2 rounded shadow-lg z-50 text-sm transition-all duration-300
-            ${
-              toast.type === "error" ? "bg-red-600" : "bg-green-600"
-            } text-white`}
+            ${toast.type === "error" ? "bg-red-600" : "bg-green-600"} text-white`}
         >
           {toast.message}
         </div>
@@ -132,7 +101,7 @@ const BlogPosts = () => {
                 <Pencil className="w-4 h-4" /> Edit
               </button>
               <button
-                onClick={() => handleDelete(blog.id)}
+                onClick={() => deleteBlog(blog.id)}
                 className="text-xs flex items-center gap-1 px-3 py-1 rounded bg-rose-500 hover:bg-rose-600 text-white"
               >
                 <Trash className="w-4 h-4" /> Delete
