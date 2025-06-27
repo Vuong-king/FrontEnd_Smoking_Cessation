@@ -21,7 +21,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 
-function SidebarAdmin({ user = {} }) {
+function SidebarAdmin() {
+  const { user } = useAuth();
+
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(() => {
     const saved = localStorage.getItem("admin-sidebar-collapsed");
@@ -52,18 +54,18 @@ function SidebarAdmin({ user = {} }) {
     { label: "Quit Plans", icon: <CheckCircleOutlined />, path: "/admin/quit-plans" },
     { label: "Progress", icon: <FieldTimeOutlined />, path: "/admin/progress" },
     { label: "Blog Posts", icon: <FileTextOutlined />, path: "/admin/blogs" },
-    { label: "Leaderboard", icon: <TrophyOutlined />, path: "/admin/leaderboard" },
+    // { label: "Leaderboard", icon: <TrophyOutlined />, path: "/admin/leaderboard" },
     { label: "Notifications", icon: <BellOutlined />, path: "/admin/notifications" },
     // { label: "Coaches", icon: <TeamOutlined />, path: "/admin/coaches" },
     // { label: "Permissions", icon: <SafetyOutlined />, path: "/admin/roles" },
     // { label: "Settings", icon: <SettingOutlined />, path: "/admin/settings" },
-    { label: "Request", icon: <SettingOutlined />, path: "/admin/request" },
+    // { label: "Request", icon: <SettingOutlined />, path: "/admin/request" },
   ];
 
   const dropdownItems = [
     { key: "1", label: "My Account", disabled: true },
     { type: "divider" },
-    { key: "2", label: "Profile", icon: <UserOutlined />, onClick: () => navigate(`/user/profile/${user?.id}`),},
+    { key: "2", label: "Profile", icon: <UserOutlined />, onClick: () => navigate(`/admin/profile/${user?.id}`),},
     { key: "3", label: "Settings", icon: <SettingOutlined /> },
     {
       key: "4",

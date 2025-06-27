@@ -1,138 +1,30 @@
-import React, { useState, useEffect } from "react";
-import { Pencil, Plus, Trash, Calendar, ListOrdered } from "lucide-react";
+import React from "react";
+import { Pencil, Plus, Trash } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
-import api from "../../api";
+import useStages from "../../hook/useStages";
 
 const Stage = () => {
-  const [stages, setStages] = useState([]);
-  const [plans, setPlans] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [selectedStage, setSelectedStage] = useState(null);
-  const [editedStage, setEditedStage] = useState({
-    plan_id: "",
-    title: "",
-    description: "",
-    stage_number: "",
-    start_date: "",
-    end_date: "",
-    is_completed: false
-  });
-  const [errors, setErrors] = useState({
-    plan_id: "",
-    title: "",
-    description: "",
-    stage_number: "",
-    start_date: "",
-    end_date: ""
-  });
-  const [isNew, setIsNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [stageToDelete, setStageToDelete] = useState(null);
-
-  useEffect(() => {
-    fetchStages();
-    fetchPlans();
-  }, []);
-
-  const fetchPlans = async () => {
-    try {
-      const response = await api.get('/quitPlan');
-      setPlans(response.data);
-    } catch (err) {
-      console.error("Lỗi khi tải danh sách kế hoạch:", err);
-      setError(err.response?.data?.message || "Không thể tải danh sách kế hoạch");
-    }
-  };
-
-  const fetchStages = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get('/stages');
-      setStages(response.data);
-    } catch (err) {
-      console.error("Lỗi khi tải danh sách giai đoạn:", err);
-      setError(err.response?.data?.message || "Không thể tải danh sách giai đoạn");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const openEditModal = (stage) => {
-    setSelectedStage(stage);
-    setIsNew(false);
-    setEditedStage({
-      plan_id: stage.plan_id,
-      title: stage.title,
-      description: stage.description,
-      stage_number: stage.stage_number,
-      start_date: stage.start_date ? new Date(stage.start_date).toISOString().split('T')[0] : "",
-      end_date: stage.end_date ? new Date(stage.end_date).toISOString().split('T')[0] : "",
-      is_completed: stage.is_completed
-    });
-  };
-
-  const openNewModal = () => {
-    setIsNew(true);
-    setEditedStage({
-      plan_id: "",
-      title: "",
-      description: "",
-      stage_number: "",
-      start_date: "",
-      end_date: "",
-      is_completed: false
-    });
-    setSelectedStage({});
-  };
-
-  const handleSaveChanges = async () => {
-    const newErrors = {
-      plan_id: !editedStage.plan_id ? "Vui lòng chọn một kế hoạch" : "",
-      title: !editedStage.title ? "Vui lòng nhập tiêu đề" : "",
-      description: !editedStage.description ? "Vui lòng nhập mô tả" : "",
-      stage_number: !editedStage.stage_number ? "Vui lòng nhập số thứ tự giai đoạn" : "",
-      start_date: !editedStage.start_date ? "Vui lòng chọn ngày bắt đầu" : "",
-      end_date: !editedStage.end_date ? "Vui lòng chọn ngày kết thúc" : ""
-    };
-
-    setErrors(newErrors);
-
-    if (Object.values(newErrors).some(error => error !== "")) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      if (isNew) {
-        await api.post('/stages', editedStage);
-      } else {
-        await api.put(`/stages/${selectedStage._id}`, editedStage);
-      }
-      await fetchStages();
-      setSelectedStage(null);
-      setIsNew(false);
-    } catch (err) {
-      console.error("Lỗi khi lưu giai đoạn:", err);
-      setError(err.response?.data?.message || "Không thể lưu giai đoạn");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/stages/${id}`);
-      await fetchStages();
-    } catch (err) {
-      console.error("Lỗi khi xóa giai đoạn:", err);
-      setError(err.response?.data?.message || "Không thể xóa giai đoạn");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    stages,
+    plans,
+    loading,
+    error,
+    selectedStage,
+    setSelectedStage,
+    editedStage,
+    setEditedStage,
+    errors,
+    isNew,
+    setIsNew,
+    showConfirm,
+    setShowConfirm,
+    stageToDelete,
+    setStageToDelete,
+    openEditModal,
+    openNewModal,
+    handleSaveChanges,
+    handleDelete,
+  } = useStages();
 
   if (loading && stages.length === 0) {
     return (
@@ -180,7 +72,7 @@ const Stage = () => {
     </div>
 
     {/* Table */}
-    <div className="max-w-6xl mx-auto bg-gray-800 rounded-xl p-6 shadow-lg ring-1 ring-gray-700 overflow-x-auto">
+    <div className="max-w-10xl mx-auto bg-gray-800 rounded-xl p-6 shadow-lg ring-1 ring-gray-700 overflow-x-auto">
       <div className="min-w-[1000px]">
         <table className="w-full text-sm text-left">
           <thead>

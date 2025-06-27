@@ -1,140 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { BadgeCheck, XCircle, Pencil, Plus, Trash } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
-import api from "../../api";
+import useSubscriptions from "../../hook/useSubscriptions";
 
 const Subscriptions = () => {
-  const [subscriptions, setSubscriptions] = useState([]);
-  const [plans, setPlans] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [selectedSub, setSelectedSub] = useState(null);
-  const [editedSub, setEditedSub] = useState({
-    name: "",
-    price: "",
-    start_date: "",
-    end_date: "",
-    is_active: true,
-    plan_id: "",
-  });
-  const [errors, setErrors] = useState({
-    name: "",
-    price: "",
-    start_date: "",
-    end_date: "",
-    plan_id: "",
-  });
-  const [isNew, setIsNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [subToDelete, setSubToDelete] = useState(null);
-
-  useEffect(() => {
-    fetchSubscriptions();
-    fetchPlans();
-  }, []);
-
-  const fetchPlans = async () => {
-    try {
-      const response = await api.get("/quitPlan");
-      setPlans(response.data);
-    } catch (err) {
-      console.error("Lỗi khi tải danh sách gói:", err);
-      setError(err.response?.data?.message || "Không thể tải danh sách gói");
-    }
-  };
-
-  const fetchSubscriptions = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get("/subscriptions");
-      setSubscriptions(response.data);
-    } catch (err) {
-      console.error("Lỗi khi tải danh sách đăng ký:", err);
-      setError(
-        err.response?.data?.message || "Không thể tải danh sách đăng ký"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const openEditModal = (sub) => {
-    setSelectedSub(sub);
-    setIsNew(false);
-    setEditedSub({
-      name: sub.name,
-      price: sub.price,
-      start_date: sub.start_date
-        ? new Date(sub.start_date).toISOString().split("T")[0]
-        : "",
-      end_date: sub.end_date
-        ? new Date(sub.end_date).toISOString().split("T")[0]
-        : "",
-      is_active: sub.is_active,
-      plan_id: sub.plan_id,
-    });
-  };
-
-  const openNewModal = () => {
-    setIsNew(true);
-    setEditedSub({
-      name: "",
-      price: "",
-      start_date: "",
-      end_date: "",
-      is_active: true,
-      plan_id: "",
-    });
-    setSelectedSub({});
-  };
-
-  const handleSaveChanges = async () => {
-    const newErrors = {
-      name: !editedSub.name ? "Vui lòng nhập tên đăng ký" : "",
-      price: !editedSub.price ? "Vui lòng nhập giá" : "",
-      start_date: !editedSub.start_date ? "Vui lòng chọn ngày bắt đầu" : "",
-      end_date: !editedSub.end_date ? "Vui lòng chọn ngày kết thúc" : "",
-      plan_id: !editedSub.plan_id ? "Vui lòng chọn gói" : "",
-    };
-
-    setErrors(newErrors);
-
-    if (Object.values(newErrors).some((error) => error !== "")) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      if (isNew) {
-        const { plan_id, ...subscriptionData } = editedSub;
-        await api.post(`/subscriptions/${plan_id}`, subscriptionData);
-      } else {
-        await api.put(`/subscriptions/${selectedSub._id}`, editedSub);
-      }
-      await fetchSubscriptions();
-      setSelectedSub(null);
-      setIsNew(false);
-    } catch (err) {
-      console.error("Lỗi khi lưu đăng ký:", err);
-      setError(err.response?.data?.message || "Không thể lưu đăng ký");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/subscriptions/${id}`);
-      await fetchSubscriptions();
-    } catch (err) {
-      console.error("Lỗi khi xóa đăng ký:", err);
-      setError(err.response?.data?.message || "Không thể xóa đăng ký");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    subscriptions,
+    plans,
+    loading,
+    error,
+    selectedSub,
+    setSelectedSub,
+    editedSub,
+    setEditedSub,
+    errors,
+    isNew,
+    setIsNew,
+    showConfirm,
+    setShowConfirm,
+    subToDelete,
+    setSubToDelete,
+    openEditModal,
+    openNewModal,
+    handleSaveChanges,
+    handleDelete,
+  } = useSubscriptions();
 
   if (loading && subscriptions.length === 0) {
     return (
@@ -227,8 +117,7 @@ const Subscriptions = () => {
                   {new Date(sub.end_date).toLocaleDateString("vi-VN")}
                 </td>
                 <td className="py-3 px-4 text-gray-200">
-                  {plans.find((p) => p._id === sub.plan_id)?.name ||
-                    sub.plan_id}
+                  {plans.find((p) => p._id === sub.plan_id)?.name || sub.plan_id}
                 </td>
                 <td className="py-3 px-4">
                   <span

@@ -1,129 +1,30 @@
-import React, { useState, useEffect } from "react";
-import { Plus, Trash, Pencil, Calendar, Clock } from "lucide-react";
+import React from "react";
+import { Plus, Trash, Pencil } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
-import api from "../../api";
+import useNotifications from "../../hook/useNotifications";
 
 const Notifications = () => {
-  const [notifications, setNotifications] = useState([]);
-  const [progresses, setProgresses] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [selectedNotification, setSelectedNotification] = useState(null);
-  const [editedNotification, setEditedNotification] = useState({
-    progress_id: "",
-    message: "",
-    type: "daily",
-    schedule: "",
-    is_sent: false
-  });
-  const [errors, setErrors] = useState({
-    progress_id: "",
-    message: "",
-    type: "",
-    schedule: "",
-    is_sent: ""
-  });
-  const [isNew, setIsNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [notificationToDelete, setNotificationToDelete] = useState(null);
-
-  useEffect(() => {
-    fetchNotifications();
-    fetchProgresses();
-  }, []);
-
-  const fetchProgresses = async () => {
-    try {
-      const response = await api.get('/progress');
-      setProgresses(response.data);
-    } catch (err) {
-      console.error("Lỗi khi lấy danh sách tiến độ:", err);
-      setError(err.response?.data?.message || "Không thể lấy danh sách tiến độ");
-    }
-  };
-
-  const fetchNotifications = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get('/notifications');
-      setNotifications(response.data);
-    } catch (err) {
-      console.error("Lỗi khi lấy danh sách thông báo:", err);
-      setError(err.response?.data?.message || "Không thể lấy danh sách thông báo");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const openEditModal = (notification) => {
-    setSelectedNotification(notification);
-    setIsNew(false);
-    setEditedNotification({
-      progress_id: notification.progress_id,
-      message: notification.message,
-      type: notification.type,
-      schedule: notification.schedule,
-      is_sent: notification.is_sent
-    });
-  };
-
-  const openNewModal = () => {
-    setIsNew(true);
-    setEditedNotification({
-      progress_id: "",
-      message: "",
-      type: "daily",
-      schedule: "",
-      is_sent: false
-    });
-    setSelectedNotification({});
-  };
-
-  const handleSaveChanges = async () => {
-    const newErrors = {
-      progress_id: !editedNotification.progress_id ? "Vui lòng chọn tiến độ" : "",
-      message: !editedNotification.message ? "Vui lòng nhập thông điệp" : "",
-      type: !editedNotification.type ? "Vui lòng chọn loại thông báo" : "",
-      schedule: !editedNotification.schedule ? "Vui lòng nhập thời gian gửi" : "",
-    };
-
-    setErrors(newErrors);
-
-    if (Object.values(newErrors).some(error => error !== "")) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      if (isNew) {
-        await api.post('/notifications', editedNotification);
-      } else {
-        await api.put(`/notifications/${selectedNotification._id}`, editedNotification);
-      }
-      await fetchNotifications();
-      setSelectedNotification(null);
-      setIsNew(false);
-    } catch (err) {
-      console.error("Lỗi khi lưu thông báo:", err);
-      setError(err.response?.data?.message || "Không thể lưu thông báo");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/notifications/${id}`);
-      await fetchNotifications();
-    } catch (err) {
-      console.error("Lỗi khi xóa thông báo:", err);
-      setError(err.response?.data?.message || "Không thể xóa thông báo");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    notifications,
+    progresses,
+    loading,
+    error,
+    selectedNotification,
+    setSelectedNotification,
+    editedNotification,
+    setEditedNotification,
+    errors,
+    isNew,
+    setIsNew,
+    showConfirm,
+    setShowConfirm,
+    notificationToDelete,
+    setNotificationToDelete,
+    openEditModal,
+    openNewModal,
+    handleSaveChanges,
+    handleDelete,
+  } = useNotifications();
 
   if (loading && notifications.length === 0) {
     return (

@@ -1,134 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Plus, Pencil, Trash } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
-import api from "../../api";
+import useBlogs from "../../hook/useBlogs";
 
 const BlogPosts = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [tags, setTags] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [editingBlog, setEditingBlog] = useState(null);
-  const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-    image: "",
-    tags: [],
-  });
-  const [errors, setErrors] = useState({
-    title: "",
-    content: "",
-    image: "",
-    tags: ""
-  });
-  const [isNew, setIsNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [blogToDelete, setBlogToDelete] = useState(null);
-
-  useEffect(() => {
-    fetchBlogs();
-    fetchTags();
-  }, []);
-
-  const fetchBlogs = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get('/posts');
-      setBlogs(response.data.posts);
-    } catch (err) {
-      console.error("Error fetching blogs:", err);
-      setError(err.response?.data?.message || "Không thể tải danh sách bài viết");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchTags = async () => {
-    try {
-      const response = await api.get('/tags');
-      let tagsData = [];
-      if (Array.isArray(response.data.data)) {
-        tagsData = response.data.data;
-      } else if (Array.isArray(response.data.tags)) {
-        tagsData = response.data.tags;
-      } else if (Array.isArray(response.data)) {
-        tagsData = response.data;
-      }
-      setTags(tagsData);
-    } catch (err) {
-      console.error("Error fetching tags:", err);
-    }
-  };
-
-  const handleNew = () => {
-    setFormData({ title: "", content: "", image: "", tags: [] });
-    setErrors({ title: "", content: "", image: "", tags: "" });
-    setEditingBlog({});
-    setIsNew(true);
-  };
-
-  const handleEdit = (blog) => {
-    setIsNew(false);
-    setEditingBlog(blog);
-    setFormData({
-      title: blog.title,
-      content: blog.content,
-      image: blog.image,
-      tags: blog.tags?.map(tag => tag._id || tag) || []
-    });
-  };
-
-  const handleSave = async () => {
-    const newErrors = {
-      title: !formData.title ? "Vui lòng nhập tiêu đề" : "",
-      content: !formData.content ? "Vui lòng nhập nội dung" : "",
-      image: "",
-      tags: ""
-    };
-
-    setErrors(newErrors);
-
-    if (Object.values(newErrors).some(error => error !== "")) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      if (isNew) {
-        await api.post('/posts/create', formData);
-      } else {
-        await api.put(`/posts/${editingBlog._id}`, formData);
-      }
-      await fetchBlogs();
-      setEditingBlog(null);
-      setIsNew(false);
-    } catch (err) {
-      console.error("Error saving blog:", err);
-      setError(err.response?.data?.message || "Không thể lưu bài viết");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/posts/${id}`);
-      await fetchBlogs();
-    } catch (err) {
-      console.error("Error deleting blog:", err);
-      setError(err.response?.data?.message || "Không thể xóa bài viết");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getTagTitle = (tagId) => {
-    const tag = tags.find(t => t._id === tagId);
-    return tag ? tag.title : tagId;
-  };
+  const {
+    blogs,
+    tags,
+    loading,
+    error,
+    editingBlog,
+    setEditingBlog,
+    formData,
+    setFormData,
+    errors,
+    isNew,
+    setIsNew,
+    showConfirm,
+    setShowConfirm,
+    blogToDelete,
+    setBlogToDelete,
+    handleNew,
+    handleEdit,
+    handleSave,
+    handleDelete,
+    getTagTitle,
+  } = useBlogs();
 
   if (loading && blogs.length === 0) {
     return (

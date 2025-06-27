@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Pencil,
   Trash2,
@@ -8,131 +8,34 @@ import {
   Gem,
 } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
-import api from "../../api";
+import useBadges from "../../hook/useBadges";
 
 const Badges = () => {
-  const [badges, setBadges] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [editingBadge, setEditingBadge] = useState(null);
-  const [newData, setNewData] = useState({ 
-    name: "", 
-    condition: "", 
-    tier: "Bronze", 
-    point_value: 0,
-    url_image: "" 
-  });
-  const [errors, setErrors] = useState({
-    name: "",
-    condition: "",
-    tier: "",
-    point_value: "",
-    url_image: ""
-  });
-  const [isNew, setIsNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [badgeToDelete, setBadgeToDelete] = useState(null);
-
-  useEffect(() => {
-    fetchBadges();
-  }, []);
-
-  const fetchBadges = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get('/badges');
-      setBadges(response.data);
-    } catch (err) {
-      console.error("Lỗi khi tải huy hiệu:", err);
-      setError(err.response?.data?.message || "Không thể tải danh sách huy hiệu");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    badges,
+    loading,
+    error,
+    editingBadge,
+    setEditingBadge,
+    newData,
+    setNewData,
+    errors,
+    isNew,
+    setIsNew,
+    showConfirm,
+    setShowConfirm,
+    badgeToDelete,
+    setBadgeToDelete,
+    handleEdit,
+    handleNew,
+    handleSave,
+    handleDelete,
+  } = useBadges();
 
   const iconByLevel = {
     Bronze: <Shield className="w-6 h-6 text-amber-600" />,
     Silver: <Trophy className="w-6 h-6 text-slate-300" />,
     Gold: <Gem className="w-6 h-6 text-yellow-400" />,
-  };
-
-  const handleEdit = (badge) => {
-    setEditingBadge(badge);
-    setNewData({
-      name: badge.name,
-      condition: badge.condition,
-      tier: badge.tier,
-      point_value: badge.point_value,
-      url_image: badge.url_image
-    });
-    setIsNew(false);
-  };
-
-  const handleSave = async () => {
-    const newErrors = {
-      name: !newData.name ? "Vui lòng nhập tên huy hiệu" : "",
-      condition: !newData.condition ? "Vui lòng nhập điều kiện" : "",
-      tier: !newData.tier ? "Vui lòng chọn cấp bậc" : "",
-      point_value: !newData.point_value && newData.point_value !== 0 ? "Vui lòng nhập giá trị điểm" : 
-                  newData.point_value < 0 ? "Giá trị điểm không được âm" : "",
-      url_image: ""
-    };
-
-    setErrors(newErrors);
-
-    if (Object.values(newErrors).some(error => error !== "")) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      if (isNew) {
-        await api.post('/badges/create', newData);
-      } else {
-        await api.put(`/badges/${editingBadge._id}`, newData);
-      }
-      await fetchBadges();
-      setEditingBadge(null);
-      setIsNew(false);
-    } catch (err) {
-      console.error("Lỗi khi lưu huy hiệu:", err);
-      setError(err.response?.data?.message || "Không thể lưu huy hiệu");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/badges/${id}`);
-      await fetchBadges();
-    } catch (err) {
-      console.error("Lỗi khi xóa huy hiệu:", err);
-      setError(err.response?.data?.message || "Không thể xóa huy hiệu");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleNew = () => {
-    setNewData({ 
-      name: "", 
-      condition: "", 
-      tier: "Bronze", 
-      point_value: 0,
-      url_image: "" 
-    });
-    setErrors({
-      name: "",
-      condition: "",
-      tier: "",
-      point_value: "",
-      url_image: ""
-    });
-    setEditingBadge({});
-    setIsNew(true);
   };
 
   if (loading && badges.length === 0) {

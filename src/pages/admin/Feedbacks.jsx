@@ -1,48 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Trash, Pencil, Plus, Star, User, MessageCircle, Filter, Search, EyeOff, ClockIcon } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
-import api from "../../api";
+import useFeedbacks from "../../hook/useFeedbacks";
 
 const Feedbacks = () => {
-  const [feedbacks, setFeedbacks] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [editingFeedback, setEditingFeedback] = useState(null);
-  const [newData, setNewData] = useState({
-    rating: 5,
-    content: "",
-    feedback_type: "user_to_system",
-    status: "pending"
-  });
-  const [errors, setErrors] = useState({
-    rating: "",
-    content: "",
-    feedback_type: "",
-    status: ""
-  });
-  const [isNew, setIsNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [feedbackToDelete, setFeedbackToDelete] = useState(null);
-  const [filterType, setFilterType] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
-
-  useEffect(() => {
-    fetchFeedbacks();
-  }, [filterType]);
-
-  const fetchFeedbacks = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get(`/feedback?type=${filterType}`);
-      setFeedbacks(response.data);
-    } catch (err) {
-      console.error("Error fetching feedbacks:", err);
-      setError(err.response?.data?.message || "Không thể tải dữ liệu phản hồi");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    feedbacks,
+    loading,
+    error,
+    editingFeedback,
+    setEditingFeedback,
+    newData,
+    setNewData,
+    errors,
+    isNew,
+    setIsNew,
+    showConfirm,
+    setShowConfirm,
+    feedbackToDelete,
+    setFeedbackToDelete,
+    filterType,
+    setFilterType,
+    searchTerm,
+    setSearchTerm,
+    filteredFeedbacks,
+    handleEdit,
+    handleNew,
+    handleSave,
+    handleDelete,
+    handleStatusUpdate,
+  } = useFeedbacks();
 
   const getFeedbackTypeIcon = (type) => {
     switch (type) {
@@ -80,99 +67,6 @@ const Feedbacks = () => {
         return 'text-gray-400 bg-gray-400/10 border-gray-400/20';
     }
   };
-
-  const handleEdit = (feedback) => {
-    setEditingFeedback(feedback);
-    setNewData({
-      rating: feedback.rating || 5,
-      content: feedback.content || "",
-      feedback_type: feedback.feedback_type || "user_to_system",
-      status: feedback.status || "pending"
-    });
-    setIsNew(false);
-  };
-
-  const handleSave = async () => {
-    const newErrors = {
-      rating: !newData.rating ? "Vui lòng nhập đánh giá" : 
-              newData.rating < 1 || newData.rating > 5 ? "Đánh giá phải từ 1 đến 5" : "",
-      content: !newData.content ? "Vui lòng nhập nội dung phản hồi" : "",
-      feedback_type: !newData.feedback_type ? "Vui lòng chọn loại phản hồi" : "",
-      status: !newData.status ? "Vui lòng chọn trạng thái" : ""
-    };
-
-    setErrors(newErrors);
-
-    if (Object.values(newErrors).some(error => error !== "")) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      if (isNew) {
-        await api.post('/feedback', newData);
-      } else {
-        await api.put(`/feedback/${editingFeedback._id}`, newData);
-      }
-      await fetchFeedbacks();
-      setEditingFeedback(null);
-      setIsNew(false);
-    } catch (err) {
-      console.error("Error saving feedback:", err);
-      setError(err.response?.data?.message || "Không thể lưu phản hồi");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/feedback/${id}`);
-      await fetchFeedbacks();
-    } catch (err) {
-      console.error("Error deleting feedback:", err);
-      setError(err.response?.data?.message || "Không thể xóa phản hồi");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleNew = () => {
-    setNewData({
-      rating: 5,
-      content: "",
-      feedback_type: "user_to_system",
-      status: "pending"
-    });
-    setErrors({
-      rating: "",
-      content: "",
-      feedback_type: "",
-      status: ""
-    });
-    setEditingFeedback({});
-    setIsNew(true);
-  };
-
-  const handleStatusUpdate = async (id, status) => {
-    try {
-      setLoading(true);
-      await api.put(`/feedback/status/${id}`, { status });
-      await fetchFeedbacks();
-    } catch (err) {
-      console.error("Error updating status:", err);
-      setError(err.response?.data?.message || "Không thể cập nhật trạng thái");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredFeedbacks = feedbacks.filter(feedback =>
-    feedback.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    feedback.user_id?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    feedback.user_id?.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   if (loading && feedbacks.length === 0) {
     return (
