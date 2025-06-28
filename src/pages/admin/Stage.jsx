@@ -28,8 +28,8 @@ const Stage = () => {
 
   if (loading && stages.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="flex items-center gap-2 text-white text-lg">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex items-center gap-2 text-gray-700 text-lg">
           <svg className="animate-spin h-5 w-5 text-cyan-500" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
@@ -42,8 +42,8 @@ const Stage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-red-400 text-lg bg-red-900/30 p-4 rounded-lg">{error}</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-red-600 text-lg bg-red-100 p-4 rounded-lg border border-red-200">{error}</div>
       </div>
     );
   }
@@ -55,7 +55,7 @@ const Stage = () => {
       <h2 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
         Quản lý giai đoạn
       </h2>
-      <p className="text-black-300 text-lg">
+      <p className="text-gray-600 text-lg">
         Quản lý và tổ chức các giai đoạn cho các kế hoạch cai thuốc lá
       </p>
     </div>
@@ -72,11 +72,11 @@ const Stage = () => {
     </div>
 
     {/* Table */}
-    <div className="max-w-10xl mx-auto bg-gray-800 rounded-xl p-6 shadow-lg ring-1 ring-gray-700 overflow-x-auto">
+    <div className="max-w-6xl mx-auto bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 overflow-x-auto">
       <div className="min-w-[1000px]">
         <table className="w-full text-sm text-left">
           <thead>
-            <tr className="text-gray-300 border-b border-gray-600">
+            <tr className="text-gray-600 border-b border-gray-200">
               <th className="py-3 px-4">Giai đoạn #</th>
               <th className="py-3 px-4">Tiêu đề</th>
               <th className="py-3 px-4">Mô tả</th>
@@ -91,22 +91,22 @@ const Stage = () => {
             {stages.map((stage) => (
               <tr
                 key={stage._id}
-                className="hover:bg-gray-700 transition duration-200 border-b border-gray-600"
+                className="hover:bg-gray-50 transition duration-200 border-b border-gray-200"
               >
-                <td className="py-3 px-4 text-gray-200">{stage.stage_number}</td>
-                <td className="py-3 px-4 text-gray-200 truncate">{stage.title}</td>
-                <td className="py-3 px-4 text-gray-200 truncate">{stage.description}</td>
-                <td className="py-3 px-4 text-gray-200 truncate">
+                <td className="py-3 px-4 text-gray-700">{stage.stage_number}</td>
+                <td className="py-3 px-4 text-gray-700 truncate">{stage.title}</td>
+                <td className="py-3 px-4 text-gray-700 truncate">{stage.description}</td>
+                <td className="py-3 px-4 text-gray-700 truncate">
                   {plans.find(p => p._id === stage.plan_id)?.name || stage.plan_id}
                 </td>
-                <td className="py-3 px-4 text-gray-200">{new Date(stage.start_date).toLocaleDateString('vi-VN')}</td>
-                <td className="py-3 px-4 text-gray-200">{new Date(stage.end_date).toLocaleDateString('vi-VN')}</td>
+                <td className="py-3 px-4 text-gray-700">{new Date(stage.start_date).toLocaleDateString('vi-VN')}</td>
+                <td className="py-3 px-4 text-gray-700">{new Date(stage.end_date).toLocaleDateString('vi-VN')}</td>
                 <td className="py-3 px-4">
                   <span
                     className={`inline-block px-4 py-2 text-sm rounded-full font-semibold min-w-[120px] text-center ${
                       stage.is_completed
-                        ? "bg-green-500/20 text-green-300 border border-green-500/30"
-                        : "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
+                        ? "bg-green-100 text-green-700 border border-green-200"
+                        : "bg-yellow-100 text-yellow-700 border border-yellow-200"
                     }`}
                   >
                     {stage.is_completed ? "Hoàn thành" : "Đang thực hiện"}
@@ -115,7 +115,7 @@ const Stage = () => {
                 <td className="py-3 px-4 text-right space-x-2">
                   <button
                     onClick={() => openEditModal(stage)}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-cyan-500 text-white text-xs font-medium transition"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-cyan-500 hover:text-white text-gray-700 text-xs font-medium transition"
                   >
                     <Pencil className="w-4 h-4" />
                     Chỉnh sửa
@@ -125,7 +125,7 @@ const Stage = () => {
                       setStageToDelete(stage._id);
                       setShowConfirm(true);
                     }}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-medium transition"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-100 hover:bg-red-500 text-red-700 hover:text-white text-xs font-medium transition"
                   >
                     <Trash className="w-4 h-4" />
                     Xóa
@@ -135,7 +135,7 @@ const Stage = () => {
             ))}
             {stages.length === 0 && (
               <tr>
-                <td colSpan="8" className="text-center py-4 text-gray-400">
+                <td colSpan="8" className="text-center py-4 text-gray-500">
                   Không tìm thấy giai đoạn nào.
                 </td>
               </tr>
@@ -147,19 +147,19 @@ const Stage = () => {
 
       {/* Modal for Add/Edit */}
       {selectedStage && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative animate-in fade-in-50 duration-300">
-            <h3 className="text-2xl font-bold mb-6 text-center text-cyan-300">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl relative animate-in fade-in-50 duration-300">
+            <h3 className="text-2xl font-bold mb-6 text-center text-gray-800">
               {isNew ? "Thêm giai đoạn mới" : "Chỉnh sửa giai đoạn"}
             </h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Kế hoạch</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Kế hoạch</label>
                 <select
                   value={editedStage.plan_id}
                   onChange={(e) => setEditedStage({ ...editedStage, plan_id: e.target.value })}
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.plan_id ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${errors.plan_id ? 'border-red-500' : 'border-gray-300'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 >
                   <option value="">Chọn một kế hoạch</option>
                   {plans.map(plan => (
@@ -168,69 +168,69 @@ const Stage = () => {
                     </option>
                   ))}
                 </select>
-                {errors.plan_id && <p className="text-red-400 text-xs mt-1">{errors.plan_id}</p>}
+                {errors.plan_id && <p className="text-red-500 text-xs mt-1">{errors.plan_id}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Tiêu đề giai đoạn</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tiêu đề giai đoạn</label>
                 <input
                   type="text"
                   value={editedStage.title}
                   onChange={(e) => setEditedStage({ ...editedStage, title: e.target.value })}
                   placeholder="Nhập tiêu đề giai đoạn"
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.title ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${errors.title ? 'border-red-500' : 'border-gray-300'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.title && <p className="text-red-400 text-xs mt-1">{errors.title}</p>}
+                {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Mô tả giai đoạn</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả giai đoạn</label>
                 <textarea
                   value={editedStage.description}
                   onChange={(e) => setEditedStage({ ...editedStage, description: e.target.value })}
                   placeholder="Nhập mô tả giai đoạn"
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.description ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${errors.description ? 'border-red-500' : 'border-gray-300'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                   rows="4"
                 />
-                {errors.description && <p className="text-red-400 text-xs mt-1">{errors.description}</p>}
+                {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Số thứ tự giai đoạn</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Số thứ tự giai đoạn</label>
                 <input
                   type="number"
                   value={editedStage.stage_number}
                   onChange={(e) => setEditedStage({ ...editedStage, stage_number: e.target.value })}
                   placeholder="Nhập số thứ tự giai đoạn"
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.stage_number ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${errors.stage_number ? 'border-red-500' : 'border-gray-300'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.stage_number && <p className="text-red-400 text-xs mt-1">{errors.stage_number}</p>}
+                {errors.stage_number && <p className="text-red-500 text-xs mt-1">{errors.stage_number}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Ngày bắt đầu</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Ngày bắt đầu</label>
                 <input
                   type="date"
                   value={editedStage.start_date}
                   onChange={(e) => setEditedStage({ ...editedStage, start_date: e.target.value })}
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.start_date ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${errors.start_date ? 'border-red-500' : 'border-gray-300'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.start_date && <p className="text-red-400 text-xs mt-1">{errors.start_date}</p>}
+                {errors.start_date && <p className="text-red-500 text-xs mt-1">{errors.start_date}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Ngày kết thúc</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Ngày kết thúc</label>
                 <input
                   type="date"
                   value={editedStage.end_date}
                   onChange={(e) => setEditedStage({ ...editedStage, end_date: e.target.value })}
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${errors.end_date ? 'border-red-500' : 'border-gray-600'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${errors.end_date ? 'border-red-500' : 'border-gray-300'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.end_date && <p className="text-red-400 text-xs mt-1">{errors.end_date}</p>}
+                {errors.end_date && <p className="text-red-500 text-xs mt-1">{errors.end_date}</p>}
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-300">Trạng thái:</span>
+                <span className="text-sm text-gray-700">Trạng thái:</span>
                 <button
                   onClick={() =>
                     setEditedStage({
@@ -240,8 +240,8 @@ const Stage = () => {
                   }
                   className={`px-3 py-1 rounded-full text-xs font-bold transition ${
                     editedStage.is_completed
-                      ? "bg-green-600 text-white hover:bg-green-700"
-                      : "bg-yellow-600 text-white hover:bg-yellow-700"
+                      ? "bg-green-100 text-green-700 hover:bg-green-200"
+                      : "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
                   }`}
                 >
                   {editedStage.is_completed ? "Đánh dấu chưa hoàn thành" : "Đánh dấu hoàn thành"}
@@ -255,7 +255,7 @@ const Stage = () => {
                   setSelectedStage(null);
                   setIsNew(false);
                 }}
-                className="px-5 py-2 rounded-lg bg-gray-600 hover:bg-gray-500 text-gray-200 transition"
+                className="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
               >
                 Hủy
               </button>

@@ -28,7 +28,7 @@ const Subscriptions = () => {
 
   if (loading && subscriptions.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="flex items-center justify-center bg-gray-50 min-h-screen text-gray-800">
         <div className="flex items-center gap-2 text-white text-lg">
           <svg
             className="animate-spin h-5 w-5 text-cyan-500"
@@ -89,10 +89,10 @@ const Subscriptions = () => {
       </div>
 
       {/* Table */}
-      <div className="max-w-6xl mx-auto bg-gray-800 rounded-xl p-6 shadow-lg ring-1 ring-gray-700 overflow-x-auto">
+      <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md p-6 ring-1 ring-gray-200 overflow-x-auto">
         <table className="w-full text-sm text-left table-auto">
           <thead>
-            <tr className="text-gray-300 border-b border-gray-600">
+            <tr className="text-gray-600 border-b border-gray-200">
               <th className="py-3 px-4">Tên</th>
               <th className="py-3 px-4">Giá</th>
               <th className="py-3 px-4">Ngày bắt đầu</th>
@@ -106,25 +106,25 @@ const Subscriptions = () => {
             {subscriptions.map((sub) => (
               <tr
                 key={sub._id}
-                className="hover:bg-gray-700 transition duration-200 border-b border-gray-600"
+                className="hover:bg-gray-50 transition duration-200 border-b border-gray-200"
               >
-                <td className="py-3 px-4 text-gray-200">{sub.name}</td>
-                <td className="py-3 px-4 text-gray-200">{sub.price}</td>
-                <td className="py-3 px-4 text-gray-200">
+                <td className="py-3 px-4 text-gray-700">{sub.name}</td>
+                <td className="py-3 px-4 text-gray-700">{sub.price}</td>
+                <td className="py-3 px-4 text-gray-700">
                   {new Date(sub.start_date).toLocaleDateString("vi-VN")}
                 </td>
-                <td className="py-3 px-4 text-gray-200">
+                <td className="py-3 px-4 text-gray-700">
                   {new Date(sub.end_date).toLocaleDateString("vi-VN")}
                 </td>
-                <td className="py-3 px-4 text-gray-200">
+                <td className="py-3 px-4 text-gray-700">
                   {plans.find((p) => p._id === sub.plan_id)?.name || sub.plan_id}
                 </td>
                 <td className="py-3 px-4">
                   <span
                     className={`px-3 py-1 text-xs rounded-full font-semibold ${
                       sub.is_active
-                        ? "bg-green-500/20 text-green-300"
-                        : "bg-red-500/20 text-red-300"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
                     }`}
                   >
                     {sub.is_active ? "Kích hoạt" : "Không kích hoạt"}
@@ -133,7 +133,7 @@ const Subscriptions = () => {
                 <td className="py-3 px-4 text-right space-x-2">
                   <button
                     onClick={() => openEditModal(sub)}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-cyan-500 text-white text-xs font-medium transition"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-cyan-500 hover:text-white text-gray-700 text-xs font-medium transition"
                   >
                     <Pencil className="w-4 h-4" />
                     Chỉnh sửa
@@ -143,7 +143,7 @@ const Subscriptions = () => {
                       setSubToDelete(sub._id);
                       setShowConfirm(true);
                     }}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-medium transition"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-100 hover:bg-red-500 text-red-700 hover:text-white text-xs font-medium transition"
                   >
                     <Trash className="w-4 h-4" />
                     Xóa
@@ -157,15 +157,15 @@ const Subscriptions = () => {
 
       {/* Modal for Add/Edit */}
       {selectedSub && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative animate-in fade-in-50 duration-300">
-            <h3 className="text-2xl font-bold mb-6 text-center text-cyan-300">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl relative animate-in fade-in-50 duration-300">
+            <h3 className="text-2xl font-bold mb-6 text-center text-gray-800">
               {isNew ? "Thêm đăng ký mới" : "Chỉnh sửa đăng ký"}
             </h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Gói
                 </label>
                 <select
@@ -173,8 +173,8 @@ const Subscriptions = () => {
                   onChange={(e) =>
                     setEditedSub({ ...editedSub, plan_id: e.target.value })
                   }
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
-                    errors.plan_id ? "border-red-500" : "border-gray-600"
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${
+                    errors.plan_id ? "border-red-500" : "border-gray-300"
                   } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 >
                   <option value="">Chọn một gói</option>
@@ -185,12 +185,12 @@ const Subscriptions = () => {
                   ))}
                 </select>
                 {errors.plan_id && (
-                  <p className="text-red-400 text-xs mt-1">{errors.plan_id}</p>
+                  <p className="text-red-500 text-xs mt-1">{errors.plan_id}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Tên đăng ký
                 </label>
                 <input
@@ -200,17 +200,17 @@ const Subscriptions = () => {
                     setEditedSub({ ...editedSub, name: e.target.value })
                   }
                   placeholder="Nhập tên đăng ký"
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
-                    errors.name ? "border-red-500" : "border-gray-600"
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${
+                    errors.name ? "border-red-500" : "border-gray-300"
                   } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
                 {errors.name && (
-                  <p className="text-red-400 text-xs mt-1">{errors.name}</p>
+                  <p className="text-red-500 text-xs mt-1">{errors.name}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Giá
                 </label>
                 <input
@@ -220,17 +220,17 @@ const Subscriptions = () => {
                     setEditedSub({ ...editedSub, price: e.target.value })
                   }
                   placeholder="Nhập giá"
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
-                    errors.price ? "border-red-500" : "border-gray-600"
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${
+                    errors.price ? "border-red-500" : "border-gray-300"
                   } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
                 {errors.price && (
-                  <p className="text-red-400 text-xs mt-1">{errors.price}</p>
+                  <p className="text-red-500 text-xs mt-1">{errors.price}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Ngày bắt đầu
                 </label>
                 <input
@@ -239,19 +239,19 @@ const Subscriptions = () => {
                   onChange={(e) =>
                     setEditedSub({ ...editedSub, start_date: e.target.value })
                   }
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
-                    errors.start_date ? "border-red-500" : "border-gray-600"
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${
+                    errors.start_date ? "border-red-500" : "border-gray-300"
                   } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
                 {errors.start_date && (
-                  <p className="text-red-400 text-xs mt-1">
+                  <p className="text-red-500 text-xs mt-1">
                     {errors.start_date}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Ngày kết thúc
                 </label>
                 <input
@@ -260,17 +260,17 @@ const Subscriptions = () => {
                   onChange={(e) =>
                     setEditedSub({ ...editedSub, end_date: e.target.value })
                   }
-                  className={`w-full p-3 rounded-lg bg-gray-700 text-white border ${
-                    errors.end_date ? "border-red-500" : "border-gray-600"
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${
+                    errors.end_date ? "border-red-500" : "border-gray-300"
                   } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
                 {errors.end_date && (
-                  <p className="text-red-400 text-xs mt-1">{errors.end_date}</p>
+                  <p className="text-red-500 text-xs mt-1">{errors.end_date}</p>
                 )}
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-300">Trạng thái:</span>
+                <span className="text-sm text-gray-700">Trạng thái:</span>
                 <button
                   onClick={() =>
                     setEditedSub({
@@ -280,8 +280,8 @@ const Subscriptions = () => {
                   }
                   className={`px-3 py-1 rounded-full text-xs font-bold transition ${
                     editedSub.is_active
-                      ? "bg-green-600 text-white hover:bg-green-700"
-                      : "bg-red-600 text-white hover:bg-red-700"
+                      ? "bg-green-100 text-green-700 hover:bg-green-200"
+                      : "bg-red-100 text-red-700 hover:bg-red-200"
                   }`}
                 >
                   {editedSub.is_active ? "Hủy kích hoạt" : "Kích hoạt"}
@@ -295,7 +295,7 @@ const Subscriptions = () => {
                   setSelectedSub(null);
                   setIsNew(false);
                 }}
-                className="px-5 py-2 rounded-lg bg-gray-600 hover:bg-gray-500 text-gray-200 transition"
+                className="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
               >
                 Hủy
               </button>

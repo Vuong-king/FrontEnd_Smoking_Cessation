@@ -43,26 +43,26 @@ const Users = () => {
 
   if (loading && users.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
-        <div className="text-white text-xl">Đang tải...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-gray-700 text-xl">Đang tải...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
-        <div className="text-red-500 text-xl">{error}</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-red-600 text-xl bg-red-100 p-4 rounded-lg border border-red-200">{error}</div>
       </div>
     );
   }
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-900 to-black min-h-screen">
+    <section className="py-20 bg-gray-50 min-h-screen text-gray-800">
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold mb-2">
           Quản lý {" "}
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
+          <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-black  font-bold">
             {role === "admin" ? "Quản trị viên" : role === "coach" ? "Huấn luyện viên" : "Người dùng"}
           </span>{" "}
           <RoleIcon />
@@ -80,7 +80,7 @@ const Users = () => {
               className={`px-4 py-2 rounded font-medium transition duration-300 transform ${
                 role === r.toLowerCase()
                   ? "bg-gradient-to-r from-purple-600 to-cyan-500 text-white shadow-md"
-                  : "bg-white/10 text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-cyan-500 hover:scale-105"
+                  : "bg-white/10 text-black hover:bg-gradient-to-r hover:from-purple-500 hover:to-cyan-500 hover:scale-105"
               }`}
             >
               {r === "Admin" ? "Quản trị viên" : r === "Coach" ? "Huấn luyện viên" : "Người dùng"}
@@ -89,10 +89,10 @@ const Users = () => {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto bg-white/5 rounded-xl p-6 shadow-xl ring-1 ring-white/10 overflow-x-auto">
+      <div className="max-w-4xl mx-auto bg-white rounded-xl p-6 shadow-xl ring-1 ring-gray-200 overflow-x-auto">
         <table className="w-full text-sm text-left">
           <thead>
-            <tr className="border-b border-white/10">
+            <tr className="border-b border-gray-200 text-gray-600">
               <th>Ảnh đại diện</th>
               <th>Email</th>
               <th>Họ tên</th>
@@ -104,7 +104,7 @@ const Users = () => {
             {filteredUsers.map((u, index) => (
               <tr
                 key={u.id}
-                className={`border-b border-white/10 hover:bg-white/5 transition duration-200 ${
+                className={`border-b border-gray-200 hover:bg-gray-50 transition duration-200 ${
                   index === 0 ? "rounded-t-lg" : ""
                 }`}
               >
@@ -115,14 +115,14 @@ const Users = () => {
                     className="w-10 h-10 rounded-full object-cover"
                   />
                 </td>
-                <td>{u.email}</td>
-                <td>{u.name}</td>
-                <td>{u.role === "admin" ? "Quản trị viên" : u.role === "coach" ? "Huấn luyện viên" : "Người dùng"}</td>
+                <td className="text-gray-700">{u.email}</td>
+                <td className="text-gray-700">{u.name}</td>
+                <td className="text-gray-700">{u.role === "admin" ? "Quản trị viên" : u.role === "coach" ? "Huấn luyện viên" : "Người dùng"}</td>
                 {(role === "coach" || role === "user") && (
                   <td className="space-x-2">
                     <button
                       onClick={() => openEditModal(u)}
-                      className="px-3 py-1 rounded text-white font-semibold bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 transition"
+                      className="px-3 py-1 rounded text-gray-700 font-semibold bg-gray-100 hover:bg-cyan-500 hover:text-white transition"
                     >
                       Sửa
                     </button>
@@ -132,7 +132,7 @@ const Users = () => {
                         setUserToDelete(u.id);
                         setShowConfirm(true);
                       }}
-                      className="px-3 py-1 rounded text-white font-semibold bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 transition"
+                      className="px-3 py-1 rounded text-red-700 font-semibold bg-red-100 hover:bg-red-500 hover:text-white transition"
                     >
                       Xóa
                     </button>
@@ -142,7 +142,7 @@ const Users = () => {
             ))}
             {filteredUsers.length === 0 && (
               <tr>
-                <td colSpan="5" className="text-center py-4 text-white/60">
+                <td colSpan="5" className="text-center py-4 text-gray-500">
                   {role === "admin" ? "Không có quản trị viên nào." : role === "coach" ? "Không có huấn luyện viên nào." : "Không có người dùng nào."}
                 </td>
               </tr>
@@ -151,7 +151,7 @@ const Users = () => {
         </table>
       </div>
 
-      {(role === "coach" || role === "user") && (
+      {/* {(role === "coach" || role === "user") && (
         <button
           onClick={openNewModal}
           className="fixed bottom-10 right-10 flex items-center gap-3 px-6 py-3 rounded-full 
@@ -170,12 +170,12 @@ const Users = () => {
             Thêm {role === "coach" ? "huấn luyện viên" : "người dùng"}
           </span>
         </button>
-      )}
+      )} */}
 
       {showModal && (role === "coach" || role === "user") && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-gradient-to-r from-purple-900 to-cyan-900 p-6 rounded-xl w-full max-w-md shadow-xl">
-            <h3 className="text-xl font-semibold mb-4 text-center">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-xl border border-gray-200">
+            <h3 className="text-xl font-semibold mb-4 text-center text-gray-800">
               {editingId ? "Sửa" : "Thêm"} {role === "coach" ? "huấn luyện viên" : "người dùng"}
             </h3>
             <div className="grid grid-cols-1 gap-3">
@@ -190,7 +190,7 @@ const Users = () => {
                     <input
                       type="text"
                       placeholder="URL ảnh đại diện"
-                      className={`p-2 rounded text-black w-full ${errors.avatar_url ? 'border-2 border-red-500' : ''}`}
+                      className={`p-2 rounded bg-gray-50 text-gray-800 border border-gray-300 w-full focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition ${errors.avatar_url ? 'border-red-500' : ''}`}
                       value={newUser.avatar_url}
                       onChange={(e) =>
                         setNewUser({ ...newUser, avatar_url: e.target.value })
@@ -204,7 +204,7 @@ const Users = () => {
                 <input
                   type="email"
                   placeholder="Email"
-                  className={`p-2 rounded text-black w-full ${errors.email ? 'border-2 border-red-500' : ''}`}
+                  className={`p-2 rounded bg-gray-50 text-gray-800 border border-gray-300 w-full focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition ${errors.email ? 'border-red-500' : ''}`}
                   value={newUser.email}
                   onChange={(e) =>
                     setNewUser({ ...newUser, email: e.target.value })
@@ -216,7 +216,7 @@ const Users = () => {
                 <input
                   type="text"
                   placeholder="Họ tên"
-                  className={`p-2 rounded text-black w-full ${errors.name ? 'border-2 border-red-500' : ''}`}
+                  className={`p-2 rounded bg-gray-50 text-gray-800 border border-gray-300 w-full focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition ${errors.name ? 'border-red-500' : ''}`}
                   value={newUser.name}
                   onChange={(e) =>
                     setNewUser({ ...newUser, name: e.target.value })
@@ -227,7 +227,7 @@ const Users = () => {
               {editingId && (
                 <div>
                   <select
-                    className={`p-2 rounded text-black w-full ${errors.role ? 'border-2 border-red-500' : ''}`}
+                    className={`p-2 rounded bg-gray-50 text-gray-800 border border-gray-300 w-full focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition ${errors.role ? 'border-red-500' : ''}`}
                     value={newUser.role}
                     onChange={(e) =>
                       setNewUser({ ...newUser, role: e.target.value })
@@ -249,7 +249,7 @@ const Users = () => {
                   setNewUser({ email: "", name: "", role: "", avatar_url: "" });
                   setEditingId(null);
                 }}
-                className="px-4 py-2 rounded shadow-md bg-gradient-to-r from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800 text-white transition duration-300"
+                className="px-4 py-2 rounded shadow-md bg-gray-200 hover:bg-gray-300 text-gray-700 transition duration-300"
               >
                 Hủy
               </button>

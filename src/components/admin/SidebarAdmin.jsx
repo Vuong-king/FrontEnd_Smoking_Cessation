@@ -44,18 +44,18 @@ function SidebarAdmin() {
   }, [collapsed]);
 
   const menu = [
-    { label: "Dashboard", icon: <DashboardOutlined />, path: "/admin" },
-    { label: "Users", icon: <UserOutlined />, path: "/admin/users" },
-    { label: "Subscriptions", icon: <CreditCardOutlined />, path: "/admin/subscriptions" },
-    { label: "Badges", icon: <StarOutlined />, path: "/admin/badges" },
-    { label: "Stages", icon: <BarChartOutlined />, path: "/admin/stages" },
+    { label: "Bảng điều khiển", icon: <DashboardOutlined />, path: "/admin" },
+    { label: "Người dùng", icon: <UserOutlined />, path: "/admin/users" },
+    { label: "Đăng ký", icon: <CreditCardOutlined />, path: "/admin/subscriptions" },
+    { label: "Huy hiệu", icon: <StarOutlined />, path: "/admin/badges" },
+    { label: "Giai đoạn", icon: <BarChartOutlined />, path: "/admin/stages" },
     // { label: "Reports", icon: <BarChartOutlined />, path: "/admin/reports" },
-    { label: "Feedbacks", icon: <MessageOutlined />, path: "/admin/feedbacks" },
-    { label: "Quit Plans", icon: <CheckCircleOutlined />, path: "/admin/quit-plans" },
-    { label: "Progress", icon: <FieldTimeOutlined />, path: "/admin/progress" },
-    { label: "Blog Posts", icon: <FileTextOutlined />, path: "/admin/blogs" },
+    { label: "Phản hồi", icon: <MessageOutlined />, path: "/admin/feedbacks" },
+    { label: "Kế hoạch bỏ thuốc", icon: <CheckCircleOutlined />, path: "/admin/quit-plans" },
+    { label: "Tiến độ", icon: <FieldTimeOutlined />, path: "/admin/progress" },
+    { label: "Bài viết blog", icon: <FileTextOutlined />, path: "/admin/blogs" },
     // { label: "Leaderboard", icon: <TrophyOutlined />, path: "/admin/leaderboard" },
-    { label: "Notifications", icon: <BellOutlined />, path: "/admin/notifications" },
+    { label: "Thông báo", icon: <BellOutlined />, path: "/admin/notifications" },
     // { label: "Coaches", icon: <TeamOutlined />, path: "/admin/coaches" },
     // { label: "Permissions", icon: <SafetyOutlined />, path: "/admin/roles" },
     // { label: "Settings", icon: <SettingOutlined />, path: "/admin/settings" },
@@ -63,13 +63,13 @@ function SidebarAdmin() {
   ];
 
   const dropdownItems = [
-    { key: "1", label: "My Account", disabled: true },
+    { key: "1", label: "Tài khoản của tôi", disabled: true },
     { type: "divider" },
-    { key: "2", label: "Profile", icon: <UserOutlined />, onClick: () => navigate(`/admin/profile/${user?.id}`),},
-    { key: "3", label: "Settings", icon: <SettingOutlined /> },
+    { key: "2", label: "Hồ sơ", icon: <UserOutlined />, onClick: () => navigate(`/admin/profile/${user?.id}`),},
+    { key: "3", label: "Cài đặt", icon: <SettingOutlined /> },
     {
       key: "4",
-      label: "Logout",
+      label: "Đăng xuất",
       icon: <SettingOutlined />,
       onClick: handleLogout,
     },
@@ -94,7 +94,7 @@ function SidebarAdmin() {
         {!collapsed && (
           <Link to="/admin">
             <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500 px-4 py-3">
-              ADMIN PANEL
+              EXHEALTH
             </div>
           </Link>
         )}
