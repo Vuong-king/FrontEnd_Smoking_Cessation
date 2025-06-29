@@ -1,40 +1,43 @@
 import { useState, useEffect } from 'react';
 import SubscriptionService from '../services/subscriptionService';
-import QuitPlanServiceAdmin from '../services/quitPlanServiceAdmin';
+import PackageService from '../services/packageService';
 
 const useSubscriptions = () => {
-  // State cho subscriptions và plans
+  // State cho subscriptions và packages
   const [subscriptions, setSubscriptions] = useState([]);
-  const [plans, setPlans] = useState([]);
+  const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // State cho modal/form
   const [selectedSub, setSelectedSub] = useState(null);
   const [editedSub, setEditedSub] = useState({
-    name: '',
-    price: '',
+    package_id: '',
+    user_id: '',
     start_date: '',
     end_date: '',
-    is_active: true,
-    plan_id: '',
+    status: 'pending',
+    price: '',
+    name: '',
   });
   const [errors, setErrors] = useState({
     name: '',
     price: '',
     start_date: '',
     end_date: '',
-    plan_id: '',
+    package_id: '',
+    status: '',
   });
   const [isNew, setIsNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [subToDelete, setSubToDelete] = useState(null);
 
-  // Fetch plans
-  const fetchPlans = async () => {
+  // Fetch packages
+  const fetchPackages = async () => {
     try {
-      const data = await QuitPlanServiceAdmin.getAllQuitPlans();
-      setPlans(data);
+      const data = await PackageService.getAllPackages();
+      console.log(data);
+      setPackages(data.packages);
     } catch (err) {
       setError(err.response?.data?.message || 'Không thể tải danh sách gói');
     }
@@ -56,7 +59,7 @@ const useSubscriptions = () => {
 
   useEffect(() => {
     fetchSubscriptions();
-    fetchPlans();
+    fetchPackages();
   }, []);
 
   // Modal handlers
@@ -68,8 +71,8 @@ const useSubscriptions = () => {
       price: sub.price,
       start_date: sub.start_date ? new Date(sub.start_date).toISOString().split('T')[0] : '',
       end_date: sub.end_date ? new Date(sub.end_date).toISOString().split('T')[0] : '',
-      is_active: sub.is_active,
-      plan_id: sub.plan_id,
+      status: sub.status,
+      package_id: sub.package_id,
     });
   };
 
@@ -80,8 +83,8 @@ const useSubscriptions = () => {
       price: '',
       start_date: '',
       end_date: '',
-      is_active: true,
-      plan_id: '',
+      status: 'pending',
+      package_id: '',
     });
     setSelectedSub({});
   };
@@ -93,7 +96,8 @@ const useSubscriptions = () => {
       price: !editedSub.price ? 'Vui lòng nhập giá' : '',
       start_date: !editedSub.start_date ? 'Vui lòng chọn ngày bắt đầu' : '',
       end_date: !editedSub.end_date ? 'Vui lòng chọn ngày kết thúc' : '',
-      plan_id: !editedSub.plan_id ? 'Vui lòng chọn gói' : '',
+      package_id: !editedSub.package_id ? 'Vui lòng chọn gói' : '',
+      status: !editedSub.status ? 'Vui lòng chọn trạng thái' : '',
     };
     setErrors(newErrors);
     return !Object.values(newErrors).some((error) => error !== '');
@@ -105,8 +109,7 @@ const useSubscriptions = () => {
     try {
       setLoading(true);
       if (isNew) {
-        const { plan_id, ...subscriptionData } = editedSub;
-        await SubscriptionService.createSubscription(plan_id, subscriptionData);
+        await SubscriptionService.createSubscription(editedSub);
       } else {
         await SubscriptionService.updateSubscription(selectedSub._id, editedSub);
       }
@@ -135,7 +138,7 @@ const useSubscriptions = () => {
 
   return {
     subscriptions,
-    plans,
+    packages,
     loading,
     error,
     selectedSub,
@@ -155,7 +158,7 @@ const useSubscriptions = () => {
     handleSaveChanges,
     handleDelete,
     fetchSubscriptions,
-    fetchPlans,
+    fetchPackages,
   };
 };
 

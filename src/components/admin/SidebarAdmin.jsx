@@ -92,9 +92,9 @@ function SidebarAdmin() {
         }`}
       >
         {!collapsed && (
-          <Link to="/admin">
+          <Link to="/">
             <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500 px-4 py-3">
-              EXHEALTH
+              EXHELA
             </div>
           </Link>
         )}

@@ -6,7 +6,7 @@ import useSubscriptions from "../../hook/useSubscriptions";
 const Subscriptions = () => {
   const {
     subscriptions,
-    plans,
+    packages,
     loading,
     error,
     selectedSub,
@@ -117,17 +117,30 @@ const Subscriptions = () => {
                   {new Date(sub.end_date).toLocaleDateString("vi-VN")}
                 </td>
                 <td className="py-3 px-4 text-gray-700">
-                  {plans.find((p) => p._id === sub.plan_id)?.name || sub.plan_id}
+                  {packages.find((p) => p._id === sub.package_id)?.name || sub.package_id}
                 </td>
                 <td className="py-3 px-4">
                   <span
                     className={`px-3 py-1 text-xs rounded-full font-semibold ${
-                      sub.is_active
+                      sub.status === 'active'
                         ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
+                        : sub.status === 'pending'
+                        ? "bg-yellow-100 text-yellow-700"
+                        : sub.status === 'cancelled'
+                        ? "bg-red-100 text-red-700"
+                        : sub.status === 'expired'
+                        ? "bg-gray-100 text-gray-700"
+                        : sub.status === 'grace_period'
+                        ? "bg-orange-100 text-orange-700"
+                        : "bg-gray-100 text-gray-700"
                     }`}
                   >
-                    {sub.is_active ? "Kích hoạt" : "Không kích hoạt"}
+                    {sub.status === 'active' ? "Đang hoạt động" 
+                     : sub.status === 'pending' ? "Chờ xử lý"
+                     : sub.status === 'cancelled' ? "Đã hủy"
+                     : sub.status === 'expired' ? "Hết hạn"
+                     : sub.status === 'grace_period' ? "Gia hạn"
+                     : sub.status}
                   </span>
                 </td>
                 <td className="py-3 px-4 text-right space-x-2">
@@ -169,23 +182,23 @@ const Subscriptions = () => {
                   Gói
                 </label>
                 <select
-                  value={editedSub.plan_id}
+                  value={editedSub.package_id}
                   onChange={(e) =>
-                    setEditedSub({ ...editedSub, plan_id: e.target.value })
+                    setEditedSub({ ...editedSub, package_id: e.target.value })
                   }
                   className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${
-                    errors.plan_id ? "border-red-500" : "border-gray-300"
+                    errors.package_id ? "border-red-500" : "border-gray-300"
                   } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 >
                   <option value="">Chọn một gói</option>
-                  {plans.map((plan) => (
-                    <option key={plan._id} value={plan._id}>
-                      {plan.name}
+                  {packages.map((p) => (
+                    <option key={p._id} value={p._id}>
+                      {p.name}
                     </option>
                   ))}
                 </select>
-                {errors.plan_id && (
-                  <p className="text-red-500 text-xs mt-1">{errors.plan_id}</p>
+                {errors.package_id && (
+                  <p className="text-red-500 text-xs mt-1">{errors.package_id}</p>
                 )}
               </div>
 
@@ -269,23 +282,28 @@ const Subscriptions = () => {
                 )}
               </div>
 
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-700">Trạng thái:</span>
-                <button
-                  onClick={() =>
-                    setEditedSub({
-                      ...editedSub,
-                      is_active: !editedSub.is_active,
-                    })
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Trạng thái
+                </label>
+                <select
+                  value={editedSub.status}
+                  onChange={(e) =>
+                    setEditedSub({ ...editedSub, status: e.target.value })
                   }
-                  className={`px-3 py-1 rounded-full text-xs font-bold transition ${
-                    editedSub.is_active
-                      ? "bg-green-100 text-green-700 hover:bg-green-200"
-                      : "bg-red-100 text-red-700 hover:bg-red-200"
-                  }`}
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${
+                    errors.status ? "border-red-500" : "border-gray-300"
+                  } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 >
-                  {editedSub.is_active ? "Hủy kích hoạt" : "Kích hoạt"}
-                </button>
+                  <option value="pending">Chờ xử lý</option>
+                  <option value="active">Đang hoạt động</option>
+                  <option value="cancelled">Đã hủy</option>
+                  <option value="expired">Hết hạn</option>
+                  <option value="grace_period">Gia hạn</option>
+                </select>
+                {errors.status && (
+                  <p className="text-red-500 text-xs mt-1">{errors.status}</p>
+                )}
               </div>
             </div>
 

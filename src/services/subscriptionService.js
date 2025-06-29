@@ -5,8 +5,8 @@ const SubscriptionService = {
     const response = await api.get('/subscriptions');
     return response.data;
   },
-  createSubscription: async (plan_id, data) => {
-    const response = await api.post(`/subscriptions/${plan_id}`, data);
+  createSubscription: async (data) => {
+    const response = await api.post(`/subscriptions`, data);
     return response.data;
   },
   updateSubscription: async (id, data) => {
