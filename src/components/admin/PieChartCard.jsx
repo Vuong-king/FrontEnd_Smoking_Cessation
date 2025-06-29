@@ -75,7 +75,8 @@ export const PieChartCard = ({ title, data, dataKey, nameKey }) => {
   };
 
   return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:scale-[1.02] hover:shadow-lg transition-all">
+    <div className="p-0">  {/* or remove this wrapper entirely if already inside a styled card */}
+
       <h3 className="text-lg font-semibold mb-4 text-white">{title}</h3>
       <div className="h-64">
         <ReactECharts

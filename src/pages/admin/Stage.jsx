@@ -1,325 +1,236 @@
-import React, { useState, useEffect } from "react";
-import { Pencil, Plus, Trash, Calendar, ListOrdered } from "lucide-react";
+import React from "react";
+import { Pencil, Plus, Trash } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
-import api from "../../api";
+import useStages from "../../hook/useStages";
 
 const Stage = () => {
-  const [stages, setStages] = useState([]);
-  const [plans, setPlans] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [selectedStage, setSelectedStage] = useState(null);
-  const [editedStage, setEditedStage] = useState({
-    plan_id: "",
-    title: "",
-    description: "",
-    stage_number: "",
-    start_date: "",
-    end_date: "",
-    is_completed: false
-  });
-  const [errors, setErrors] = useState({
-    plan_id: "",
-    title: "",
-    description: "",
-    stage_number: "",
-    start_date: "",
-    end_date: ""
-  });
-  const [isNew, setIsNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [stageToDelete, setStageToDelete] = useState(null);
-
-  useEffect(() => {
-    fetchStages();
-    fetchPlans();
-  }, []);
-
-  const fetchPlans = async () => {
-    try {
-      const response = await api.get('/quitPlan');
-      setPlans(response.data);
-    } catch (err) {
-      console.error("Error fetching plans:", err);
-      setError(err.response?.data?.message || "Failed to fetch plans");
-    }
-  };
-
-  const fetchStages = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get('/stages');
-      setStages(response.data);
-    } catch (err) {
-      console.error("Error fetching stages:", err);
-      setError(err.response?.data?.message || "Failed to fetch stages");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const openEditModal = (stage) => {
-    setSelectedStage(stage);
-    setIsNew(false);
-    setEditedStage({
-      plan_id: stage.plan_id,
-      title: stage.title,
-      description: stage.description,
-      stage_number: stage.stage_number,
-      start_date: stage.start_date ? new Date(stage.start_date).toISOString().split('T')[0] : "",
-      end_date: stage.end_date ? new Date(stage.end_date).toISOString().split('T')[0] : "",
-      is_completed: stage.is_completed
-    });
-  };
-
-  const openNewModal = () => {
-    setIsNew(true);
-    setEditedStage({
-      plan_id: "",
-      title: "",
-      description: "",
-      stage_number: "",
-      start_date: "",
-      end_date: "",
-      is_completed: false
-    });
-    setSelectedStage({});
-  };
-
-  const handleSaveChanges = async () => {
-    const newErrors = {
-      plan_id: !editedStage.plan_id ? "Please select a plan" : "",
-      title: !editedStage.title ? "Please enter a title" : "",
-      description: !editedStage.description ? "Please enter a description" : "",
-      stage_number: !editedStage.stage_number ? "Please enter a stage number" : "",
-      start_date: !editedStage.start_date ? "Please select a start date" : "",
-      end_date: !editedStage.end_date ? "Please select an end date" : ""
-    };
-
-    setErrors(newErrors);
-
-    if (Object.values(newErrors).some(error => error !== "")) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      if (isNew) {
-        await api.post('/stages', editedStage);
-      } else {
-        await api.put(`/stages/${selectedStage._id}`, editedStage);
-      }
-      await fetchStages();
-      setSelectedStage(null);
-      setIsNew(false);
-    } catch (err) {
-      console.error("Error saving stage:", err);
-      setError(err.response?.data?.message || "Failed to save stage");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/stages/${id}`);
-      await fetchStages();
-    } catch (err) {
-      console.error("Error deleting stage:", err);
-      setError(err.response?.data?.message || "Failed to delete stage");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    stages,
+    plans,
+    loading,
+    error,
+    selectedStage,
+    setSelectedStage,
+    editedStage,
+    setEditedStage,
+    errors,
+    isNew,
+    setIsNew,
+    showConfirm,
+    setShowConfirm,
+    stageToDelete,
+    setStageToDelete,
+    openEditModal,
+    openNewModal,
+    handleSaveChanges,
+    handleDelete,
+  } = useStages();
 
   if (loading && stages.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex items-center gap-2 text-gray-700 text-lg">
+          <svg className="animate-spin h-5 w-5 text-cyan-500" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
+          </svg>
+          Đang tải...
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
-        <div className="text-red-500 text-xl">{error}</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-red-600 text-lg bg-red-100 p-4 rounded-lg border border-red-200">{error}</div>
       </div>
     );
   }
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-900 to-black min-h-screen text-white relative">
-      {/* Title */}
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold mb-2">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
-            Stages Management
-          </span>
-        </h2>
-        <p className="text-white/70">
-          Manage and organize stages for quit smoking plans
-        </p>
-      </div>
+  <section className="py-16 bg-gray-100 min-h-screen text-gray-800">
+    {/* Title */}
+    <div className="text-center mb-10 max-w-4xl mx-auto">
+      <h2 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
+        Quản lý giai đoạn
+      </h2>
+      <p className="text-gray-600 text-lg">
+        Quản lý và tổ chức các giai đoạn cho các kế hoạch cai thuốc lá
+      </p>
+    </div>
 
-      {/* Add New Button */}
-      <div className="max-w-4xl mx-auto mb-4 text-right">
-        <button
-          onClick={openNewModal}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 transition text-sm font-semibold"
-        >
-          <Plus className="w-4 h-4" />
-          Add Stage
-        </button>
-      </div>
+    {/* Add New Button */}
+    <div className="max-w-6xl mx-auto mb-8 flex justify-end">
+      <button
+        onClick={openNewModal}
+        className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl"
+      >
+        <Plus className="w-5 h-5" />
+        Thêm giai đoạn
+      </button>
+    </div>
 
-      {/* Table */}
-      <div className="max-w-7xl mx-auto bg-white/5 rounded-xl p-6 shadow-lg ring-1 ring-white/10 overflow-x-auto">
-        <table className="w-full text-sm text-left table-auto">
+    {/* Table */}
+    <div className="max-w-6xl mx-auto bg-white rounded-xl p-6 shadow-lg ring-1 ring-gray-200 overflow-x-auto">
+      <div className="min-w-[1000px]">
+        <table className="w-full text-sm text-left">
           <thead>
-            <tr className="text-white/80 border-b border-white/10">
-              <th className="py-3 px-4">Stage #</th>
-              <th className="py-3 px-4">Title</th>
-              <th className="py-3 px-4">Description</th>
-              <th className="py-3 px-4">Plan</th>
-              <th className="py-3 px-4">Start Date</th>
-              <th className="py-3 px-4">End Date</th>
-              <th className="py-3 px-4">Status</th>
-              <th className="py-3 px-4 text-right">Actions</th>
+            <tr className="text-gray-600 border-b border-gray-200">
+              <th className="py-3 px-4">Giai đoạn #</th>
+              <th className="py-3 px-4">Tiêu đề</th>
+              <th className="py-3 px-4">Mô tả</th>
+              <th className="py-3 px-4">Kế hoạch</th>
+              <th className="py-3 px-4">Ngày bắt đầu</th>
+              <th className="py-3 px-4">Ngày kết thúc</th>
+              <th className="py-3 px-4">Trạng thái</th>
+              <th className="py-3 px-4 text-right">Hành động</th>
             </tr>
           </thead>
           <tbody>
             {stages.map((stage) => (
               <tr
                 key={stage._id}
-                className="hover:bg-white/10 transition duration-200 border-b border-white/10"
+                className="hover:bg-gray-50 transition duration-200 border-b border-gray-200"
               >
-                <td className="py-3 px-4">{stage.stage_number}</td>
-                <td className="py-3 px-4">{stage.title}</td>
-                <td className="py-3 px-4 max-w-xs truncate">{stage.description}</td>
-                <td className="py-3 px-4">
+                <td className="py-3 px-4 text-gray-700">{stage.stage_number}</td>
+                <td className="py-3 px-4 text-gray-700 truncate">{stage.title}</td>
+                <td className="py-3 px-4 text-gray-700 truncate">{stage.description}</td>
+                <td className="py-3 px-4 text-gray-700 truncate">
                   {plans.find(p => p._id === stage.plan_id)?.name || stage.plan_id}
                 </td>
-                <td className="py-3 px-4">{new Date(stage.start_date).toLocaleDateString()}</td>
-                <td className="py-3 px-4">{new Date(stage.end_date).toLocaleDateString()}</td>
+                <td className="py-3 px-4 text-gray-700">{new Date(stage.start_date).toLocaleDateString('vi-VN')}</td>
+                <td className="py-3 px-4 text-gray-700">{new Date(stage.end_date).toLocaleDateString('vi-VN')}</td>
                 <td className="py-3 px-4">
                   <span
-                    className={`px-3 py-1 text-xs rounded-full font-semibold ${
+                    className={`inline-block px-4 py-2 text-sm rounded-full font-semibold min-w-[120px] text-center ${
                       stage.is_completed
-                        ? "bg-green-500/20 text-green-300"
-                        : "bg-yellow-500/20 text-yellow-300"
+                        ? "bg-green-100 text-green-700 border border-green-200"
+                        : "bg-yellow-100 text-yellow-700 border border-yellow-200"
                     }`}
                   >
-                    {stage.is_completed ? "Completed" : "In Progress"}
+                    {stage.is_completed ? "Hoàn thành" : "Đang thực hiện"}
                   </span>
                 </td>
                 <td className="py-3 px-4 text-right space-x-2">
                   <button
                     onClick={() => openEditModal(stage)}
-                    className="inline-flex items-center gap-1 px-3 py-1 rounded bg-white/10 hover:bg-white/20 transition"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-cyan-500 hover:text-white text-gray-700 text-xs font-medium transition"
                   >
                     <Pencil className="w-4 h-4" />
-                    Edit
+                    Chỉnh sửa
                   </button>
                   <button
                     onClick={() => {
                       setStageToDelete(stage._id);
                       setShowConfirm(true);
                     }}
-                    className="inline-flex items-center gap-1 px-3 py-1 rounded bg-rose-500 hover:bg-rose-600 transition text-white"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-100 hover:bg-red-500 text-red-700 hover:text-white text-xs font-medium transition"
                   >
                     <Trash className="w-4 h-4" />
-                    Delete
+                    Xóa
                   </button>
                 </td>
               </tr>
             ))}
+            {stages.length === 0 && (
+              <tr>
+                <td colSpan="8" className="text-center py-4 text-gray-500">
+                  Không tìm thấy giai đoạn nào.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
+    </div>
 
       {/* Modal for Add/Edit */}
       {selectedStage && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-gradient-to-r from-purple-900 to-cyan-900 p-6 rounded-xl w-full max-w-md shadow-xl">
-            <h3 className="text-xl font-semibold mb-4 text-center">
-              {isNew ? "Add New Stage" : "Edit Stage"}
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl relative animate-in fade-in-50 duration-300">
+            <h3 className="text-2xl font-bold mb-6 text-center text-gray-800">
+              {isNew ? "Thêm giai đoạn mới" : "Chỉnh sửa giai đoạn"}
             </h3>
 
-            <div className="grid gap-3 mb-6">
+            <div className="space-y-4">
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Kế hoạch</label>
                 <select
                   value={editedStage.plan_id}
                   onChange={(e) => setEditedStage({ ...editedStage, plan_id: e.target.value })}
-                  className={`p-2 rounded text-black w-full ${errors.plan_id ? 'border-2 border-red-500' : ''}`}
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${errors.plan_id ? 'border-red-500' : 'border-gray-300'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 >
-                  <option value="">Select a plan</option>
+                  <option value="">Chọn một kế hoạch</option>
                   {plans.map(plan => (
                     <option key={plan._id} value={plan._id}>
                       {plan.name}
                     </option>
                   ))}
                 </select>
-                {errors.plan_id && <p className="text-red-500 text-sm mt-1">{errors.plan_id}</p>}
+                {errors.plan_id && <p className="text-red-500 text-xs mt-1">{errors.plan_id}</p>}
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tiêu đề giai đoạn</label>
                 <input
                   type="text"
                   value={editedStage.title}
                   onChange={(e) => setEditedStage({ ...editedStage, title: e.target.value })}
-                  placeholder="Stage Title"
-                  className={`p-2 rounded text-black w-full ${errors.title ? 'border-2 border-red-500' : ''}`}
+                  placeholder="Nhập tiêu đề giai đoạn"
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${errors.title ? 'border-red-500' : 'border-gray-300'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
+                {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả giai đoạn</label>
                 <textarea
                   value={editedStage.description}
                   onChange={(e) => setEditedStage({ ...editedStage, description: e.target.value })}
-                  placeholder="Stage Description"
-                  className={`p-2 rounded text-black w-full ${errors.description ? 'border-2 border-red-500' : ''}`}
-                  rows="3"
+                  placeholder="Nhập mô tả giai đoạn"
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${errors.description ? 'border-red-500' : 'border-gray-300'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
+                  rows="4"
                 />
-                {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
+                {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Số thứ tự giai đoạn</label>
                 <input
                   type="number"
                   value={editedStage.stage_number}
                   onChange={(e) => setEditedStage({ ...editedStage, stage_number: e.target.value })}
-                  placeholder="Stage Number"
-                  className={`p-2 rounded text-black w-full ${errors.stage_number ? 'border-2 border-red-500' : ''}`}
+                  placeholder="Nhập số thứ tự giai đoạn"
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${errors.stage_number ? 'border-red-500' : 'border-gray-300'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.stage_number && <p className="text-red-500 text-sm mt-1">{errors.stage_number}</p>}
+                {errors.stage_number && <p className="text-red-500 text-xs mt-1">{errors.stage_number}</p>}
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Ngày bắt đầu</label>
                 <input
                   type="date"
                   value={editedStage.start_date}
                   onChange={(e) => setEditedStage({ ...editedStage, start_date: e.target.value })}
-                  className={`p-2 rounded text-black w-full ${errors.start_date ? 'border-2 border-red-500' : ''}`}
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${errors.start_date ? 'border-red-500' : 'border-gray-300'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.start_date && <p className="text-red-500 text-sm mt-1">{errors.start_date}</p>}
+                {errors.start_date && <p className="text-red-500 text-xs mt-1">{errors.start_date}</p>}
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Ngày kết thúc</label>
                 <input
                   type="date"
                   value={editedStage.end_date}
                   onChange={(e) => setEditedStage({ ...editedStage, end_date: e.target.value })}
-                  className={`p-2 rounded text-black w-full ${errors.end_date ? 'border-2 border-red-500' : ''}`}
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${errors.end_date ? 'border-red-500' : 'border-gray-300'} focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.end_date && <p className="text-red-500 text-sm mt-1">{errors.end_date}</p>}
+                {errors.end_date && <p className="text-red-500 text-xs mt-1">{errors.end_date}</p>}
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm text-white/80">Status:</span>
+                <span className="text-sm text-gray-700">Trạng thái:</span>
                 <button
                   onClick={() =>
                     setEditedStage({
@@ -329,31 +240,41 @@ const Stage = () => {
                   }
                   className={`px-3 py-1 rounded-full text-xs font-bold transition ${
                     editedStage.is_completed
-                      ? "bg-green-600 text-white hover:bg-green-700"
-                      : "bg-yellow-600 text-white hover:bg-yellow-700"
+                      ? "bg-green-100 text-green-700 hover:bg-green-200"
+                      : "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
                   }`}
                 >
-                  {editedStage.is_completed ? "Mark Incomplete" : "Mark Complete"}
+                  {editedStage.is_completed ? "Đánh dấu chưa hoàn thành" : "Đánh dấu hoàn thành"}
                 </button>
               </div>
             </div>
 
-            <div className="flex justify-end gap-3">
+            <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => {
                   setSelectedStage(null);
                   setIsNew(false);
                 }}
-                className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 transition"
+                className="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
               >
-                Cancel
+                Hủy
               </button>
               <button
                 onClick={handleSaveChanges}
                 disabled={loading}
-                className="px-4 py-2 rounded bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 transition text-white font-semibold disabled:opacity-50"
+                className="px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Saving..." : "Save"}
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z" />
+                    </svg>
+                    Đang lưu...
+                  </span>
+                ) : (
+                  "Lưu"
+                )}
               </button>
             </div>
           </div>
@@ -362,7 +283,7 @@ const Stage = () => {
 
       {showConfirm && (
         <ConfirmModal
-          message="Are you sure you want to delete this stage?"
+          message="Bạn có chắc chắn muốn xóa giai đoạn này không?"
           onCancel={() => {
             setShowConfirm(false);
             setStageToDelete(null);

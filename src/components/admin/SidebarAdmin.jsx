@@ -17,50 +17,61 @@ import {
   CheckCircleOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Space } from "antd";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
-function SidebarAdmin({ user = {} }) {
+function SidebarAdmin() {
+  const { user } = useAuth();
+
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(() => {
     const saved = localStorage.getItem("admin-sidebar-collapsed");
     return saved === "true";
   });
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
   useEffect(() => {
     localStorage.setItem("admin-sidebar-collapsed", collapsed);
   }, [collapsed]);
 
   const menu = [
-    { label: "Dashboard", icon: <DashboardOutlined />, path: "/admin" },
-    { label: "Users", icon: <UserOutlined />, path: "/admin/users" },
-    { label: "Subscriptions", icon: <CreditCardOutlined />, path: "/admin/subscriptions" },
-    { label: "Badges", icon: <StarOutlined />, path: "/admin/badges" },
-    { label: "Stages", icon: <BarChartOutlined />, path: "/admin/stages" },
-    { label: "Reports", icon: <BarChartOutlined />, path: "/admin/reports" },
-    { label: "Feedbacks", icon: <MessageOutlined />, path: "/admin/feedbacks" },
-    { label: "Quit Plans", icon: <CheckCircleOutlined />, path: "/admin/quit-plans" },
-    { label: "Progress", icon: <FieldTimeOutlined />, path: "/admin/progress" },
-    { label: "Blog Posts", icon: <FileTextOutlined />, path: "/admin/blogs" },
-    { label: "Leaderboard", icon: <TrophyOutlined />, path: "/admin/leaderboard" },
-    { label: "Notifications", icon: <BellOutlined />, path: "/admin/notifications" },
-    { label: "Coaches", icon: <TeamOutlined />, path: "/admin/coaches" },
-    { label: "Permissions", icon: <SafetyOutlined />, path: "/admin/roles" },
-    { label: "Settings", icon: <SettingOutlined />, path: "/admin/settings" },
+    { label: "Bảng điều khiển", icon: <DashboardOutlined />, path: "/admin" },
+    { label: "Người dùng", icon: <UserOutlined />, path: "/admin/users" },
+    { label: "Đăng ký", icon: <CreditCardOutlined />, path: "/admin/subscriptions" },
+    { label: "Huy hiệu", icon: <StarOutlined />, path: "/admin/badges" },
+    { label: "Giai đoạn", icon: <BarChartOutlined />, path: "/admin/stages" },
+    // { label: "Reports", icon: <BarChartOutlined />, path: "/admin/reports" },
+    { label: "Phản hồi", icon: <MessageOutlined />, path: "/admin/feedbacks" },
+    { label: "Kế hoạch bỏ thuốc", icon: <CheckCircleOutlined />, path: "/admin/quit-plans" },
+    { label: "Tiến độ", icon: <FieldTimeOutlined />, path: "/admin/progress" },
+    { label: "Bài viết blog", icon: <FileTextOutlined />, path: "/admin/blogs" },
+    // { label: "Leaderboard", icon: <TrophyOutlined />, path: "/admin/leaderboard" },
+    { label: "Thông báo", icon: <BellOutlined />, path: "/admin/notifications" },
+    // { label: "Coaches", icon: <TeamOutlined />, path: "/admin/coaches" },
+    // { label: "Permissions", icon: <SafetyOutlined />, path: "/admin/roles" },
+    // { label: "Settings", icon: <SettingOutlined />, path: "/admin/settings" },
+    // { label: "Request", icon: <SettingOutlined />, path: "/admin/request" },
   ];
 
   const dropdownItems = [
-    { key: "1", label: "My Account", disabled: true },
+    { key: "1", label: "Tài khoản của tôi", disabled: true },
     { type: "divider" },
-    { key: "2", label: "Profile", icon: <UserOutlined /> },
-    { key: "3", label: "Settings", icon: <SettingOutlined /> },
+    { key: "2", label: "Hồ sơ", icon: <UserOutlined />, onClick: () => navigate(`/admin/profile/${user?.id}`),},
+    { key: "3", label: "Cài đặt", icon: <SettingOutlined /> },
     {
       key: "4",
-      label: "Logout",
+      label: "Đăng xuất",
       icon: <SettingOutlined />,
-      onClick: () => {
-        console.log("Logout clicked");
-      },
+      onClick: handleLogout,
     },
   ];
 
@@ -81,9 +92,9 @@ function SidebarAdmin({ user = {} }) {
         }`}
       >
         {!collapsed && (
-          <Link to="/admin">
+          <Link to="/">
             <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500 px-4 py-3">
-              ADMIN PANEL
+              EXHELA
             </div>
           </Link>
         )}

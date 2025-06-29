@@ -1,233 +1,165 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { BadgeCheck, XCircle, Pencil, Plus, Trash } from "lucide-react";
 import { ConfirmModal } from "../../components/admin/ConfirmModal";
-import api from "../../api";
+import useSubscriptions from "../../hook/useSubscriptions";
 
 const Subscriptions = () => {
-  const [subscriptions, setSubscriptions] = useState([]);
-  const [plans, setPlans] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [selectedSub, setSelectedSub] = useState(null);
-  const [editedSub, setEditedSub] = useState({
-    name: "",
-    price: "",
-    start_date: "",
-    end_date: "",
-    is_active: true,
-    plan_id: ""
-  });
-  const [errors, setErrors] = useState({
-    name: "",
-    price: "",
-    start_date: "",
-    end_date: "",
-    plan_id: ""
-  });
-  const [isNew, setIsNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [subToDelete, setSubToDelete] = useState(null);
-
-  useEffect(() => {
-    fetchSubscriptions();
-    fetchPlans();
-  }, []);
-
-  const fetchPlans = async () => {
-    try {
-      const response = await api.get('/quitPlan');
-      setPlans(response.data);
-    } catch (err) {
-      console.error("Error fetching plans:", err);
-      setError(err.response?.data?.message || "Failed to fetch plans");
-    }
-  };
-
-  const fetchSubscriptions = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get('/subscriptions');
-      setSubscriptions(response.data);
-    } catch (err) {
-      console.error("Error fetching subscriptions:", err);
-      setError(err.response?.data?.message || "Failed to fetch subscriptions");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const openEditModal = (sub) => {
-    setSelectedSub(sub);
-    setIsNew(false);
-    setEditedSub({
-      name: sub.name,
-      price: sub.price,
-      start_date: sub.start_date ? new Date(sub.start_date).toISOString().split('T')[0] : "",
-      end_date: sub.end_date ? new Date(sub.end_date).toISOString().split('T')[0] : "",
-      is_active: sub.is_active,
-      plan_id: sub.plan_id
-    });
-  };
-
-  const openNewModal = () => {
-    setIsNew(true);
-    setEditedSub({
-      name: "",
-      price: "",
-      start_date: "",
-      end_date: "",
-      is_active: true,
-      plan_id: ""
-    });
-    setSelectedSub({});
-  };
-
-  const handleSaveChanges = async () => {
-    const newErrors = {
-      name: !editedSub.name ? "Please enter a subscription name" : "",
-      price: !editedSub.price ? "Please enter a price" : "",
-      start_date: !editedSub.start_date ? "Please select a start date" : "",
-      end_date: !editedSub.end_date ? "Please select an end date" : "",
-      plan_id: !editedSub.plan_id ? "Please select a plan" : ""
-    };
-
-    setErrors(newErrors);
-
-    if (Object.values(newErrors).some(error => error !== "")) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      if (isNew) {
-        const { plan_id, ...subscriptionData } = editedSub;
-        await api.post(`/subscriptions/${plan_id}`, subscriptionData);
-      } else {
-        await api.put(`/subscriptions/${selectedSub._id}`, editedSub);
-      }
-      await fetchSubscriptions();
-      setSelectedSub(null);
-      setIsNew(false);
-    } catch (err) {
-      console.error("Error saving subscription:", err);
-      setError(err.response?.data?.message || "Failed to save subscription");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      setLoading(true);
-      await api.delete(`/subscriptions/${id}`);
-      await fetchSubscriptions();
-    } catch (err) {
-      console.error("Error deleting subscription:", err);
-      setError(err.response?.data?.message || "Failed to delete subscription");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    subscriptions,
+    packages,
+    loading,
+    error,
+    selectedSub,
+    setSelectedSub,
+    editedSub,
+    setEditedSub,
+    errors,
+    isNew,
+    setIsNew,
+    showConfirm,
+    setShowConfirm,
+    subToDelete,
+    setSubToDelete,
+    openEditModal,
+    openNewModal,
+    handleSaveChanges,
+    handleDelete,
+  } = useSubscriptions();
 
   if (loading && subscriptions.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="flex items-center justify-center bg-gray-50 min-h-screen text-gray-800">
+        <div className="flex items-center gap-2 text-white text-lg">
+          <svg
+            className="animate-spin h-5 w-5 text-cyan-500"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+              fill="none"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"
+            />
+          </svg>
+          Đang tải...
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-black">
-        <div className="text-red-500 text-xl">{error}</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-red-400 text-lg bg-red-900/30 p-4 rounded-lg">
+          {error}
+        </div>
       </div>
     );
   }
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-900 to-black min-h-screen text-white relative">
+    <section className="py-16 bg-gray-100 min-h-screen text-gray-800">
       {/* Title */}
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold mb-2">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
-            Subscriptions
-          </span>
+      <div className="text-center mb-10 max-w-4xl mx-auto">
+        <h2 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
+          Quản lý đăng ký
         </h2>
-        <p className="text-white/70">
-          Manage and review all active and past subscriptions.
+        <p className="text-black-300 text-lg">
+          Quản lý và xem xét tất cả các đăng ký hiện tại và đã qua.
         </p>
       </div>
 
       {/* Add New Button */}
-      <div className="max-w-4xl mx-auto mb-4 text-right">
+      <div className="max-w-6xl mx-auto mb-8 flex justify-end">
         <button
           onClick={openNewModal}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 transition text-sm font-semibold"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl text-black"
         >
-          <Plus className="w-4 h-4" />
-          Add Subscription
+          <Plus className="w-5 h-5" />
+          Thêm đăng ký
         </button>
       </div>
 
       {/* Table */}
-      <div className="max-w-4xl mx-auto bg-white/5 rounded-xl p-6 shadow-lg ring-1 ring-white/10 overflow-x-auto">
+      <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md p-6 ring-1 ring-gray-200 overflow-x-auto">
         <table className="w-full text-sm text-left table-auto">
           <thead>
-            <tr className="text-white/80 border-b border-white/10">
-              <th className="py-3 px-4">Name</th>
-              <th className="py-3 px-4">Price</th>
-              <th className="py-3 px-4">Start Date</th>
-              <th className="py-3 px-4">End Date</th>
-              <th className="py-3 px-4">Plan</th>
-              <th className="py-3 px-4">Status</th>
-              <th className="py-3 px-4 text-right">Actions</th>
+            <tr className="text-gray-600 border-b border-gray-200">
+              <th className="py-3 px-4">Tên</th>
+              <th className="py-3 px-4">Giá</th>
+              <th className="py-3 px-4">Ngày bắt đầu</th>
+              <th className="py-3 px-4">Ngày kết thúc</th>
+              <th className="py-3 px-4">Gói</th>
+              <th className="py-3 px-4">Trạng thái</th>
+              <th className="py-3 px-4 text-right">Hành động</th>
             </tr>
           </thead>
           <tbody>
             {subscriptions.map((sub) => (
               <tr
                 key={sub._id}
-                className="hover:bg-white/10 transition duration-200 border-b border-white/10"
+                className="hover:bg-gray-50 transition duration-200 border-b border-gray-200"
               >
-                <td className="py-3 px-4">
-                  <span>{sub.name}</span>
+                <td className="py-3 px-4 text-gray-700">{sub.name}</td>
+                <td className="py-3 px-4 text-gray-700">{sub.price}</td>
+                <td className="py-3 px-4 text-gray-700">
+                  {new Date(sub.start_date).toLocaleDateString("vi-VN")}
                 </td>
-                <td className="py-3 px-4">{sub.price}</td>
-                <td className="py-3 px-4">{new Date(sub.start_date).toLocaleDateString()}</td>
-                <td className="py-3 px-4">{new Date(sub.end_date).toLocaleDateString()}</td>
-                <td className="py-3 px-4">
-                  {plans.find(p => p._id === sub.plan_id)?.name || sub.plan_id}
+                <td className="py-3 px-4 text-gray-700">
+                  {new Date(sub.end_date).toLocaleDateString("vi-VN")}
+                </td>
+                <td className="py-3 px-4 text-gray-700">
+                  {packages.find((p) => p._id === sub.package_id)?.name || sub.package_id}
                 </td>
                 <td className="py-3 px-4">
                   <span
                     className={`px-3 py-1 text-xs rounded-full font-semibold ${
-                      sub.is_active
-                        ? "bg-green-500/20 text-green-300"
-                        : "bg-red-500/20 text-red-300"
+                      sub.status === 'active'
+                        ? "bg-green-100 text-green-700"
+                        : sub.status === 'pending'
+                        ? "bg-yellow-100 text-yellow-700"
+                        : sub.status === 'cancelled'
+                        ? "bg-red-100 text-red-700"
+                        : sub.status === 'expired'
+                        ? "bg-gray-100 text-gray-700"
+                        : sub.status === 'grace_period'
+                        ? "bg-orange-100 text-orange-700"
+                        : "bg-gray-100 text-gray-700"
                     }`}
                   >
-                    {sub.is_active ? "Active" : "Inactive"}
+                    {sub.status === 'active' ? "Đang hoạt động" 
+                     : sub.status === 'pending' ? "Chờ xử lý"
+                     : sub.status === 'cancelled' ? "Đã hủy"
+                     : sub.status === 'expired' ? "Hết hạn"
+                     : sub.status === 'grace_period' ? "Gia hạn"
+                     : sub.status}
                   </span>
                 </td>
                 <td className="py-3 px-4 text-right space-x-2">
                   <button
                     onClick={() => openEditModal(sub)}
-                    className="inline-flex items-center gap-1 px-3 py-1 rounded bg-white/10 hover:bg-white/20 transition"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-cyan-500 hover:text-white text-gray-700 text-xs font-medium transition"
                   >
                     <Pencil className="w-4 h-4" />
-                    Edit
+                    Chỉnh sửa
                   </button>
                   <button
                     onClick={() => {
                       setSubToDelete(sub._id);
                       setShowConfirm(true);
                     }}
-                    className="inline-flex items-center gap-1 px-3 py-1 rounded bg-rose-500 hover:bg-rose-600 transition text-white"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-100 hover:bg-red-500 text-red-700 hover:text-white text-xs font-medium transition"
                   >
                     <Trash className="w-4 h-4" />
-                    Delete
+                    Xóa
                   </button>
                 </td>
               </tr>
@@ -238,107 +170,184 @@ const Subscriptions = () => {
 
       {/* Modal for Add/Edit */}
       {selectedSub && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-gradient-to-r from-purple-900 to-cyan-900 p-6 rounded-xl w-full max-w-md shadow-xl">
-            <h3 className="text-xl font-semibold mb-4 text-center">
-              {isNew ? "Add New Subscription" : "Edit Subscription"}
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl relative animate-in fade-in-50 duration-300">
+            <h3 className="text-2xl font-bold mb-6 text-center text-gray-800">
+              {isNew ? "Thêm đăng ký mới" : "Chỉnh sửa đăng ký"}
             </h3>
 
-            <div className="grid gap-3 mb-6">
+            <div className="space-y-4">
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Gói
+                </label>
                 <select
-                  value={editedSub.plan_id}
-                  onChange={(e) => setEditedSub({ ...editedSub, plan_id: e.target.value })}
-                  className={`p-2 rounded text-black w-full ${errors.plan_id ? 'border-2 border-red-500' : ''}`}
+                  value={editedSub.package_id}
+                  onChange={(e) =>
+                    setEditedSub({ ...editedSub, package_id: e.target.value })
+                  }
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${
+                    errors.package_id ? "border-red-500" : "border-gray-300"
+                  } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 >
-                  <option value="">Select a plan</option>
-                  {plans.map(plan => (
-                    <option key={plan._id} value={plan._id}>
-                      {plan.name}
+                  <option value="">Chọn một gói</option>
+                  {packages.map((p) => (
+                    <option key={p._id} value={p._id}>
+                      {p.name}
                     </option>
                   ))}
                 </select>
-                {errors.plan_id && <p className="text-red-500 text-sm mt-1">{errors.plan_id}</p>}
+                {errors.package_id && (
+                  <p className="text-red-500 text-xs mt-1">{errors.package_id}</p>
+                )}
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tên đăng ký
+                </label>
                 <input
                   type="text"
                   value={editedSub.name}
-                  onChange={(e) => setEditedSub({ ...editedSub, name: e.target.value })}
-                  placeholder="Subscription Name"
-                  className={`p-2 rounded text-black w-full ${errors.name ? 'border-2 border-red-500' : ''}`}
+                  onChange={(e) =>
+                    setEditedSub({ ...editedSub, name: e.target.value })
+                  }
+                  placeholder="Nhập tên đăng ký"
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${
+                    errors.name ? "border-red-500" : "border-gray-300"
+                  } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                {errors.name && (
+                  <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                )}
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Giá
+                </label>
                 <input
                   type="text"
                   value={editedSub.price}
-                  onChange={(e) => setEditedSub({ ...editedSub, price: e.target.value })}
-                  placeholder="Price"
-                  className={`p-2 rounded text-black w-full ${errors.price ? 'border-2 border-red-500' : ''}`}
+                  onChange={(e) =>
+                    setEditedSub({ ...editedSub, price: e.target.value })
+                  }
+                  placeholder="Nhập giá"
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${
+                    errors.price ? "border-red-500" : "border-gray-300"
+                  } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
+                {errors.price && (
+                  <p className="text-red-500 text-xs mt-1">{errors.price}</p>
+                )}
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ngày bắt đầu
+                </label>
                 <input
                   type="date"
                   value={editedSub.start_date}
-                  onChange={(e) => setEditedSub({ ...editedSub, start_date: e.target.value })}
-                  className={`p-2 rounded text-black w-full ${errors.start_date ? 'border-2 border-red-500' : ''}`}
+                  onChange={(e) =>
+                    setEditedSub({ ...editedSub, start_date: e.target.value })
+                  }
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${
+                    errors.start_date ? "border-red-500" : "border-gray-300"
+                  } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.start_date && <p className="text-red-500 text-sm mt-1">{errors.start_date}</p>}
+                {errors.start_date && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.start_date}
+                  </p>
+                )}
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ngày kết thúc
+                </label>
                 <input
                   type="date"
                   value={editedSub.end_date}
-                  onChange={(e) => setEditedSub({ ...editedSub, end_date: e.target.value })}
-                  className={`p-2 rounded text-black w-full ${errors.end_date ? 'border-2 border-red-500' : ''}`}
+                  onChange={(e) =>
+                    setEditedSub({ ...editedSub, end_date: e.target.value })
+                  }
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${
+                    errors.end_date ? "border-red-500" : "border-gray-300"
+                  } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 />
-                {errors.end_date && <p className="text-red-500 text-sm mt-1">{errors.end_date}</p>}
+                {errors.end_date && (
+                  <p className="text-red-500 text-xs mt-1">{errors.end_date}</p>
+                )}
               </div>
 
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-white/80">Status:</span>
-                <button
-                  onClick={() =>
-                    setEditedSub({
-                      ...editedSub,
-                      is_active: !editedSub.is_active,
-                    })
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Trạng thái
+                </label>
+                <select
+                  value={editedSub.status}
+                  onChange={(e) =>
+                    setEditedSub({ ...editedSub, status: e.target.value })
                   }
-                  className={`px-3 py-1 rounded-full text-xs font-bold transition ${
-                    editedSub.is_active
-                      ? "bg-green-600 text-white hover:bg-green-700"
-                      : "bg-red-600 text-white hover:bg-red-700"
-                  }`}
+                  className={`w-full p-3 rounded-lg bg-gray-50 text-gray-800 border ${
+                    errors.status ? "border-red-500" : "border-gray-300"
+                  } focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition`}
                 >
-                  {editedSub.is_active ? "Deactivate" : "Activate"}
-                </button>
+                  <option value="pending">Chờ xử lý</option>
+                  <option value="active">Đang hoạt động</option>
+                  <option value="cancelled">Đã hủy</option>
+                  <option value="expired">Hết hạn</option>
+                  <option value="grace_period">Gia hạn</option>
+                </select>
+                {errors.status && (
+                  <p className="text-red-500 text-xs mt-1">{errors.status}</p>
+                )}
               </div>
             </div>
 
-            <div className="flex justify-end gap-3">
+            <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => {
                   setSelectedSub(null);
                   setIsNew(false);
                 }}
-                className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 transition"
+                className="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition"
               >
-                Cancel
+                Hủy
               </button>
               <button
                 onClick={handleSaveChanges}
                 disabled={loading}
-                className="px-4 py-2 rounded bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 transition text-white font-semibold disabled:opacity-50"
+                className="px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Saving..." : "Save"}
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <svg
+                      className="animate-spin h-4 w-4 text-white"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"
+                      />
+                    </svg>
+                    Đang lưu...
+                  </span>
+                ) : (
+                  "Lưu"
+                )}
               </button>
             </div>
           </div>
@@ -347,7 +356,7 @@ const Subscriptions = () => {
 
       {showConfirm && (
         <ConfirmModal
-          message="Are you sure you want to delete this subscription?"
+          message="Bạn có chắc chắn muốn xóa đăng ký này không?"
           onCancel={() => {
             setShowConfirm(false);
             setSubToDelete(null);
