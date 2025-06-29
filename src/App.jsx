@@ -58,9 +58,9 @@ const Layout = () => {
   const { user } = useAuth();
 
   return (
-    <div className='min-h-screen bg-black text-white'>
+    <div className="min-h-screen bg-black text-white">
       {user ? <UserHeader /> : <Navbar />}
-      <main className='mt-16'>
+      <main className="mt-16">
         <Outlet />
       </main>
       <Footer />
@@ -71,7 +71,6 @@ const Layout = () => {
 // ===== App with Routing =====
 function App() {
   return (
-
     <div className="bg-white min-h-screen">
       <Router>
         <AuthProvider>
@@ -85,7 +84,10 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/" element={<HomePages />} />
               <Route path="/quit-plan" element={<QuitPlanPage />} />
-              <Route path="/quit-plan-detail/:id" element={<QuitPlanDetailPage />} />
+              <Route
+                path="/quit-plan-detail/:id"
+                element={<QuitPlanDetailPage />}
+              />
               <Route path="/stages/:id" element={<StagesPage />} />
               <Route path="/blog" element={<BlogPage />} />
               <Route path="blog/:id" element={<BlogDetail />} />
@@ -116,11 +118,20 @@ function App() {
               <Route path="roles" element={<Permissions />} />
               <Route path="progress" element={<Progress />} />
               <Route path="quit-plans" element={<QuitPlans />} />
-              <Route path="quit-plans/:id" element={<QuitPlanDetailPageAdmin />} />
+              <Route
+                path="quit-plans/:id"
+                element={<QuitPlanDetailPageAdmin />}
+              />
               <Route path="blogs" element={<BlogPosts />} />
               <Route path="blogs/:id" element={<BlogDetail />} />
               <Route path="/admin/request" element={<Request />} />
               <Route path="profile/:id" element={<ProfilePage />} />
+            </Route>
+
+            <Route path="/coach" element={<CoachLayout />}>
+              <Route path="my-quit-plans" element={<CoachQuitPlan />} />
+              <Route path="quit-plans-request" element={<RequestQuitPlan />} />
+              <Route path="stages" element={<StagesCoach />} />
             </Route>
 
             {/* 404 route */}
@@ -129,8 +140,6 @@ function App() {
         </AuthProvider>
       </Router>
     </div>
-
-   
   );
 }
 
