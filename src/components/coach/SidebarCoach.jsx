@@ -40,9 +40,9 @@ function SidebarCoach({ user = {} }) {
       path: "/coach/quit-plans-request",
     },
     { label: "Giai Đoạn", icon: <BarChartOutlined />, path: "/coach/stages" }, // Xem các giai đoạn cai thuốc
-    { label: "Progress", icon: <FieldTimeOutlined />, path: "/coach/progress" }, // Theo dõi tiến độ người dùng
+    { label: "Nhiệm Vụ", icon: <FieldTimeOutlined />, path: "/coach/task" }, // Theo dõi tiến độ người dùng
 
-    { label: "Feedbacks", icon: <MessageOutlined />, path: "/coach/feedbacks" }, // Đọc phản hồi từ user
+    { label: "Tiến trình", icon: <MessageOutlined />, path: "/coach/progress" }, // Đọc phản hồi từ user
     { label: "Blog Posts", icon: <FileTextOutlined />, path: "/coach/blogs" }, // Đăng bài chia sẻ
     {
       label: "Leaderboard",
