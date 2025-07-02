@@ -139,10 +139,10 @@ export function useQuitPlanData() {
   }, []);
 
 
-  const getQuitPlanByUserId = useCallback(async (userId) => {
+  const getQuitPlanByUserId = useCallback(async (id) => {
     try {
       setLoading(true);
-      const data = await getQuitPlanByUserIdAPI(userId); 
+      const data = await getQuitPlanByUserIdAPI(id); 
 
       if (!Array.isArray(data) || data.length === 0) {
         throw new Error("Không tìm thấy kế hoạch của người dùng");

@@ -62,6 +62,7 @@ import StagesCoach from "./pages/coach/StagesCoach";
 // Components
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import RequestHistoryPage from "./pages/user/RequestHistoryPage";
+import QuitPlanSection from "./components/user/quitplan/QuitPlanSection";
 
 
 // ===== Layout Wrapper =====
@@ -124,6 +125,8 @@ function App() {
               <Route path="achievements" element={<UserAchievement />} />
               <Route path="support" element={<UserSupport />} />
               <Route path="my-requests" element={<RequestHistoryPage />} />
+              <Route path="my-plans" element={<QuitPlanSection />} />
+
             </Route>
 
             {/* Admin protected routes */}

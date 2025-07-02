@@ -13,6 +13,7 @@ import { UserCheck, Clock } from "lucide-react";
 import { DeleteOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { useQuitPlanData } from "../../../hook/useQuitPlanData";
+import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 
@@ -31,10 +32,15 @@ const statusLabelMap = {
 };
 
 const RequestHistory = () => {
+  const navigate = useNavigate();
   const { getMyQuitPlanRequests, deleteQuitPlanRequest } = useQuitPlanData();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [alert, setAlert] = useState({ visible: false, type: "success", message: "" });
+  const [alert, setAlert] = useState({
+    visible: false,
+    type: "success",
+    message: "",
+  });
 
   const fetchRequests = async () => {
     try {
@@ -50,9 +56,13 @@ const RequestHistory = () => {
 
   const handleDelete = async (id) => {
     try {
-      await deleteQuitPlanRequest(id); 
+      await deleteQuitPlanRequest(id);
       setRequests((prev) => prev.filter((item) => item._id !== id));
-      setAlert({ visible: true, type: "success", message: "Đã xoá yêu cầu thành công" });
+      setAlert({
+        visible: true,
+        type: "success",
+        message: "Đã xoá yêu cầu thành công",
+      });
     } catch {
       setAlert({ visible: true, type: "error", message: "Xoá thất bại" });
     }
@@ -66,7 +76,7 @@ const RequestHistory = () => {
     if (alert.visible) {
       const timer = setTimeout(() => {
         setAlert((prev) => ({ ...prev, visible: false }));
-      }, 5000); // 10 giây
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [alert.visible]);
@@ -154,9 +164,19 @@ const RequestHistory = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 md:px-12">
       <div className="max-w-6xl mx-auto">
-        <Title level={2} className="mb-6 text-center text-gray-800">
+        <Title level={2} className="text-center text-gray-800 mb-4">
           Lịch sử yêu cầu huấn luyện viên
         </Title>
+
+        <div className="flex mb-8">
+          <Button
+            onClick={() => navigate(-1)}
+            className="transition-all duration-200 hover:scale-105 hover:shadow-md border-gray-300"
+          >
+            ← Quay lại
+          </Button>
+        </div>
+
         {alert.visible && (
           <Alert
             message={alert.message}
@@ -167,6 +187,7 @@ const RequestHistory = () => {
             style={{ marginBottom: 16 }}
           />
         )}
+
         {loading ? (
           <div className="flex justify-center py-20">
             <Spin size="large" />
