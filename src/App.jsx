@@ -15,45 +15,53 @@ import UserLayout from "./layouts/user/UserLayout";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import UserHeader from "./layouts/user/UserHeader";
 import AdminLayout from "./components/admin/AdminLayout";
+import CoachLayout from "./components/coach/CoachLayout";
 
-// Pages
+// Pages - Generic
 import HomePages from "./pages/generic/home/HomePage";
 import AuthPage from "./pages/auth/AuthPage";
 import NotFoundPage from "./pages/error/404Page";
+import BlogPage from "./pages/generic/BlogPage";
+import BlogDetail from "./components/generic/blog/BlogDetail";
+import QuitPlanPage from "./pages/generic/QuitPlanPage";
+import QuitPlanDetailPage from "./pages/generic/QuitPlanDetailPage";
+import StagesPage from "./pages/generic/StagesPage";
+import PaymentSuccessPage from "./pages/generic/PaymentSuccessPage";
+import PaymentCancelPage from "./pages/generic/PaymentCancelPage";
+
+// Pages - User
 import DashBoardUser from "./pages/user/DashBoardUser";
 import UserBlogPage from "./pages/user/UserBlogPage";
 import SmokingStatusPage from "./pages/user/SmokingStatusPage";
 import ProfilePage from "./pages/user/ProfilePage";
-import StagesPage from "./pages/generic/StagesPage";
-import BlogPage from "./pages/generic/BlogPage";
+import UserAchievement from "./pages/user/UserAchievement";
+import UserSupport from "./pages/user/UserSupport";
+import UserProgress from "./pages/user/UserProgress";
+import UserQuitPlanPage from "./pages/user/UserQuitPlanPage";
 
-// Admin pages
+// Pages - Admin
 import AdminDashboardHome from "./pages/admin/AdminDashboardHome";
 import Users from "./pages/admin/Users";
 import Subscriptions from "./pages/admin/Subscriptions";
 import Badges from "./pages/admin/Badges";
-import BlogPosts from "./pages/admin/BlogPosts";
-import BlogDetail from "./components/generic/blog/BlogDetail";
 import Feedbacks from "./pages/admin/Feedbacks";
 import Leaderboard from "./pages/admin/Leaderboard";
 import Notifications from "./pages/admin/Notifications";
 import Progress from "./pages/admin/Progress";
 import QuitPlans from "./pages/admin/QuitPlans";
-import UserAchievement from "./pages/user/UserAchievement";
-import UserSupport from "./pages/user/UserSupport";
-import UserProgress from "./pages/user/UserProgress";
-import UserQuitPlanPage from "./pages/user/UserQuitPlanPage";
-import QuitPlanPage from "./pages/generic/QuitPlanPage";
-import QuitPlanDetailPage from "./pages/generic/QuitPlanDetailPage";
+import QuitPlanDetailPageAdmin from "./pages/admin/QuitPlansDetail";
+import BlogPosts from "./pages/admin/BlogPosts";
+import Request from "./pages/admin/Request";
 import Stages from "./pages/admin/Stage";
-import CoachLayout from "./components/coach/CoachLayout";
+
+// Pages - Coach
 import CoachQuitPlan from "./pages/coach/CoachQuitPlan";
 import RequestQuitPlan from "./pages/coach/RequestQuitPlan";
 import StagesCoach from "./pages/coach/StagesCoach";
-import Request from "./pages/admin/Request";
-import QuitPlanDetailPageAdmin from "./pages/admin/QuitPlansDetail";
-import PaymentSuccessPage from "./pages/generic/PaymentSuccessPage";
-import PaymentCancelPage from "./pages/generic/PaymentCancelPage";
+
+// Components
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -78,12 +86,13 @@ function App() {
         <AuthProvider>
           <ScrollToTop />
           <Routes>
-            {/* Auth route */}
+            {/* Auth routes */}
             <Route path="/login" element={<AuthPage />} />
             <Route path="/login/:token" element={<AuthPage />} />
             <Route path="/payment-success" element={<PaymentSuccessPage />} />
             <Route path="/payment-cancel" element={<PaymentCancelPage />} />
-            {/* Main layout routes */}
+
+            {/* Public layout */}
             <Route element={<Layout />}>
               <Route path="/" element={<HomePages />} />
               <Route path="/quit-plan" element={<QuitPlanPage />} />
@@ -93,11 +102,18 @@ function App() {
               />
               <Route path="/stages/:id" element={<StagesPage />} />
               <Route path="/blog" element={<BlogPage />} />
-              <Route path="blog/:id" element={<BlogDetail />} />
+              <Route path="/blog/:id" element={<BlogDetail />} />
             </Route>
 
-            {/* User routes */}
-            <Route path="/user" element={<UserLayout />}>
+            {/* User protected routes */}
+            <Route
+              path="/user"
+              element={
+                <ProtectedRoute allowedRoles={["user"]}>
+                  <UserLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route path="dashboard" element={<DashBoardUser />} />
               <Route path="quitplan" element={<UserQuitPlanPage />} />
               <Route path="profile/:id" element={<ProfilePage />} />
@@ -108,8 +124,15 @@ function App() {
               <Route path="support" element={<UserSupport />} />
             </Route>
 
-            {/* Admin routes */}
-            <Route path="/admin" element={<AdminLayout />}>
+            {/* Admin protected routes */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route index element={<AdminDashboardHome />} />
               <Route path="users" element={<Users />} />
               <Route path="subscriptions" element={<Subscriptions />} />
@@ -118,7 +141,6 @@ function App() {
               <Route path="feedbacks" element={<Feedbacks />} />
               <Route path="leaderboard" element={<Leaderboard />} />
               <Route path="notifications" element={<Notifications />} />
-              <Route path="roles" element={<Permissions />} />
               <Route path="progress" element={<Progress />} />
               <Route path="quit-plans" element={<QuitPlans />} />
               <Route
@@ -127,17 +149,26 @@ function App() {
               />
               <Route path="blogs" element={<BlogPosts />} />
               <Route path="blogs/:id" element={<BlogDetail />} />
-              <Route path="/admin/request" element={<Request />} />
+              <Route path="request" element={<Request />} />
               <Route path="profile/:id" element={<ProfilePage />} />
             </Route>
 
-            <Route path="/coach" element={<CoachLayout />}>
+            {/* Coach protected routes */}
+            <Route
+              path="/coach"
+              element={
+                <ProtectedRoute allowedRoles={["coach"]}>
+                  <CoachLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route path="my-quit-plans" element={<CoachQuitPlan />} />
               <Route path="quit-plans-request" element={<RequestQuitPlan />} />
               <Route path="stages" element={<StagesCoach />} />
             </Route>
 
-            {/* 404 route */}
+            {/* Unauthorized + 404 */}
+
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AuthProvider>
