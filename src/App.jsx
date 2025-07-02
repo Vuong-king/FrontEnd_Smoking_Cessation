@@ -61,6 +61,7 @@ import StagesCoach from "./pages/coach/StagesCoach";
 
 // Components
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import RequestHistoryPage from "./pages/user/RequestHistoryPage";
 
 
 // ===== Layout Wrapper =====
@@ -122,6 +123,7 @@ function App() {
               <Route path="progress" element={<UserProgress />} />
               <Route path="achievements" element={<UserAchievement />} />
               <Route path="support" element={<UserSupport />} />
+              <Route path="my-requests" element={<RequestHistoryPage />} />
             </Route>
 
             {/* Admin protected routes */}
