@@ -52,6 +52,8 @@ import RequestQuitPlan from "./pages/coach/RequestQuitPlan";
 import StagesCoach from "./pages/coach/StagesCoach";
 import Request from "./pages/admin/Request";
 import QuitPlanDetailPageAdmin from "./pages/admin/QuitPlansDetail";
+import PaymentSuccessPage from "./pages/generic/PaymentSuccessPage";
+import PaymentCancelPage from "./pages/generic/PaymentCancelPage";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -79,7 +81,8 @@ function App() {
             {/* Auth route */}
             <Route path="/login" element={<AuthPage />} />
             <Route path="/login/:token" element={<AuthPage />} />
-
+            <Route path="/payment-success" element={<PaymentSuccessPage />} />
+            <Route path="/payment-cancel" element={<PaymentCancelPage />} />
             {/* Main layout routes */}
             <Route element={<Layout />}>
               <Route path="/" element={<HomePages />} />
