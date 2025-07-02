@@ -38,3 +38,13 @@ export const getPublicQuitPlansAPI = async () => {
   const response = await api.get("/quitPlan/public");
   return response.data;
 };
+
+export const getQuitPlanByUserIdAPI = async (userId) => {
+  const response = await api.get(`/quitPlan/user/${userId}`);
+  return response.data;
+};
+
+export const deleteQuitPlanRequestAPI = async (id) => {
+  const response = await api.delete(`/quitPlan/request/${id}`);
+  return response.data;
+};

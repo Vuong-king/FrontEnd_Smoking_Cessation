@@ -7,11 +7,13 @@ import {
   getStagesByPlanIdAPI,
   sendQuitPlanRequestAPI,
   getPublicQuitPlansAPI,
+  getQuitPlanByUserIdAPI,
+  deleteQuitPlanRequestAPI,
 } from "../services/quitPlanService";
 
 export function useQuitPlanData() {
   const [quitPlans, setQuitPlans] = useState([]);
-  const [publicQuitPlans, setPublicQuitPlans] = useState([]); 
+  const [publicQuitPlans, setPublicQuitPlans] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -57,19 +59,22 @@ export function useQuitPlanData() {
     }
   }, []);
 
-  const createQuitPlan = useCallback(async (planData) => {
-    try {
-      setLoading(true);
-      const created = await createQuitPlanAPI(planData);
-      await fetchQuitPlans();
-      return created;
-    } catch (err) {
-      setError(err.message || "Có lỗi khi tạo kế hoạch");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchQuitPlans]);
+  const createQuitPlan = useCallback(
+    async (planData) => {
+      try {
+        setLoading(true);
+        const created = await createQuitPlanAPI(planData);
+        await fetchQuitPlans();
+        return created;
+      } catch (err) {
+        setError(err.message || "Có lỗi khi tạo kế hoạch");
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchQuitPlans]
+  );
 
   const getQuitPlanById = useCallback(async (id) => {
     try {
@@ -83,7 +88,8 @@ export function useQuitPlanData() {
         _id: data._id || id,
         name: data.name || "Kế hoạch không tên",
         reason: data.reason || "Không có lý do",
-        start_date: data.start_date || data.createdAt || new Date().toISOString(),
+        start_date:
+          data.start_date || data.createdAt || new Date().toISOString(),
         target_quit_date: data.target_quit_date || "",
         createdAt: data.createdAt || "",
         updatedAt: data.updatedAt || "",
@@ -115,7 +121,9 @@ export function useQuitPlanData() {
     try {
       return await sendQuitPlanRequestAPI(data);
     } catch (error) {
-      setError(error.response?.data?.message || "Không thể gửi yêu cầu kế hoạch");
+      setError(
+        error.response?.data?.message || "Không thể gửi yêu cầu kế hoạch"
+      );
       throw error;
     }
   }, []);
@@ -129,6 +137,50 @@ export function useQuitPlanData() {
       throw error;
     }
   }, []);
+
+
+  const getQuitPlanByUserId = useCallback(async (userId) => {
+    try {
+      setLoading(true);
+      const data = await getQuitPlanByUserIdAPI(userId); 
+
+      if (!Array.isArray(data) || data.length === 0) {
+        throw new Error("Không tìm thấy kế hoạch của người dùng");
+      }
+
+      const plan = data[0]; 
+
+      return {
+        _id: plan._id,
+        name: plan.name,
+        reason: plan.reason,
+        start_date: plan.start_date,
+        target_quit_date: plan.target_quit_date,
+        status: plan.status,
+        is_public: plan.is_public,
+        createdAt: plan.createdAt,
+        updatedAt: plan.updatedAt,
+        user_id: plan.user_id,
+        coach_id: plan.coach_id,
+      };
+    } catch (error) {
+      setError(error.message || "Lỗi khi lấy kế hoạch theo userId");
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+const deleteQuitPlanRequest = useCallback(async (id) => {
+  try {
+    await deleteQuitPlanRequestAPI(id); // giữ nguyên
+  } catch (error) {
+    console.error("Lỗi khi xoá yêu cầu:", error);
+    setError(error.message || "Không thể xoá yêu cầu");
+    throw error;
+  }
+}, []);
+
 
   return {
     // State
@@ -144,5 +196,7 @@ export function useQuitPlanData() {
     createQuitPlan,
     sendQuitPlanRequest,
     getMyQuitPlanRequests,
+    getQuitPlanByUserId,
+    deleteQuitPlanRequest
   };
 }
