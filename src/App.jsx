@@ -10,7 +10,7 @@ import "antd/dist/reset.css";
 // Layout
 import { Navbar } from "./layouts/Navbar";
 import { Footer } from "./layouts/Footer";
-import ScrollToTop from "./layouts/ScrolltoTop";
+// import ScrollToTop from "./layouts/ScrolltoTop";
 import UserLayout from "./layouts/user/UserLayout";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import UserHeader from "./layouts/user/UserHeader";
@@ -86,7 +86,7 @@ function App() {
     <div className="bg-white min-h-screen">
       <Router>
         <AuthProvider>
-          <ScrollToTop />
+          {/* <ScrollToTop /> */}
           <Routes>
             {/* Auth routes */}
             <Route path="/login" element={<AuthPage />} />
