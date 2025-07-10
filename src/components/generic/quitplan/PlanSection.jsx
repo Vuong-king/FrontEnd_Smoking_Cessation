@@ -5,7 +5,7 @@ import PlanCard from "./PlanCard";
 import { useQuitPlanData } from "../../../hook/useQuitPlanData";
 
 function PlanSection() {
-  const { publicQuitPlans, loading, error, fetchPublicPlans } = useQuitPlanData();
+  const { publicPlans, loading, error, fetchPublicPlans } = useQuitPlanData();
 
   useEffect(() => {
     fetchPublicPlans();
@@ -37,7 +37,7 @@ function PlanSection() {
           />
         ) : (
           <Row gutter={[24, 24]} justify="center">
-            {Array.isArray(publicQuitPlans) && publicQuitPlans.map((plan, index) => (
+            {Array.isArray(publicPlans) && publicPlans.map((plan, index) => (
               <Col xs={24} sm={12} md={8} lg={6} key={plan._id}>
                 <PlanCard
                   id={plan._id}
