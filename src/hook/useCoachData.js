@@ -27,6 +27,7 @@ export function useCoachData() {
     coaches,
     loading,
     error,
+    getAllCoaches: fetchCoaches,
     refetch: fetchCoaches,
   };
 }

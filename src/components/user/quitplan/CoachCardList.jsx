@@ -1,222 +1,184 @@
-import { useState } from "react";
-import { useCoachData } from "../../../hook/useCoachData";
-import {
-  Card,
-  Avatar,
-  Skeleton,
-  Row,
-  Col,
-  Typography,
-  Alert,
-  Rate,
-  Tag,
-  Divider,
-  Button,
-  message,
-} from "antd";
-import {
-  StarOutlined,
-  ClockCircleOutlined,
-  TeamOutlined,
-  MessageOutlined,
-  UserOutlined,
-  CheckOutlined,
-  FileTextOutlined,
-  SolutionOutlined,
-} from "@ant-design/icons";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { Card, Typography, Alert, Button, message, Spin } from "antd";
 import QuitPlanModal from "./QuitPlanModal";
-import { useQuitPlanData } from "../../../hook/useQuitPlanData";
-import { useNavigate } from "react-router-dom";
-import { ChevronRight, FileText, Target } from "lucide-react";
 
-const { Title, Paragraph, Text } = Typography;
+import CoachCard from "./CoachCard";
+import CoachInfo from "./CoachInfo";
+import DetailedCoachInfo from "./DetailedCoachInfo";
+import LoadingSkeleton from "./LoadingSkeleton";
+import { useAuth } from "../../../context/AuthContext";
+import { useCoachData } from "../../../hook/useCoachData";
+import useQuitPlanData from "../../../hook/useQuitPlanData";
+import UserStageView from "./UserStageView";
 
-const LoadingSkeleton = () => (
-  <div className="py-10 px-6 bg-gray-50 min-h-screen">
-    <div className="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-sm">
-      <Skeleton.Input
-        active
-        size="large"
-        className="w-80 h-10 block mx-auto mb-10"
-      />
-      <Row gutter={[24, 24]}>
-        {[...Array(6)].map((_, i) => (
-          <Col xs={24} sm={12} lg={8} key={i}>
-            <Card loading={true} className="rounded-xl border-gray-200" />
-          </Col>
-        ))}
-      </Row>
-    </div>
-  </div>
-);
-
-const CoachCard = ({ coach, onSelectCoach }) => {
-  const name = coach.coach_id?.name || "Ẩn danh";
-  const avatar = coach.coach_id?.avatar_url || "";
-
-  return (
-    <Card
-      hoverable
-      className="rounded-xl border-gray-100 shadow-md bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-      bodyStyle={{ padding: "24px" }}
-    >
-      <div className="flex items-center mb-5 pb-4 border-b border-gray-100">
-        <Avatar
-          size={72}
-          src={avatar}
-          icon={<UserOutlined />}
-          className="mr-4 border-2 border-gray-100 shadow"
-        />
-        <div className="flex-1">
-          <Title level={4} className="m-0 mb-1 text-gray-800 text-lg font-semibold">
-            {name}
-          </Title>
-          <Tag color="blue" className="text-xs px-2 py-1 rounded-md bg-blue-50 text-blue-600">
-            {coach.specialization}
-          </Tag>
-        </div>
-      </div>
-
-      <div className="mb-4">
-        <div className="flex items-center mb-2">
-          <ClockCircleOutlined className="text-green-500 mr-2" />
-          <Text className="text-gray-600 text-sm">Kinh nghiệm: <Text strong>{coach.experience_years} năm</Text></Text>
-        </div>
-        <div className="flex items-center mb-2">
-          <TeamOutlined className="text-blue-500 mr-2" />
-          <Text className="text-gray-600 text-sm">Buổi hỗ trợ: <Text strong>{coach.total_sessions}</Text></Text>
-        </div>
-        <div className="flex items-center">
-          <StarOutlined className="text-yellow-500 mr-2" />
-          <Rate disabled defaultValue={coach.rating_avg} allowHalf />
-          <Text className="ml-2 text-sm text-gray-700">({coach.rating_avg})</Text>
-        </div>
-      </div>
-
-      <Divider />
-
-      <div className="mb-4">
-        <Text strong>Giới thiệu:</Text>
-        <Paragraph ellipsis={{ rows: 3, expandable: true, symbol: "Xem thêm" }} className="text-gray-600 text-sm">
-          {coach.bio}
-        </Paragraph>
-      </div>
-
-      <Button
-        type="primary"
-        size="large"
-        icon={<CheckOutlined />}
-        block
-        onClick={() => onSelectCoach(coach)}
-        className="rounded-lg mt-4"
-      >
-        Chọn cho tôi
-      </Button>
-    </Card>
-  );
-};
+const { Title, Text } = Typography;
 
 const CoachCardList = () => {
-  const { coaches, loading, error } = useCoachData();
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const { user } = useAuth();
+  const { getAllCoaches } = useCoachData();
+  const { getQuitPlanByUserId, sendQuitPlanRequest, getMyQuitPlanRequests } =
+    useQuitPlanData();
+
   const [selectedCoach, setSelectedCoach] = useState(null);
-  const { sendQuitPlanRequest } = useQuitPlanData();
-  const navigate = useNavigate();
+  const [coaches, setCoaches] = useState([]);
+  const [userQuitPlan, setUserQuitPlan] = useState(null);
+  const [pendingRequest, setPendingRequest] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const userId = useMemo(() => user?.userId || user?.id || user?._id, [user]);
+
+  const serviceRef = useRef({
+    getAllCoaches,
+    getQuitPlanByUserId,
+    getMyQuitPlanRequests,
+  });
+
+  serviceRef.current = { getAllCoaches, getQuitPlanByUserId, getMyQuitPlanRequests };
+
+  const refreshData = useCallback(async () => {
+    if (!userId || isRefreshing) return;
+
+    setIsRefreshing(true);
+    setLoading(true);
+    try {
+      const [coachList, quitPlans, requests] = await Promise.all([
+        serviceRef.current.getAllCoaches(),
+        serviceRef.current.getQuitPlanByUserId(userId),
+        serviceRef.current.getMyQuitPlanRequests(),
+      ]);
+
+      setCoaches(coachList || []);
+      let approvedPlan = Array.isArray(quitPlans)
+        ? quitPlans.find((p) => p.status === "approved" || p.coach_id)
+        : quitPlans?.status === "approved" || quitPlans?.coach_id
+        ? quitPlans
+        : null;
+
+      setUserQuitPlan(approvedPlan);
+
+      const pendingReq = Array.isArray(requests)
+        ? requests.find((r) => ["pending", "created", "approved"].includes(r.status))
+        : requests?.status && ["pending", "created", "approved"].includes(requests.status)
+        ? requests
+        : null;
+
+      setPendingRequest(pendingReq);
+      setError(null);
+    } catch (err) {
+      setError(err?.response?.data?.message || err.message || "Lỗi tải dữ liệu");
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  }, [userId, isRefreshing]);
+
+  useEffect(() => {
+    if (!userId) return setLoading(false);
+    refreshData();
+  }, [userId]);
 
   const handleSubmit = async (formData) => {
+    const coachId =
+      selectedCoach?.coach_id?._id || selectedCoach?.coach_id || selectedCoach?._id;
+    if (!coachId) return message.error("Không xác định được coach!");
+
     try {
-      const coachId = selectedCoach?.coach_id?._id || selectedCoach?.coach_id || selectedCoach?._id;
-      if (!coachId) return message.error("Không xác định được coach!");
       await sendQuitPlanRequest({ coach_id: coachId, ...formData });
-      message.success("Gửi yêu cầu cho coach thành công!");
-      setIsModalVisible(false);
+      message.success("Gửi yêu cầu thành công!");
+      setSelectedCoach(null);
+      await refreshData();
     } catch (err) {
       message.error("Thất bại: " + (err?.message || ""));
     }
   };
 
-  const handleSelectCoach = (coach) => {
-    setSelectedCoach(coach);
-    setIsModalVisible(true);
-  };
-
   if (loading) return <LoadingSkeleton />;
 
-  if (error) {
+  if (error)
     return (
-      <div className="py-10 px-6 bg-gray-50 min-h-screen">
-        <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-sm">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="p-8 shadow-lg rounded-lg max-w-4xl">
           <Alert
             type="error"
-            message="Không thể tải danh sách huấn luyện viên"
-            description="Vui lòng thử lại sau hoặc liên hệ với quản trị viên."
+            message="Không thể tải dữ liệu"
+            description={error}
             showIcon
-            className="rounded-lg"
           />
+          <div className="mt-4 text-center">
+            <Button onClick={refreshData} type="primary">Thử lại</Button>
+          </div>
+        </Card>
+      </div>
+    );
+
+  if (userQuitPlan?._id) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1">
+            <Card className="sticky top-4 shadow-lg rounded-lg">
+              <DetailedCoachInfo coach={userQuitPlan.coach_id} plan={userQuitPlan} />
+            </Card>
+          </div>
+          <div className="lg:col-span-2">
+            <Card className="shadow-lg rounded-lg">
+              <Title level={3}>Giai Đoạn Hiện Tại & Nhiệm Vụ</Title>
+              <UserStageView quitPlan={userQuitPlan} />
+            </Card>
+          </div>
         </div>
       </div>
     );
   }
 
+  if (pendingRequest?._id) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="p-8 shadow-lg rounded-lg max-w-4xl w-full">
+          <Title level={2}>Yêu Cầu Đã Được Gửi</Title>
+          <Text>Vui lòng chờ huấn luyện viên xác nhận yêu cầu của bạn.</Text>
+          <div className="mt-6">
+            <Button onClick={refreshData} loading={isRefreshing}>
+              🔄 Kiểm tra cập nhật
+            </Button>
+          </div>
+          {pendingRequest.coach_id && (
+            <div className="mt-6">
+              <CoachInfo coach={pendingRequest.coach_id} />
+            </div>
+          )}
+        </Card>
+      </div>
+    );
+  }
+
   return (
-     <div className="py-10 px-6 bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto bg-white p-8 rounded-xl shadow-sm">
-
-        <div className="mb-8 text-center">
-          <Title level={2} className="text-gray-800">Đội Ngũ Huấn Luyện Viên</Title>
-          <Text type="secondary">Các chuyên gia sẽ đồng hành cùng bạn</Text>
-        </div>
-
-
-        <div className="flex gap-6 items-start">
-
-          <div className="flex flex-col gap-3 w-[260px]">
-
-            <button
-              onClick={() => navigate("/user/my-requests")}
-              className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-blue-50 hover:shadow-sm transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-blue-100 text-blue-600">
-                  <FileText size={20} />
-                </div>
-                <span className="text-gray-800 font-medium text-sm">Xem lịch sử yêu cầu</span>
-              </div>
-              <ChevronRight size={16} className="text-gray-400" />
-            </button>
-
-            <button
-              onClick={() => navigate("/user/my-plans")}
-              className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-green-50 hover:shadow-sm transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-green-100 text-green-600">
-                  <Target size={20} />
-                </div>
-                <span className="text-gray-800 font-medium text-sm">Kế hoạch của tôi</span>
-              </div>
-              <ChevronRight size={16} className="text-gray-400" />
-            </button>
-          </div>
-
-          <div className="flex-1">
-            <Row gutter={[24, 24]}>
-              {coaches.map((coach, index) => (
-                <Col xs={24} sm={12} lg={8} key={index}>
-                  <CoachCard coach={coach} onSelectCoach={handleSelectCoach} />
-                </Col>
-              ))}
-            </Row>
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <Card className="p-8 shadow-lg rounded-lg max-w-6xl w-full">
+        <Title level={2} className="text-center">Chọn Huấn Luyện Viên</Title>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-8">
+          {coaches.length ? (
+            coaches.map((coach) => (
+              <CoachCard
+                key={coach._id}
+                coach={coach}
+                onSelectCoach={setSelectedCoach}
+              />
+            ))
+          ) : (
+            <Text className="col-span-full text-center">Không có huấn luyện viên</Text>
+          )}
         </div>
 
         <QuitPlanModal
-          visible={isModalVisible}
-          onCancel={() => setIsModalVisible(false)}
+          visible={!!selectedCoach}
+          onCancel={() => setSelectedCoach(null)}
           onSubmit={handleSubmit}
           coach={selectedCoach}
         />
-      </div>
+      </Card>
     </div>
   );
 };
