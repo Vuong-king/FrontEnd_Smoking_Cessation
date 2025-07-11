@@ -1,9 +1,10 @@
 import { Card, Avatar, Typography, Rate, Tag, Button } from "antd";
 import InfoBox from "./InfoBox";
 
-const { Title, Paragraph, Text } = Typography;
 
+const { Title, Paragraph, Text } = Typography;
 const CoachCard = ({ coach, onSelectCoach }) => (
+  
   <Card
     hoverable
     className="rounded-lg border-0 shadow-lg bg-white transition-all group overflow-hidden flex flex-col"
@@ -12,12 +13,12 @@ const CoachCard = ({ coach, onSelectCoach }) => (
     <div className="bg-blue-500 p-4 text-white flex items-center min-h-[120px]">
       <Avatar
         size={64}
-        src={coach.coach_id?.avatar_url}
+        src={coach?.avatar_url}
         className="border-3 border-white shadow-lg group-hover:scale-110 transition-transform"
       />
       <div className="ml-3">
         <Title level={5} className="m-0 mb-2 text-white" ellipsis={{ rows: 2 }}>
-          {coach.coach_id?.name || "Ẩn danh"}
+          {coach.name || "Ẩn danh"}
         </Title>
         <Tag className="bg-white bg-opacity-20 border-0 text-white text-xs">
           {coach.specialization?.length > 20

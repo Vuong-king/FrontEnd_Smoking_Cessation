@@ -37,6 +37,7 @@ import UserAchievement from "./pages/user/UserAchievement";
 import UserSupport from "./pages/user/UserSupport";
 import UserProgress from "./pages/user/UserProgress";
 import UserQuitPlanPage from "./pages/user/UserQuitPlanPage";
+import QuitPlanManagePage from "./pages/user/QuitPlanManagePage";
 
 // Pages - Admin
 import AdminDashboardHome from "./pages/admin/AdminDashboardHome";
@@ -101,6 +102,7 @@ function App() {
               />
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/blog/:id" element={<BlogDetail />} />
+              <Route path="/quitplan/:id/manage" element={<QuitPlanManagePage />} />
             </Route>
 
             {/* User protected routes */}

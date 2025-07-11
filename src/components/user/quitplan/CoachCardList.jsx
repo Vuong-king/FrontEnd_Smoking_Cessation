@@ -15,16 +15,13 @@ const { Title, Text } = Typography;
 
 const CoachCardList = () => {
   const { user } = useAuth();
-  const { getAllCoaches } = useCoachData();
+  const { coaches, loading, error, getAllCoaches } = useCoachData();
   const { getQuitPlanByUserId, sendQuitPlanRequest, getMyQuitPlanRequests } =
     useQuitPlanData();
 
   const [selectedCoach, setSelectedCoach] = useState(null);
-  const [coaches, setCoaches] = useState([]);
   const [userQuitPlan, setUserQuitPlan] = useState(null);
   const [pendingRequest, setPendingRequest] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const userId = useMemo(() => user?.userId || user?.id || user?._id, [user]);
@@ -41,15 +38,13 @@ const CoachCardList = () => {
     if (!userId || isRefreshing) return;
 
     setIsRefreshing(true);
-    setLoading(true);
     try {
-      const [coachList, quitPlans, requests] = await Promise.all([
+      const [, quitPlans, requests] = await Promise.all([
         serviceRef.current.getAllCoaches(),
         serviceRef.current.getQuitPlanByUserId(userId),
         serviceRef.current.getMyQuitPlanRequests(),
       ]);
 
-      setCoaches(coachList || []);
       let approvedPlan = Array.isArray(quitPlans)
         ? quitPlans.find((p) => p.status === "approved" || p.coach_id)
         : quitPlans?.status === "approved" || quitPlans?.coach_id
@@ -65,17 +60,15 @@ const CoachCardList = () => {
         : null;
 
       setPendingRequest(pendingReq);
-      setError(null);
-    } catch (err) {
-      setError(err?.response?.data?.message || err.message || "Lỗi tải dữ liệu");
+    } catch {
+      // error handled by hook
     } finally {
-      setLoading(false);
       setIsRefreshing(false);
     }
   }, [userId, isRefreshing]);
 
   useEffect(() => {
-    if (!userId) return setLoading(false);
+    if (!userId) return;
     refreshData();
   }, [userId]);
 
@@ -160,13 +153,15 @@ const CoachCardList = () => {
         <Title level={2} className="text-center">Chọn Huấn Luyện Viên</Title>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-8">
           {coaches.length ? (
-            coaches.map((coach) => (
-              <CoachCard
-                key={coach._id}
-                coach={coach}
-                onSelectCoach={setSelectedCoach}
-              />
-            ))
+            coaches
+              .filter(coach => coach.coach_id && coach.coach_id._id)
+              .map((coach) => (
+                <CoachCard
+                  key={coach.coach_id._id}
+                  coach={coach.coach_id}
+                  onSelectCoach={setSelectedCoach}
+                />
+              ))
           ) : (
             <Text className="col-span-full text-center">Không có huấn luyện viên</Text>
           )}
