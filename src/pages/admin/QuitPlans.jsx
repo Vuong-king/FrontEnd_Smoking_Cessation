@@ -1,10 +1,14 @@
 import React from "react";
-import { Plus, Pencil, Trash } from "lucide-react";
-import { ConfirmModal } from "../../components/admin/ConfirmModal";
-import { useNavigate } from "react-router-dom";
+import { Table, Button, Modal, Input, Select, Tag, Spin } from "antd";
+import { PlusOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import useQuitPlans from "../../hook/useQuitPlans";
+import ColourfulText from "../../components/ui/ColourfulText";
+import { useNavigate } from "react-router-dom";
+
+const { Option } = Select;
 
 const QuitPlans = () => {
+  const navigate = useNavigate();
   const {
     plans,
     users,
@@ -18,8 +22,6 @@ const QuitPlans = () => {
     setShowConfirm,
     planToDelete,
     setPlanToDelete,
-    dateError,
-    setDateError,
     selectedUser,
     formData,
     setFormData,
@@ -31,219 +33,193 @@ const QuitPlans = () => {
     handleSave,
     handleDelete,
   } = useQuitPlans();
-  const navigate = useNavigate();
 
+  // Table columns
+  const columns = [
+    {
+      title: "Tên Kế Hoạch",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Lý Do",
+      dataIndex: "reason",
+      key: "reason",
+    },
+    {
+      title: "Ngày Bắt Đầu",
+      dataIndex: "start_date",
+      key: "start_date",
+      render: (date) => new Date(date).toLocaleDateString('vi-VN'),
+    },
+    {
+      title: "Ngày Mục Tiêu",
+      dataIndex: "target_quit_date",
+      key: "target_quit_date",
+      render: (date) => new Date(date).toLocaleDateString('vi-VN'),
+    },
+    {
+      title: "ID Người Dùng",
+      dataIndex: "user_id",
+      key: "user_id",
+      render: (user_id) => typeof user_id === 'object' ? user_id._id : user_id || "Không có",
+    },
+    {
+      title: "Hành Động",
+      key: "action",
+      render: (_, record) => (
+        <>
+          <Button type="link" icon={<EditOutlined />} onClick={e => { e.stopPropagation(); handleEdit(record); }}>
+            Sửa
+          </Button>
+          <Button type="link" danger icon={<DeleteOutlined />} onClick={e => { e.stopPropagation(); setPlanToDelete(record._id); setShowConfirm(true); }}>
+            Xóa
+          </Button>
+        </>
+      ),
+    },
+  ];
+
+  // Modal form content
+  const modalForm = (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <Select
+        placeholder="Chọn người dùng"
+        value={formData.user || ""}
+        onChange={handleUserChange}
+        status={errors.user ? "error" : ""}
+      >
+        {users.map(user => (
+          <Option key={user.id} value={user.id}>
+            {user.responses?.name || user.name} ({user.responses?.email || user.email})
+          </Option>
+        ))}
+      </Select>
+      {errors.user && <div style={{ color: "#ff4d4f" }}>{errors.user}</div>}
+      {selectedUser && (
+        <div style={{ color: "#888", fontSize: 13 }}>
+          Đã chọn: {selectedUser.responses?.name || selectedUser.name} ({selectedUser.responses?.email || selectedUser.email})
+        </div>
+      )}
+      <Input
+        placeholder="Tên kế hoạch"
+        value={formData.name}
+        onChange={e => setFormData({ ...formData, name: e.target.value })}
+        status={errors.name ? "error" : ""}
+      />
+      {errors.name && <div style={{ color: "#ff4d4f" }}>{errors.name}</div>}
+      <Input
+        placeholder="Lý do"
+        value={formData.reason}
+        onChange={e => setFormData({ ...formData, reason: e.target.value })}
+        status={errors.reason ? "error" : ""}
+      />
+      {errors.reason && <div style={{ color: "#ff4d4f" }}>{errors.reason}</div>}
+      <Input
+        type="date"
+        value={formData.start_date}
+        onChange={e => handleDateChange('start_date', e.target.value)}
+        status={errors.start_date ? "error" : ""}
+      />
+      {errors.start_date && <div style={{ color: "#ff4d4f" }}>{errors.start_date}</div>}
+      <Input
+        type="date"
+        value={formData.target_quit_date}
+        onChange={e => handleDateChange('target_quit_date', e.target.value)}
+        status={errors.target_quit_date ? "error" : ""}
+      />
+      {errors.target_quit_date && <div style={{ color: "#ff4d4f" }}>{errors.target_quit_date}</div>}
+    </div>
+  );
+
+  // Loading
   if (loading && plans.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-gray-600 text-lg">Đang tải...</div>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Spin size="large" tip="Đang tải..." />
       </div>
     );
   }
 
+  // Error
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-red-500 text-lg">{error}</div>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ color: "#ff4d4f", fontSize: 18, background: "#fff1f0", padding: 24, borderRadius: 8, border: "1px solid #ffa39e" }}>{error}</div>
       </div>
     );
   }
 
   return (
-    <section className="py-16 bg-gray-100 min-h-screen text-gray-800">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-2 text-indigo-600">
-            Kế Hoạch Cai Thuốc
-          </h2>
-          <p className="text-gray-500">Quản lý các kế hoạch cai thuốc của người dùng.</p>
-        </div>
-
-        <div className="flex justify-end mb-6">
-          <button
-            onClick={handleNew}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition duration-200 text-sm font-medium"
-          >
-            <Plus className="w-5 h-5" />
-            Thêm Kế Hoạch
-          </button>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white rounded-xl shadow-md">
-            <thead>
-              <tr className="bg-gray-200 text-gray-600 text-sm font-semibold">
-                <th className="py-3 px-4 text-left">Tên Kế Hoạch</th>
-                <th className="py-3 px-4 text-left">Lý Do</th>
-                <th className="py-3 px-4 text-left">Ngày Bắt Đầu</th>
-                <th className="py-3 px-4 text-left">Ngày Mục Tiêu</th>
-                <th className="py-3 px-4 text-left">ID Người Dùng</th>
-                <th className="py-3 px-4 text-left">Hành Động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {plans.map((plan) => (
-                <tr
-                  key={plan._id}
-                  className="border-b hover:bg-gray-50 transition duration-200"
-                  onClick={() => navigate(`/admin/quit-plans/${plan._id}`, { state: { plan } })}
-                >
-                  <td className="py-3 px-4 text-sm text-gray-800">{plan.name}</td>
-                  <td className="py-3 px-4 text-sm text-gray-500">{plan.reason}</td>
-                  <td className="py-3 px-4 text-sm text-gray-500">
-                    {new Date(plan.start_date).toLocaleDateString('vi-VN')}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-gray-500">
-                    {new Date(plan.target_quit_date).toLocaleDateString('vi-VN')}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-gray-400">
-                    {plan.user_id && typeof plan.user_id === 'object'
-                      ? plan.user_id._id
-                      : plan.user_id || "Không có"}
-                  </td>
-                  <td className="py-3 px-4 text-sm">
-                    <div className="flex gap-3">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(plan);
-                        }}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
-                      >
-                        <Pencil className="w-4 h-4" /> Sửa
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setPlanToDelete(plan._id);
-                          setShowConfirm(true);
-                        }}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 text-sm"
-                      >
-                        <Trash className="w-4 h-4" /> Xóa
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {editingPlan && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white p-8 rounded-2xl w-full max-w-lg shadow-2xl">
-              <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-                {isNew ? "Thêm Kế Hoạch Cai Thuốc Mới" : "Chỉnh Sửa Kế Hoạch Cai Thuốc"}
-              </h3>
-
-              <div className="space-y-4 mb-6">
-                <div>
-                  <select
-                    value={formData.user || ""}
-                    onChange={handleUserChange}
-                    className={`w-full p-3 rounded-lg border ${errors.user ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-                  >
-                    <option value="">Chọn người dùng</option>
-                    {users.map(user => (
-                      <option key={user.id} value={user.id}>
-                        {user.responses?.name || user.name} ({user.responses?.email || user.email})
-                      </option>
-                    ))}
-                  </select>
-                  {errors.user && <p className="text-red-500 text-sm mt-1">{errors.user}</p>}
-                  {selectedUser && (
-                    <div className="mt-2 text-sm text-gray-500">
-                      Đã chọn: {selectedUser.responses?.name || selectedUser.name} ({selectedUser.responses?.email || selectedUser.email})
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Tên kế hoạch"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    className={`w-full p-3 rounded-lg border ${errors.name ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-                  />
-                  {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-                </div>
-
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Lý do"
-                    value={formData.reason}
-                    onChange={(e) =>
-                      setFormData({ ...formData, reason: e.target.value })
-                    }
-                    className={`w-full p-3 rounded-lg border ${errors.reason ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-                  />
-                  {errors.reason && <p className="text-red-500 text-sm mt-1">{errors.reason}</p>}
-                </div>
-
-                <div>
-                  <input
-                    type="date"
-                    value={formData.start_date}
-                    onChange={(e) => handleDateChange('start_date', e.target.value)}
-                    className={`w-full p-3 rounded-lg border ${errors.start_date ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-                  />
-                  {errors.start_date && <p className="text-red-500 text-sm mt-1">{errors.start_date}</p>}
-                </div>
-
-                <div>
-                  <input
-                    type="date"
-                    value={formData.target_quit_date}
-                    onChange={(e) => handleDateChange('target_quit_date', e.target.value)}
-                    className={`w-full p-3 rounded-lg border ${errors.target_quit_date ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-                  />
-                  {errors.target_quit_date && <p className="text-red-500 text-sm mt-1">{errors.target_quit_date}</p>}
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => {
-                    setEditingPlan(null);
-                    setIsNew(false);
-                    setDateError("");
-                  }}
-                  className="px-5 py-2.5 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition duration-200"
-                >
-                  Hủy
-                </button>
-                <button
-                  onClick={handleSave}
-                  disabled={loading || dateError}
-                  className="px-5 py-2.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition duration-200 disabled:opacity-50"
-                >
-                  {loading ? "Đang lưu..." : "Lưu"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showConfirm && (
-          <ConfirmModal
-            message="Bạn có chắc chắn muốn xóa kế hoạch cai thuốc này không?"
-            onCancel={() => {
-              setShowConfirm(false);
-              setPlanToDelete(null);
-            }}
-            onConfirm={() => {
-              handleDelete(planToDelete);
-              setShowConfirm(false);
-              setPlanToDelete(null);
-            }}
-          />
-        )}
+    <section style={{ padding: "40px 0", background: "#f9fafb", minHeight: "100vh" }}>
+      <div style={{ textAlign: "center", marginBottom: 40 }}>
+        <h2 style={{ fontSize: 32, fontWeight: 700, marginBottom: 8, color: "black" }}>
+          Quản lý <ColourfulText text="Kế hoạch cai thuốc" />
+        </h2>
+        <p style={{ color: "#666", fontSize: 18 }}>
+          Quản lý các kế hoạch cai thuốc của người dùng.
+        </p>
       </div>
+      <div style={{ maxWidth: 1200, margin: "0 auto 32px auto", display: "flex", justifyContent: "flex-end" }}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          shape="round"
+          size="large"
+          onClick={handleNew}
+        >
+          Thêm Kế Hoạch
+        </Button>
+      </div>
+      <div style={{ maxWidth: 1200, margin: "0 auto", background: "#fff", borderRadius: 16, padding: 24, boxShadow: "0 2px 8px #f0f1f2" }}>
+        <Table
+          columns={columns}
+          dataSource={plans}
+          rowKey="_id"
+          pagination={{ pageSize: 10 }}
+          locale={{
+            emptyText: "Không có kế hoạch nào.",
+          }}
+          onRow={(record) => ({
+            onClick: () => navigate(`/admin/quit-plans/${record._id}`, { state: { plan: record } }),
+          })}
+        />
+      </div>
+      <Modal
+        open={!!editingPlan}
+        title={isNew ? "Thêm Kế Hoạch Cai Thuốc Mới" : "Chỉnh Sửa Kế Hoạch Cai Thuốc"}
+        onCancel={() => {
+          setEditingPlan(null);
+          setIsNew(false);
+        }}
+        onOk={handleSave}
+        confirmLoading={loading}
+        okText={isNew ? "Thêm" : "Lưu"}
+        cancelText="Hủy"
+        destroyOnClose
+      >
+        {modalForm}
+      </Modal>
+      <Modal
+        open={showConfirm}
+        title="Xác nhận xoá"
+        onCancel={() => {
+          setShowConfirm(false);
+          setPlanToDelete(null);
+        }}
+        onOk={() => {
+          handleDelete(planToDelete);
+          setShowConfirm(false);
+          setPlanToDelete(null);
+        }}
+        okText="Xóa"
+        okButtonProps={{ danger: true }}
+        cancelText="Hủy"
+        icon={<ExclamationCircleOutlined style={{ color: '#ff4d4f' }} />}
+        destroyOnClose
+      >
+        Bạn có chắc chắn muốn xóa kế hoạch cai thuốc này không?
+      </Modal>
     </section>
   );
 };

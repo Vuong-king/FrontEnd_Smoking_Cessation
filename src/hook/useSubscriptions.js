@@ -37,7 +37,7 @@ const useSubscriptions = () => {
     try {
       const data = await PackageService.getAllPackages();
       console.log(data);
-      setPackages(data.packages);
+      setPackages(data);
     } catch (err) {
       setError(err.response?.data?.message || 'Không thể tải danh sách gói');
     }

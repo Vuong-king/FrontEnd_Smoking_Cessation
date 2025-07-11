@@ -1,5 +1,8 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import { Card, Typography, Button, Result, Row, Col, Space } from "antd";
+
+const { Title, Text } = Typography;
 
 const QuitPlanDetailPageAdmin = () => {
   const navigate = useNavigate();
@@ -7,44 +10,51 @@ const QuitPlanDetailPageAdmin = () => {
 
   if (!plan) {
     return (
-      <div className="text-center text-white mt-20">
-        <h2 className="text-2xl font-bold">Không tìm thấy kế hoạch</h2>
-        <button
-          onClick={() => navigate("/admin/quit-plans")}
-          className="mt-4 px-4 py-2 bg-gradient-to-r from-purple-500 to-cyan-500 rounded text-white"
-        >
-          Quay lại danh sách Kế Hoạch
-        </button>
-      </div>
+      <Result
+        status="404"
+        title="Không tìm thấy kế hoạch"
+        extra={
+          <Button type="primary" onClick={() => navigate("/admin/quit-plans")}>Quay lại danh sách Kế Hoạch</Button>
+        }
+      />
     );
   }
 
   return (
-    <div className="p-10 text-gray-800 max-w-2xl mx-auto bg-white rounded-xl shadow-lg mt-10">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate("/admin/quit-plans")}
-        className="mb-6 inline-flex items-center gap-2 text-sm font-semibold bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 text-white px-4 py-2 rounded transition"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Quay lại danh sách Kế Hoạch
-      </button>
+    <Row justify="center" style={{ marginTop: 40 }}>
+      <Col xs={24} sm={22} md={20} lg={16} xl={12}>
+        <Card
+          bordered={false}
+          style={{ boxShadow: "0 2px 8px #f0f1f2" }}
+          bodyStyle={{ padding: 32 }}
+        >
+          <Button
+            type="link"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => navigate("/admin/quit-plans")}
+            style={{ marginBottom: 24, paddingLeft: 0 }}
+          >
+            Quay lại danh sách Kế Hoạch
+          </Button>
 
-      <h1 className="text-3xl font-bold mb-4">{plan.name}</h1>
-      <p className="mb-2 text-gray-600">Lý do: {plan.reason}</p>
-      <p className="mb-2 text-gray-600">
-        Người dùng: {typeof plan.user_id === 'object' && plan.user_id !== null
-          ? `${plan.user_id.name} (${plan.user_id.email})`
-          : plan.user_id}
-      </p>
-      <p className="mb-2 text-gray-600">
-        Ngày bắt đầu: {plan.start_date ? new Date(plan.start_date).toLocaleDateString('vi-VN') : ''}
-      </p>
-      <p className="mb-2 text-gray-600">
-        Ngày mục tiêu: {plan.target_quit_date ? new Date(plan.target_quit_date).toLocaleDateString('vi-VN') : ''}
-      </p>
-      {/* Add more fields if needed */}
-    </div>
+          <Title level={2} style={{ marginBottom: 8 }}>{plan.name}</Title>
+          <Space direction="vertical" size="middle" style={{ marginBottom: 24 }}>
+            <Text type="secondary">Lý do: {plan.reason}</Text>
+            <Text type="secondary">
+              Người dùng: {typeof plan.user_id === 'object' && plan.user_id !== null
+                ? `${plan.user_id.name} (${plan.user_id.email})`
+                : plan.user_id}
+            </Text>
+            <Text type="secondary">
+              Ngày bắt đầu: {plan.start_date ? new Date(plan.start_date).toLocaleDateString('vi-VN') : ''}
+            </Text>
+            <Text type="secondary">
+              Ngày mục tiêu: {plan.target_quit_date ? new Date(plan.target_quit_date).toLocaleDateString('vi-VN') : ''}
+            </Text>
+          </Space>
+        </Card>
+      </Col>
+    </Row>
   );
 };
 
