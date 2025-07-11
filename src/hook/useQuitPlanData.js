@@ -118,6 +118,12 @@ export function useQuitPlanData() {
     [callService]
   );
 
+  // Memoize getQuitPlanById để tránh bị tạo mới mỗi lần render
+  const getQuitPlanById = useCallback(
+    (id) => callService(quitPlanService.getQuitPlanById, id),
+    [callService]
+  );
+
   return {
     // State
     quitPlans,
@@ -138,7 +144,7 @@ export function useQuitPlanData() {
     // CRUD
     createQuitPlan: createWithRefresh,
     getAllQuitPlans: () => callService(quitPlanService.getAllQuitPlans),
-    getQuitPlanById: (id) => callService(quitPlanService.getQuitPlanById, id),
+    getQuitPlanById, // Đã được memoize
     updateQuitPlan: updateWithRefresh,
     deleteQuitPlan: deleteWithRefresh,
     getQuitPlanByUserId: memoizedGetQuitPlanByUserId,
