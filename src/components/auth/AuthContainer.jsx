@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import ColourfulText from "../ui/ColourfulText";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../api";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 
 const AuthContainer = () => {
@@ -247,9 +247,11 @@ const handleRegisterSubmit = async (e) => {
                       {loginError}
                     </div>
                   )}
-                  <span className="text-gray-600 mb-3 text-right w-full block">
-                    Forgot Password?
-                  </span>
+                  <Link to="/reset-password" className="block text-right mb-3">
+                    <span className="text-indigo-600 hover:text-indigo-800 text-sm font-medium cursor-pointer transition-colors duration-200">
+                      Forgot Password?
+                    </span>
+                  </Link>
                   <button
                     type="submit"
                     disabled={loading}

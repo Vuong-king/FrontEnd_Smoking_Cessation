@@ -61,6 +61,8 @@ import StagesCoach from "./pages/coach/StagesCoach";
 
 // Components
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import ResetPassword from "./components/auth/ResetPassword";
+import ResetPasswordWithToken from "./components/auth/ResetPasswordWithToken";
 
 
 // ===== Layout Wrapper =====
@@ -91,7 +93,8 @@ function App() {
             <Route path="/login/:token" element={<AuthPage />} />
             <Route path="/payment-success" element={<PaymentSuccessPage />} />
             <Route path="/payment-cancel" element={<PaymentCancelPage />} />
-
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/resset-password/:token" element={<ResetPasswordWithToken />} />
             {/* Public layout */}
             <Route element={<Layout />}>
               <Route path="/" element={<HomePages />} />
