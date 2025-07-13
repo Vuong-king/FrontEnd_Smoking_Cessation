@@ -196,7 +196,7 @@ const Users = () => {
           }}
         />
       </div>
-      {(role === "coach" || role === "user") && (
+      {/* {(role === "coach" || role === "user") && (
         <Button
           type="primary"
           shape="round"
@@ -206,7 +206,7 @@ const Users = () => {
         >
           ➕ Thêm {role === "coach" ? "huấn luyện viên" : "người dùng"}
         </Button>
-      )}
+      )} */}
       <Modal
         open={showModal && (role === "coach" || role === "user")}
         title={editingId ? `Sửa ${role === "coach" ? "huấn luyện viên" : "người dùng"}` : `Thêm ${role === "coach" ? "huấn luyện viên" : "người dùng"}`}
