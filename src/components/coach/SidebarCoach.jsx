@@ -11,6 +11,7 @@ import {
   FileTextOutlined,
   TrophyOutlined,
   BellOutlined,
+  NotificationOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Space } from "antd";
 import { Link, useLocation } from "react-router-dom";
@@ -43,17 +44,16 @@ function SidebarCoach({ user = {} }) {
     { label: "Nhiệm Vụ", icon: <FieldTimeOutlined />, path: "/coach/task" }, // Theo dõi tiến độ người dùng
 
     { label: "Tiến trình", icon: <MessageOutlined />, path: "/coach/progress" }, // Đọc phản hồi từ user
-    { label: "Blog Posts", icon: <FileTextOutlined />, path: "/coach/blogs" }, // Đăng bài chia sẻ
+    {
+      label: "Thông báo học viên",
+      icon: <NotificationOutlined />,
+      path: "/coach/notifications",
+    }, // Đăng bài chia sẻ
     {
       label: "Leaderboard",
       icon: <TrophyOutlined />,
       path: "/coach/leaderboard",
     }, // Theo dõi bảng xếp hạng
-    {
-      label: "Notifications",
-      icon: <BellOutlined />,
-      path: "/coach/notifications",
-    }, // Gửi/nhận thông báo
   ];
 
   const dropdownItems = [
