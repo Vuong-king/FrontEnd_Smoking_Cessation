@@ -25,28 +25,30 @@ const PlanStageView = ({ quitPlanId }) => {
     return stages[0];
   };
 
-  useEffect(() => {
+  // Hàm fetch lại dữ liệu stage và task
+  const fetchData = async () => {
     if (!quitPlanId) return;
     setLoading(true);
     setError(null);
-    const fetchData = async () => {
-      try {
-        const stagesData = await UserQuitPlanService.getMyStages(quitPlanId);
-        setStages(stagesData);
-        const current = determineCurrentStage(stagesData);
-        setCurrentStage(current);
-        if (current) {
-          const tasks = await UserQuitPlanService.getTasksWithCompletion(current._id);
-          setStageTasks(tasks);
-        } else {
-          setStageTasks([]);
-        }
-      } catch (err) {
-        setError(err.message || "Lỗi khi tải dữ liệu");
-      } finally {
-        setLoading(false);
+    try {
+      const stagesData = await UserQuitPlanService.getMyStages(quitPlanId);
+      setStages(stagesData);
+      const current = determineCurrentStage(stagesData);
+      setCurrentStage(current);
+      if (current) {
+        const tasks = await UserQuitPlanService.getTasksWithCompletion(current._id);
+        setStageTasks(tasks);
+      } else {
+        setStageTasks([]);
       }
-    };
+    } catch (err) {
+      setError(err.message || "Lỗi khi tải dữ liệu");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, [quitPlanId]);
 
@@ -81,6 +83,37 @@ const PlanStageView = ({ quitPlanId }) => {
     }
   };
 
+  // Thêm logic chuyển giai đoạn chỉ local state
+  const handleMoveToNextStage = async () => {
+    if (!currentStage || !stages.length) return;
+
+    const currentIndex = stages.findIndex(s => s._id === currentStage._id);
+    const nextStage = stages[currentIndex + 1];
+
+    // Cập nhật trạng thái local cho stage hiện tại và stage tiếp theo
+    const updatedStages = stages.map((stage, idx) => {
+      if (idx === currentIndex) return { ...stage, status: "completed" };
+      if (idx === currentIndex + 1) return { ...stage, status: "in_progress" };
+      return stage;
+    });
+    setStages(updatedStages);
+
+    // Chuyển sang stage tiếp theo
+    if (nextStage) {
+      setCurrentStage({ ...nextStage, status: "in_progress" });
+      setLoading(true);
+      try {
+        const tasks = await UserQuitPlanService.getTasksWithCompletion(nextStage._id);
+        setStageTasks(tasks);
+      } catch (err) {
+        setError(err.message || "Lỗi khi tải nhiệm vụ giai đoạn mới");
+        setStageTasks([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   return (
     <div>
       <StageOverview myStages={stages} currentStage={currentStage} />
@@ -90,8 +123,8 @@ const PlanStageView = ({ quitPlanId }) => {
         progress={progress}
         completedCount={completedCount}
         loading={loading}
-        onRefresh={() => {}}
-        onMoveToNextStage={() => {}} // Có thể bổ sung logic chuyển stage nếu muốn
+        onRefresh={fetchData}
+        onMoveToNextStage={handleMoveToNextStage}
       />
       <StageStats
         currentStage={currentStage}
