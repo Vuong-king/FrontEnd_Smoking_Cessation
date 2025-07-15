@@ -2,6 +2,7 @@ import React from "react";
 import { Users, CreditCard, DollarSign, MessageSquare } from "lucide-react";
 import { ChartCard } from "../../components/admin/ChartCard";
 import { PieChartCard } from "../../components/admin/PieChartCard";
+import ColourfulText from "../../components/ui/ColourfulText";
 
 const userGrowthData = [
   { month: "Jan", users: 200 },
@@ -44,7 +45,7 @@ const AdminDashboardHome = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
             Welcome to the{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
-              Admin Dashboard
+            <ColourfulText text="Admin Dashboard"/>
             </span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 mx-auto max-w-full">
