@@ -75,7 +75,6 @@ const UserHeader = () => {
               { name: "Kế Hoạch", path: "/quit-plan" },
               { name: "Community", path: "/community" },
               { name: "Ranking", path: "/ranking" },
-              { name: "Premium", path: "/premium" },
             ].map((item) => (
               <Link
                 key={item.name}

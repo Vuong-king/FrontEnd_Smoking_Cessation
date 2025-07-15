@@ -4,6 +4,7 @@ import { Services } from "../../../components/generic/home/Services";
 import { WorkProcess } from "../../../components/generic/home/WorkProcess";
 import { Pricing } from "../../../components/generic/home/Pricing";
 import { ContactForm } from "../../../components/generic/home/ContactForm";
+import ChatboxAI from "../../../components/generic/ChatboxAI";
 import Testimonials from "../../../components/generic/home/Testimonials";
 
 function HomePages() {
@@ -15,6 +16,7 @@ function HomePages() {
       <Pricing />
       <ContactForm />
       <Testimonials />
+      <ChatboxAI />
     </div>
   );
 }
