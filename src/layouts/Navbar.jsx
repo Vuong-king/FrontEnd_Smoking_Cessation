@@ -48,12 +48,6 @@ export function Navbar() {
               Ranking
             </Link>
             <Link
-              to="*"
-              className="text-white/80 hover:text-white transition-colors"
-            >
-              Premium
-            </Link>
-            <Link
               to="/login"
               className="px-4 py-2 rounded-full bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 transition-all"
             >

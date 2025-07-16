@@ -7,7 +7,8 @@ import {
   TrophyOutlined,
 } from "@ant-design/icons";
 import { useQuitPlanData } from "../../hook/useQuitPlanData";
-import ColourfulText from "../../components/ui/ColourfulText";
+
+
 
 function QuitPlanDetailPage() {
   const { id } = useParams();
@@ -157,7 +158,7 @@ function QuitPlanDetailPage() {
                 </div>
 
                 <div className="col-span-full flex justify-center mt-6">
-               <Link to={`/stages/${id}`}>
+               <Link to={`/quitplan/${id}/manage`}>
                     <Button
                       type="primary"
                       size="large"

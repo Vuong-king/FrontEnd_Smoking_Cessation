@@ -1,149 +1,121 @@
-
-import { Table, Card, Badge, Button, Space, Popconfirm } from "antd"
-import { 
-  Edit, 
-  Trash2, 
-  Calculator, 
-  Calendar, 
-  Clock, 
+import { Table, Card, Button, Space, Popconfirm } from "antd";
+import {
+  Trash2,
+  Calendar,
   BarChart3,
   Cigarette,
-  DollarSign 
-} from "lucide-react"
-import { getFrequencyColor, getFrequencyLabel } from "../../../utils/Helpers"
-import { calculateDays, calculateTotalCost } from "../../../utils/Calculation"
+  DollarSign,
+} from "lucide-react";
 
+const iconColor = "#d9d9d9";
 
-export default function SmokingTable({ records, onEdit, onDelete }) {
+const formatDateTime = (dateTimeString) => {
+  const date = new Date(dateTimeString);
+  return {
+    date: date.toLocaleDateString("vi-VN"),
+    time: date.toLocaleTimeString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }),
+  };
+};
+
+export default function SmokingTable({ records, onDelete }) {
   const columns = [
-    {
-      title: "Frequency",
-      dataIndex: "frequency",
-      key: "frequency",
-      render: (frequency) => (
-        <Badge color={getFrequencyColor(frequency)} text={getFrequencyLabel(frequency)} />
-      ),
-    },
     {
       title: (
         <Space>
           <Cigarette size={14} />
-          Cigs/day
+          Số điếu / ngày
         </Space>
       ),
       dataIndex: "cigarettes_per_day",
-      key: "cigarettes_per_day",
-      render: (value) => `${value} cigs`,
+      align: "center",
+      width: 150,
+      render: (value) => `${value} điếu`,
     },
     {
       title: (
         <Space>
           <DollarSign size={14} />
-          Price/pack
+          Giá / bao (20 điếu)
         </Space>
       ),
       dataIndex: "cost_per_pack",
-      key: "cost_per_pack",
+      align: "center",
+      width: 200,
       render: (value) => `${value.toLocaleString("vi-VN")} VNĐ`,
     },
     {
       title: (
         <Space>
           <Calendar size={14} />
-          Start date
+          Ngày bắt đầu cai thuốc
         </Space>
       ),
       dataIndex: "start_date",
-      key: "start_date",
-      render: (date) => new Date(date).toLocaleDateString("vi-VN"),
+      align: "center",
+      width: 220,
+      render: (date) => {
+        const { date: d, time } = formatDateTime(date);
+        return (
+          <div style={{ lineHeight: "1.4" }}>
+            <div>{d}</div>
+            <small style={{ color: "#666" }}>{time}</small>
+          </div>
+        );
+      },
     },
     {
-      title: (
-        <Space>
-          <Clock size={14} />
-          Days
-        </Space>
-      ),
-      key: "days",
-      render: (_, record) => `${calculateDays(record.start_date)} days`,
-    },
-    {
-      title: (
-        <Space>
-          <Calculator size={14} />
-          Total cost
-        </Space>
-      ),
-      key: "total_cost",
+      title: "Thao tác",
+      align: "center",
+      width: 120,
       render: (_, record) => (
-        <span style={{ color: "#f5222d", fontWeight: "bold" }}>
-          {calculateTotalCost(record).toLocaleString("vi-VN")} VNĐ
-        </span>
+        <Popconfirm
+          title="Bạn có chắc chắn muốn xóa bản ghi này không?"
+          onConfirm={() => onDelete(record.id)}
+          okText="Có"
+          cancelText="Không"
+        >
+          <Button danger size="small" icon={<Trash2 size={14} />} />
+        </Popconfirm>
       ),
     },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_, record) => (
-        <Space>
-          <Button
-            type="default"
-            icon={<Edit size={14} />}
-            size="small"
-            onClick={() => onEdit(record)}
-            title="Edit record"
-          />
-          <Popconfirm
-            title="Are you sure you want to delete this record?"
-            onConfirm={() => onDelete(record.id)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button 
-              type="default" 
-              danger 
-              icon={<Trash2 size={14} />} 
-              size="small" 
-              title="Delete record" 
-            />
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ]
+  ];
 
   return (
     <Card
       title={
         <Space>
           <BarChart3 size={20} style={{ color: "#1890ff" }} />
-          Smoking History
+          Tình trạng hút thuốc
         </Space>
       }
-      style={{ marginBottom: "24px" }}
+      style={{ marginBottom: 24 }}
       hoverable
     >
       <Table
         columns={columns}
         dataSource={records}
         rowKey="id"
-        pagination={{
-          pageSize: 10,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
-        }}
+        bordered
         locale={{
           emptyText: (
-            <div style={{ padding: "40px", textAlign: "center" }}>
-              <Cigarette size={48} style={{ color: "#d9d9d9", marginBottom: "16px" }} />
-              <div style={{ color: "#666" }}>No data yet. Add your first information!</div>
+            <div style={{ padding: 40, textAlign: "center" }}>
+              <Cigarette
+                size={48}
+                style={{ color: iconColor, marginBottom: 16 }}
+              />
+              <div style={{ color: "#666" }}>
+                Chưa có dữ liệu. Hãy thêm thông tin đầu tiên của bạn!
+              </div>
             </div>
           ),
         }}
         scroll={{ x: 800 }}
-        rowHover
+        size="middle"
       />
     </Card>
-  )
+  );
 }

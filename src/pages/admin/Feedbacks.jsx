@@ -1,75 +1,231 @@
-import React, { useEffect, useState } from "react";
-import { Trash } from "lucide-react";
+import React from "react";
+import { Table, Button, Modal, Input, Select, Tag, Spin, Rate } from "antd";
+import { EditOutlined, DeleteOutlined, ExclamationCircleOutlined, MessageOutlined, UserOutlined, StarOutlined, EyeInvisibleOutlined, FilterOutlined, SearchOutlined, PlusOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import useFeedbacks from "../../hook/useFeedbacks";
+import ColourfulText from "../../components/ui/ColourfulText";
+
+const { Option } = Select;
+
+const feedbackTypeLabels = {
+  user_to_coach: { label: "Phản hồi Huấn luyện viên", icon: <UserOutlined style={{ color: '#60a5fa' }} /> },
+  user_to_plan: { label: "Phản hồi Kế hoạch", icon: <MessageOutlined style={{ color: '#34d399' }} /> },
+  user_to_system: { label: "Phản hồi Hệ thống", icon: <MessageOutlined style={{ color: '#a78bfa' }} /> },
+};
 
 const Feedbacks = () => {
-  const [feedbacks, setFeedbacks] = useState([]);
-  const [toast, setToast] = useState(null);
+  const {
+    feedbacks,
+    loading,
+    error,
+    editingFeedback,
+    setEditingFeedback,
+    newData,
+    setNewData,
+    errors,
+    isNew,
+    setIsNew,
+    showConfirm,
+    setShowConfirm,
+    feedbackToDelete,
+    setFeedbackToDelete,
+    filteredFeedbacks,
+    handleEdit,
+    handleSave,
+    handleDelete,
+    handleStatusUpdate,
+  } = useFeedbacks();
 
-  useEffect(() => {
-    const saved = localStorage.getItem("feedbacks");
-    if (saved) setFeedbacks(JSON.parse(saved));
-  }, []);
+  // Table columns
+  const columns = [
+    {
+      title: "Loại phản hồi",
+      dataIndex: "feedback_type",
+      key: "feedback_type",
+      render: (type) => (
+        <span>
+          {feedbackTypeLabels[type]?.icon} {feedbackTypeLabels[type]?.label}
+        </span>
+      ),
+    },
+    {
+      title: "Ngày",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date) => new Date(date || Date.now()).toLocaleDateString('vi-VN'),
+    },
+    {
+      title: "Đánh giá",
+      dataIndex: "rating",
+      key: "rating",
+      render: (rating) => <Rate disabled value={rating || 0} count={5} allowHalf style={{ fontSize: 16 }} />,
+    },
+    {
+      title: "Nội dung",
+      dataIndex: "content",
+      key: "content",
+      ellipsis: true,
+    },
+    {
+      title: "Người gửi",
+      dataIndex: ["user_id", "name"],
+      key: "user_id",
+      render: (_, record) => record.user_id?.name || record.user_id?.email || 'N/A',
+    },
+    {
+      title: "Huấn luyện viên",
+      dataIndex: ["coach_id", "name"],
+      key: "coach_id",
+      render: (_, record) => record.coach_id?.name || 'N/A',
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status, record) => (
+        <Select
+          value={status || "pending"}
+          onChange={value => handleStatusUpdate(record._id, value)}
+          style={{ width: 120 }}
+        >
+          <Option value="pending">Chờ duyệt</Option>
+          <Option value="approved">Đã duyệt</Option>
+          <Option value="hidden">Đã ẩn</Option>
+        </Select>
+      ),
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      render: (_, record) => (
+        <>
+          <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)}>
+            Sửa
+          </Button>
+          <Button type="link" danger icon={<DeleteOutlined />} onClick={() => { setFeedbackToDelete(record._id); setShowConfirm(true); }}>
+            Xóa
+          </Button>
+        </>
+      ),
+    },
+  ];
 
-  const showToast = (message, type = "success") => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  // Modal form content
+  const modalForm = (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <Rate
+        value={newData.rating}
+        onChange={value => setNewData({ ...newData, rating: value })}
+        count={5}
+        allowHalf
+      />
+      {errors.rating && <div style={{ color: "#ff4d4f" }}>{errors.rating}</div>}
+      <Input.TextArea
+        placeholder="Nội dung phản hồi"
+        value={newData.content}
+        onChange={e => setNewData({ ...newData, content: e.target.value })}
+        rows={4}
+        status={errors.content ? "error" : ""}
+      />
+      {errors.content && <div style={{ color: "#ff4d4f" }}>{errors.content}</div>}
+      <Select
+        placeholder="Loại phản hồi"
+        value={newData.feedback_type}
+        onChange={value => setNewData({ ...newData, feedback_type: value })}
+        status={errors.feedback_type ? "error" : ""}
+      >
+        <Option value="user_to_system">Phản hồi Hệ thống</Option>
+        <Option value="user_to_coach">Phản hồi Huấn luyện viên</Option>
+        <Option value="user_to_plan">Phản hồi Kế hoạch</Option>
+      </Select>
+      {errors.feedback_type && <div style={{ color: "#ff4d4f" }}>{errors.feedback_type}</div>}
+      <Select
+        placeholder="Trạng thái"
+        value={newData.status}
+        onChange={value => setNewData({ ...newData, status: value })}
+        status={errors.status ? "error" : ""}
+      >
+        <Option value="pending">Chờ duyệt</Option>
+        <Option value="approved">Đã duyệt</Option>
+        <Option value="hidden">Đã ẩn</Option>
+      </Select>
+      {errors.status && <div style={{ color: "#ff4d4f" }}>{errors.status}</div>}
+    </div>
+  );
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this feedback?")) {
-      const updated = feedbacks.filter((f) => f.id !== id);
-      localStorage.setItem("feedbacks", JSON.stringify(updated));
-      setFeedbacks(updated);
-      showToast("Feedback deleted.", "error");
-    }
-  };
+  // Loading
+  if (loading && feedbacks.length === 0) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Spin size="large" tip="Đang tải..." />
+      </div>
+    );
+  }
+
+  // Error
+  if (error) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ color: "#ff4d4f", fontSize: 18, background: "#fff1f0", padding: 24, borderRadius: 8, border: "1px solid #ffa39e" }}>{error}</div>
+      </div>
+    );
+  }
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-900 to-black min-h-screen text-white relative">
-      {toast && (
-        <div
-          className={`fixed top-6 right-6 px-4 py-2 rounded shadow-lg z-50 text-sm transition-all duration-300 ${
-            toast.type === "error" ? "bg-red-600" : "bg-green-600"
-          } text-white`}
-        >
-          {toast.message}
-        </div>
-      )}
-
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold mb-2">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
-            User Feedback
-          </span>
+    <section style={{ padding: "40px 0", background: "#f9fafb", minHeight: "100vh" }}>
+      <div style={{ textAlign: "center", marginBottom: 40 }}>
+        <h2 style={{ fontSize: 32, fontWeight: 700, marginBottom: 8, color: "black" }}>
+          Quản lý <ColourfulText text="Phản hồi" />
         </h2>
-        <p className="text-white/70">Review feedback from platform users.</p>
+        <p style={{ color: "#666", fontSize: 18 }}>
+          Xem xét và quản lý phản hồi từ người dùng nền tảng
+        </p>
       </div>
-
-      {feedbacks.length === 0 ? (
-        <p className="text-center text-white/60 text-lg">No feedback found.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {feedbacks.map((f) => (
-            <div
-              key={f.id}
-              className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-cyan-500/50 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.03]"
-            >
-              <h3 className="text-lg font-semibold mb-1">{f.subject}</h3>
-              <p className="text-sm text-white/70 mb-1">From: {f.email}</p>
-              <p className="text-sm text-white/50 mb-3">Type: {f.type}</p>
-              <p className="text-sm mb-4">{f.message}</p>
-              <div className="text-right">
-                <button
-                  onClick={() => handleDelete(f.id)}
-                  className="text-xs flex items-center gap-1 px-3 py-1 rounded bg-rose-500 hover:bg-rose-600 text-white"
-                >
-                  <Trash className="w-4 h-4" /> Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <div style={{ maxWidth: 1200, margin: "0 auto", background: "#fff", borderRadius: 16, padding: 24, boxShadow: "0 2px 8px #f0f1f2" }}>
+        <Table
+          columns={columns}
+          dataSource={filteredFeedbacks}
+          rowKey="_id"
+          pagination={{ pageSize: 10 }}
+          locale={{
+            emptyText: "Không tìm thấy phản hồi nào.",
+          }}
+        />
+      </div>
+      <Modal
+        open={!!editingFeedback}
+        title={isNew ? "Thêm Phản hồi Mới" : "Chỉnh sửa Phản hồi"}
+        onCancel={() => {
+          setEditingFeedback(null);
+          setIsNew(false);
+        }}
+        onOk={handleSave}
+        confirmLoading={loading}
+        okText={isNew ? "Thêm" : "Lưu"}
+        cancelText="Hủy"
+        destroyOnClose
+      >
+        {modalForm}
+      </Modal>
+      <Modal
+        open={showConfirm}
+        title="Xác nhận xoá"
+        onCancel={() => {
+          setShowConfirm(false);
+          setFeedbackToDelete(null);
+        }}
+        onOk={() => {
+          handleDelete(feedbackToDelete);
+          setShowConfirm(false);
+          setFeedbackToDelete(null);
+        }}
+        okText="Xóa"
+        okButtonProps={{ danger: true }}
+        cancelText="Hủy"
+        icon={<ExclamationCircleOutlined style={{ color: '#ff4d4f' }} />}
+        destroyOnClose
+      >
+        Bạn có chắc chắn muốn xóa phản hồi này không?
+      </Modal>
     </section>
   );
 };
