@@ -58,6 +58,7 @@ import StagesCoach from "./pages/coach/StagesCoach";
 import CoachTask from "./pages/coach/CoachTask";
 import CoachProgress from "./pages/coach/CoachProgress";
 import CoachNotification from "./pages/coach/CoachNotification";
+import CoachMeetSession from "./pages/coach/CoachMeetSession";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -137,6 +138,7 @@ function App() {
             <Route path='task' element={<CoachTask />} />
             <Route path='progress' element={<CoachProgress />} />
             <Route path='notifications' element={<CoachNotification />} />
+            <Route path='meet-session' element={<CoachMeetSession />} />
           </Route>
 
           {/* 404 route */}

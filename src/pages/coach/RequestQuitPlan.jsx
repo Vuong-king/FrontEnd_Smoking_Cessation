@@ -10,15 +10,17 @@ import {
   Form,
   Input,
   DatePicker,
+  Typography,
 } from "antd";
 import api from "../../api";
 import dayjs from "dayjs";
+
+const { Title } = Typography;
 
 const RequestQuitPlan = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-
   const [openModal, setOpenModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
 
@@ -29,7 +31,6 @@ const RequestQuitPlan = () => {
       setData(res.data);
     } catch (error) {
       message.error("Lỗi khi lấy danh sách yêu cầu");
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -40,7 +41,7 @@ const RequestQuitPlan = () => {
       await api.put(`/quitplan/${id}/approve`);
       message.success("Đã duyệt kế hoạch");
       fetchRequests();
-    } catch (err) {
+    } catch {
       message.error("Lỗi khi duyệt kế hoạch");
     }
   };
@@ -50,7 +51,7 @@ const RequestQuitPlan = () => {
       await api.put(`/quitplan/${id}/reject`);
       message.success("Đã từ chối kế hoạch");
       fetchRequests();
-    } catch (err) {
+    } catch {
       message.error("Lỗi khi từ chối kế hoạch");
     }
   };
@@ -69,21 +70,17 @@ const RequestQuitPlan = () => {
   const handleCreatePlan = async () => {
     try {
       const values = await form.validateFields();
-
       const payload = {
         user_id: selectedRequest.user_id._id,
         name: values.name,
         reason: values.reason,
         start_date: values.start_date,
         target_quit_date: values.target_quit_date,
-        request_id: selectedRequest._id, // 👈 thêm dòng này
+        request_id: selectedRequest._id,
       };
-
       await api.post("/quitplan", payload);
       message.success("Tạo kế hoạch thành công!");
       setOpenModal(false);
-
-      // ✅ Cập nhật trạng thái ở frontend
       const updated = data.map((item) =>
         item._id === selectedRequest._id ? { ...item, status: "created" } : item
       );
@@ -94,7 +91,6 @@ const RequestQuitPlan = () => {
       } else {
         message.error("Lỗi khi tạo kế hoạch");
       }
-      console.error(error);
     }
   };
 
@@ -105,7 +101,6 @@ const RequestQuitPlan = () => {
   const columns = [
     {
       title: "Người dùng",
-      key: "user",
       render: (_, record) => (
         <div className='flex items-center gap-2'>
           <Avatar src={record.user_id.avatar_url} />
@@ -116,32 +111,21 @@ const RequestQuitPlan = () => {
         </div>
       ),
     },
-    {
-      title: "Tên kế hoạch",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Lý do",
-      dataIndex: "reason",
-      key: "reason",
-    },
+    { title: "Tên kế hoạch", dataIndex: "name" },
+    { title: "Lý do", dataIndex: "reason" },
     {
       title: "Ngày bắt đầu",
       dataIndex: "start_date",
-      key: "start_date",
-      render: (date) => new Date(date).toLocaleDateString("vi-VN"),
+      render: (date) => dayjs(date).format("DD/MM/YYYY"),
     },
     {
       title: "Ngày bỏ thuốc",
       dataIndex: "target_quit_date",
-      key: "target_quit_date",
-      render: (date) => new Date(date).toLocaleDateString("vi-VN"),
+      render: (date) => dayjs(date).format("DD/MM/YYYY"),
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
-      key: "status",
       render: (status) => {
         const color =
           status === "approved"
@@ -156,7 +140,6 @@ const RequestQuitPlan = () => {
     },
     {
       title: "Hành động",
-      key: "action",
       render: (_, record) => {
         if (record.status === "pending") {
           return (
@@ -197,19 +180,20 @@ const RequestQuitPlan = () => {
   ];
 
   return (
-    <div className='p-6 max-w-6xl mx-auto'>
-      <h2 className='text-2xl font-semibold mb-4'>
+    <section className='p-10 bg-white min-h-screen text-black'>
+      <Title level={2} style={{ textAlign: "center" }}>
         Danh sách yêu cầu kế hoạch
-      </h2>
-      <Table
-        rowKey='_id'
-        loading={loading}
-        dataSource={data}
-        columns={columns}
-        pagination={{ pageSize: 5 }}
-      />
+      </Title>
+      <div className='bg-white rounded-xl shadow p-6 mt-4'>
+        <Table
+          rowKey='_id'
+          loading={loading}
+          dataSource={data}
+          columns={columns}
+          pagination={{ pageSize: 6 }}
+        />
+      </div>
 
-      {/* Modal tạo kế hoạch */}
       <Modal
         title='Tạo kế hoạch từ yêu cầu'
         open={openModal}
@@ -247,7 +231,7 @@ const RequestQuitPlan = () => {
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </section>
   );
 };
 

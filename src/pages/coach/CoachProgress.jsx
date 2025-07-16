@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tag, Avatar, message, Select, DatePicker, Space } from "antd";
+import {
+  Table,
+  Tag,
+  Avatar,
+  message,
+  Select,
+  DatePicker,
+  Space,
+  Typography,
+} from "antd";
 import api from "../../api";
 import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
+const { Title } = Typography;
 
 const CoachProgress = () => {
   const [data, setData] = useState([]);
@@ -19,11 +29,8 @@ const CoachProgress = () => {
     try {
       setLoading(true);
       const res = await api.get("/progress");
-
       const progressData = res.data;
-      console.log("🔥 DATA:", progressData); // 👈 log toàn bộ data
 
-      // 🎯 Danh sách học viên duy nhất
       const uniqueUsers = Array.from(
         new Map(
           progressData.map((item) => [item.user_id._id, item.user_id])
@@ -45,7 +52,6 @@ const CoachProgress = () => {
     fetchProgress();
   }, []);
 
-  // 🎯 Filter Logic
   useEffect(() => {
     let filtered = [...allData];
 
@@ -120,42 +126,46 @@ const CoachProgress = () => {
   ];
 
   return (
-    <div className='p-6 max-w-7xl mx-auto'>
-      <h2 className='text-2xl font-semibold mb-4'>Tiến trình của học viên</h2>
+    <section className='p-10 bg-white min-h-screen text-black'>
+      <Title level={2} style={{ textAlign: "center" }}>
+        Tiến trình của học viên
+      </Title>
 
-      {/* 🎯 Bộ lọc */}
-      <Space style={{ marginBottom: 16 }} wrap>
-        <Select
-          allowClear
-          style={{ width: 220 }}
-          placeholder='Chọn học viên'
-          onChange={(value) =>
-            setFilters((prev) => ({ ...prev, user: value }))
-          }>
-          {users.map((user) => (
-            <Select.Option key={user._id} value={user._id}>
-              {user.name}
-            </Select.Option>
-          ))}
-        </Select>
+      <div className='mt-6 bg-white rounded-xl shadow p-6 max-w-7xl mx-auto'>
+        {/* 🎯 Bộ lọc */}
+        <Space style={{ marginBottom: 16 }} wrap>
+          <Select
+            allowClear
+            style={{ width: 220 }}
+            placeholder='Chọn học viên'
+            onChange={(value) =>
+              setFilters((prev) => ({ ...prev, user: value }))
+            }>
+            {users.map((user) => (
+              <Select.Option key={user._id} value={user._id}>
+                {user.name}
+              </Select.Option>
+            ))}
+          </Select>
 
-        <RangePicker
-          format='DD/MM/YYYY'
-          onChange={(range) =>
-            setFilters((prev) => ({ ...prev, dateRange: range }))
-          }
+          <RangePicker
+            format='DD/MM/YYYY'
+            onChange={(range) =>
+              setFilters((prev) => ({ ...prev, dateRange: range }))
+            }
+          />
+        </Space>
+
+        <Table
+          rowKey='_id'
+          loading={loading}
+          dataSource={data}
+          columns={columns}
+          pagination={{ pageSize: 6 }}
+          scroll={{ x: "max-content" }}
         />
-      </Space>
-
-      <Table
-        rowKey='_id'
-        loading={loading}
-        dataSource={data}
-        columns={columns}
-        pagination={{ pageSize: 6 }}
-        scroll={{ x: "max-content" }}
-      />
-    </div>
+      </div>
+    </section>
   );
 };
 

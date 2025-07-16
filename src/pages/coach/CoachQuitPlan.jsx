@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table, Avatar, Typography, message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import api from "../../api";
+import dayjs from "dayjs";
 
 const { Title } = Typography;
 
@@ -15,8 +16,7 @@ const CoachQuitPlan = () => {
       const response = await api.get("/quitPlan/my-users");
       setQuitPlans(response.data || []);
     } catch (err) {
-      console.error("Failed to fetch quit plans:", err);
-      message.error("Failed to fetch quit plans");
+      message.error("Lỗi khi lấy danh sách kế hoạch");
     } finally {
       setLoading(false);
     }
@@ -28,12 +28,12 @@ const CoachQuitPlan = () => {
 
   const columns = [
     {
-      title: "User Name",
+      title: "Học viên",
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Email User",
+      title: "Email",
       dataIndex: "email",
       key: "email",
     },
@@ -44,38 +44,35 @@ const CoachQuitPlan = () => {
       render: (avatar) => (
         <Avatar
           src={avatar}
-          icon={!avatar ? <UserOutlined /> : null}
+          icon={!avatar && <UserOutlined />}
           style={{ backgroundColor: "#87d068" }}
         />
       ),
     },
-
     {
-      title: "Plan Name",
+      title: "Tên kế hoạch",
       dataIndex: "plan_name",
       key: "plan_name",
     },
-
     {
-      title: "Start Date",
+      title: "Ngày bắt đầu",
       dataIndex: "start_date",
       key: "start_date",
-      render: (date) => new Date(date).toLocaleDateString(),
+      render: (date) => dayjs(date).format("DD/MM/YYYY"),
     },
     {
-      title: "Target Quit Date",
+      title: "Ngày bỏ thuốc",
       dataIndex: "target_quit_date",
       key: "target_quit_date",
-      render: (date) => new Date(date).toLocaleDateString(),
+      render: (date) => dayjs(date).format("DD/MM/YYYY"),
     },
   ];
 
   return (
-    <section className='p-10 bg-gradient-to-b from-gray-900 to-black min-h-screen text-white'>
-      <Title level={2} style={{ textAlign: "center", color: "#fff" }}>
-        Quit Plans Assigned to You
+    <section className='p-10 bg-white min-h-screen text-black'>
+      <Title level={2} style={{ textAlign: "center" }}>
+        Kế hoạch bạn đang hỗ trợ
       </Title>
-
       <div className='mt-6 bg-white rounded-xl shadow-lg p-6'>
         <Table
           columns={columns}

@@ -1,5 +1,4 @@
 import {
-  SettingOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   DashboardOutlined,
@@ -8,9 +7,8 @@ import {
   FieldTimeOutlined,
   BarChartOutlined,
   MessageOutlined,
-  FileTextOutlined,
   TrophyOutlined,
-  BellOutlined,
+  LogoutOutlined,
   NotificationOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Space } from "antd";
@@ -31,42 +29,59 @@ function SidebarCoach({ user = {} }) {
   const menu = [
     {
       label: "Kế hoạch của tôi",
-      icon: <CheckCircleOutlined />,
+      icon: <DashboardOutlined />,
       path: "/coach/my-quit-plans",
-    }, // Xem và duyệt kế hoạch
-
+    },
     {
       label: "Duyệt Yêu Cầu",
       icon: <CheckCircleOutlined />,
       path: "/coach/quit-plans-request",
     },
-    { label: "Giai Đoạn", icon: <BarChartOutlined />, path: "/coach/stages" }, // Xem các giai đoạn cai thuốc
-    { label: "Nhiệm Vụ", icon: <FieldTimeOutlined />, path: "/coach/task" }, // Theo dõi tiến độ người dùng
-
-    { label: "Tiến trình", icon: <MessageOutlined />, path: "/coach/progress" }, // Đọc phản hồi từ user
+    {
+      label: "Giai Đoạn",
+      icon: <BarChartOutlined />,
+      path: "/coach/stages",
+    },
+    {
+      label: "Nhiệm Vụ",
+      icon: <TrophyOutlined />,
+      path: "/coach/task",
+    },
+    {
+      label: "Tiến trình",
+      icon: <FieldTimeOutlined />,
+      path: "/coach/progress",
+    },
     {
       label: "Thông báo học viên",
       icon: <NotificationOutlined />,
       path: "/coach/notifications",
-    }, // Đăng bài chia sẻ
+    },
     {
-      label: "Leaderboard",
-      icon: <TrophyOutlined />,
-      path: "/coach/leaderboard",
-    }, // Theo dõi bảng xếp hạng
+      label: "Yêu cầu tư vấn ",
+      icon: <MessageOutlined />,
+      path: "/coach/meet-session",
+    },
   ];
 
   const dropdownItems = [
     { key: "1", label: "My Account", disabled: true },
     { type: "divider" },
-    { key: "2", label: "Profile", icon: <UserOutlined /> },
-    { key: "3", label: "Settings", icon: <SettingOutlined /> },
     {
-      key: "4",
-      label: "Logout",
-      icon: <SettingOutlined />,
+      key: "2",
+      label: "Profile",
+      icon: <UserOutlined />,
       onClick: () => {
-        console.log("Logout clicked");
+        window.location.href = `/coach/profile/${user.id}`;
+      },
+    },
+    {
+      key: "3",
+      label: "Logout",
+      icon: <LogoutOutlined />,
+      onClick: () => {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
       },
     },
   ];
@@ -112,8 +127,8 @@ function SidebarCoach({ user = {} }) {
             <Space direction={collapsed ? "vertical" : "horizontal"}>
               <Avatar
                 size={collapsed ? 32 : 40}
-                src={user.avatar}
-                icon={<UserOutlined />}
+                src={user.avatar || null}
+                icon={!user.avatar && <UserOutlined />}
               />
               {!collapsed && (
                 <div>

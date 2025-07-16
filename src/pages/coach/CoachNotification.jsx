@@ -8,12 +8,14 @@ import {
   Input,
   Select,
   message,
+  Typography,
 } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import api from "../../api";
 import dayjs from "dayjs";
 
 const { Option } = Select;
+const { Title } = Typography;
 
 const CoachNotification = () => {
   const [data, setData] = useState([]);
@@ -38,10 +40,10 @@ const CoachNotification = () => {
     fetchData();
   }, []);
 
-  const handleSendNotification = async (record) => {
+  const handleSendNotification = (record) => {
     setSelectedProgress(record);
     form.setFieldsValue({
-      type: record.progress ? "motivation" : "reminder", // Tự động chọn loại
+      type: record.progress ? "motivation" : "reminder",
     });
     setModalVisible(true);
   };
@@ -66,7 +68,6 @@ const CoachNotification = () => {
       setModalVisible(false);
       form.resetFields();
     } catch (err) {
-      console.log(err);
       message.error("Lỗi khi gửi thông báo");
     }
   };
@@ -145,15 +146,19 @@ const CoachNotification = () => {
   ];
 
   return (
-    <section className='p-10 bg-gradient-to-b from-gray-900 to-black min-h-screen text-white'>
-      <h2 className='text-2xl text-center mb-6'>Gửi Thông Báo Cho Học Viên</h2>
-      <div className='bg-white rounded-xl shadow-lg p-6'>
+    <section className='p-10 bg-white min-h-screen text-black'>
+      <Title level={2} style={{ textAlign: "center" }}>
+        Gửi Thông Báo Cho Học Viên
+      </Title>
+
+      <div className='mt-6 bg-white rounded-xl shadow p-6 max-w-7xl mx-auto'>
         <Table
           columns={columns}
           dataSource={data}
           rowKey={(record) => `${record.user._id}-${record.stage._id}`}
           loading={loading}
           pagination={{ pageSize: 8 }}
+          scroll={{ x: "max-content" }}
         />
       </div>
 

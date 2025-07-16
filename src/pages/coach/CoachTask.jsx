@@ -7,10 +7,12 @@ import {
   Input,
   message,
   List,
-  Tag,
   Popconfirm,
+  Typography,
 } from "antd";
 import api from "../../api";
+
+const { Title } = Typography;
 
 const CoachTask = () => {
   const [stages, setStages] = useState([]);
@@ -24,7 +26,7 @@ const CoachTask = () => {
   const fetchStages = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/stages"); // admin get all
+      const res = await api.get("/stages"); // Admin get all
       setStages(res.data);
     } catch (error) {
       message.error("Lỗi khi lấy danh sách stage");
@@ -87,7 +89,6 @@ const CoachTask = () => {
       title: "Mô tả",
       dataIndex: "description",
     },
-
     {
       title: "Hành động",
       render: (_, record) => (
@@ -99,19 +100,22 @@ const CoachTask = () => {
   ];
 
   return (
-    <div className='p-6 max-w-5xl mx-auto'>
-      <h2 className='text-xl font-semibold mb-4'>
+    <section className='p-10 bg-white min-h-screen text-black'>
+      <Title level={2} style={{ textAlign: "center" }}>
         Quản lý nhiệm vụ trong các Giai đoạn
-      </h2>
+      </Title>
 
-      <Table
-        rowKey='_id'
-        dataSource={stages}
-        columns={columns}
-        loading={loading}
-        pagination={{ pageSize: 5 }}
-      />
+      <div className='bg-white rounded-xl shadow p-6 mt-4 max-w-6xl mx-auto'>
+        <Table
+          rowKey='_id'
+          dataSource={stages}
+          columns={columns}
+          loading={loading}
+          pagination={{ pageSize: 5 }}
+        />
+      </div>
 
+      {/* Modal Thêm nhiệm vụ */}
       <Modal
         open={openModal}
         title={`Thêm nhiệm vụ cho: ${selectedStage?.title}`}
@@ -161,7 +165,7 @@ const CoachTask = () => {
           />
         </div>
       </Modal>
-    </div>
+    </section>
   );
 };
 
