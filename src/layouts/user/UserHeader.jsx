@@ -1,21 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, Badge, Button, Dropdown, Menu, Popover, List } from "antd";
 import { BellOutlined, DashboardOutlined } from "@ant-design/icons";
 import { MdLogout } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
-import useNotifications from "../../hook/useNotifications";
+import NotificationService from "../../services/notificationService";
 
 const UserHeader = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
 
-  const {
-    notifications
-  } = useNotifications();
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      const response = await NotificationService.getUserNotifications(user?.id);
+      setNotifications(response);
+    };
+    fetchNotifications();
+  }, [user?.id]);
 
-  console.log(notifications);
 
   const handleLogout = async () => {
     try {
@@ -67,7 +71,7 @@ const UserHeader = () => {
       key: "dashboard",
       icon: <DashboardOutlined className="text-blue-400" />,
       label: (
-        <Link to={role === "admin" ? "/admin/dashboard" : "/user/dashboard"}>
+        <Link to={role === "admin" ? "/admin" : "/user/dashboard"}>
           <span className="text-white">Dashboard</span>
         </Link>
       ),
