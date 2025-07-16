@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Form, Input, DatePicker, message } from "antd";
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  DatePicker,
+  message,
+  Typography,
+} from "antd";
 import api from "../../api";
 import dayjs from "dayjs";
+
+const { Title } = Typography;
 
 const StagesCoach = () => {
   const [plans, setPlans] = useState([]);
@@ -42,7 +53,7 @@ const StagesCoach = () => {
         plan_id: selectedPlan._id,
         start_date: values.start_date.toISOString(),
         end_date: values.end_date.toISOString(),
-        stage_number: 1, // Bạn có thể tự động tăng nếu cần
+        stage_number: 1, // Có thể tự động tăng nếu cần
       };
 
       await api.post("/stages", payload);
@@ -127,16 +138,20 @@ const StagesCoach = () => {
   ];
 
   return (
-    <div className='p-6 max-w-6xl mx-auto'>
-      <h2 className='text-2xl font-semibold mb-4'>Danh sách Kế hoạch</h2>
+    <section className='p-10 bg-white min-h-screen text-black'>
+      <Title level={2} style={{ textAlign: "center" }}>
+        Danh sách Kế hoạch
+      </Title>
 
-      <Table
-        rowKey='_id'
-        dataSource={plans}
-        columns={columns}
-        loading={loading}
-        pagination={{ pageSize: 5 }}
-      />
+      <div className='bg-white rounded-xl shadow p-6 mt-4 max-w-6xl mx-auto'>
+        <Table
+          rowKey='_id'
+          dataSource={plans}
+          columns={columns}
+          loading={loading}
+          pagination={{ pageSize: 5 }}
+        />
+      </div>
 
       {/* Modal Thêm Giai đoạn */}
       <Modal
@@ -188,7 +203,7 @@ const StagesCoach = () => {
           pagination={false}
         />
       </Modal>
-    </div>
+    </section>
   );
 };
 
