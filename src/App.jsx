@@ -68,6 +68,7 @@ import CoachTask from "./pages/coach/CoachTask";
 import CoachProgress from "./pages/coach/CoachProgress";
 import CoachNotification from "./pages/coach/CoachNotification";
 import CoachMeetSession from "./pages/coach/CoachMeetSession";
+import RankingPage from "./pages/generic/RankingPage";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -116,6 +117,7 @@ function App() {
                 path='/quitplan/:id/manage'
                 element={<QuitPlanManagePage />}
               />
+              <Route path='/ranking' element={<RankingPage />} />
             </Route>
 
             {/* User protected routes */}

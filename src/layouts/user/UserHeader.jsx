@@ -1,14 +1,21 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Avatar, Dropdown, Menu } from "antd";
-import { DashboardOutlined } from "@ant-design/icons";
+import { Avatar, Badge, Button, Dropdown, Menu, Popover, List } from "antd";
+import { BellOutlined, DashboardOutlined } from "@ant-design/icons";
 import { MdLogout } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
+import useNotifications from "../../hook/useNotifications";
 
 const UserHeader = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const {
+    notifications
+  } = useNotifications();
+
+  console.log(notifications);
 
   const handleLogout = async () => {
     try {
@@ -17,6 +24,28 @@ const UserHeader = () => {
       console.error("Logout error:", error);
     }
   };
+
+  const notificationContent = (
+    <div style={{ width: 300, maxHeight: 400, overflowY: "auto" }}>
+      <List
+        dataSource={notifications}
+        renderItem={(item) => (
+          <List.Item key={item._id}>
+            <div>
+              <div className="font-semibold">{item.type}</div>
+              <div>{item.message}</div>
+              {item.schedule && (
+                <div className="text-xs text-gray-400">
+                  {new Date(item.schedule).toLocaleString()}
+                </div>
+              )}
+            </div>
+          </List.Item>
+        )}
+        locale={{ emptyText: "Không có thông báo" }}
+      />
+    </div>
+  );
 
   const getUserMenuItems = (role) => {
     const baseItems = [
@@ -88,6 +117,20 @@ const UserHeader = () => {
 
           {/* User Dropdown */}
           <div className="flex items-center gap-4">
+            <Popover
+              content={notificationContent}
+              title="Thông báo"
+              trigger="click"
+              placement="bottomRight"
+            >
+              <Badge count={notifications.length}>
+                <Button
+                  icon={<BellOutlined />}
+                  className="flex items-center justify-center"
+                  shape="circle"
+                />
+              </Badge>
+            </Popover>
             <Dropdown overlay={menu} placement="bottomRight" arrow>
               <div className="flex items-center gap-3 cursor-pointer">
                 <span className="text-white font-medium">
