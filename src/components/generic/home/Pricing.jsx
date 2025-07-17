@@ -10,6 +10,15 @@ export function Pricing() {
   const { packages, loading, error } = usePackageData();
   const { user } = useAuth();
 
+  // Sắp xếp packages theo thứ tự mong muốn
+  const packageOrder = ["free", "plus", "premium"];
+  const sortedPackages = (packages || []).slice().sort((a, b) => {
+    const aIndex = packageOrder.indexOf(a.name?.toLowerCase());
+    const bIndex = packageOrder.indexOf(b.name?.toLowerCase());
+    // Nếu không tìm thấy, cho xuống cuối
+    return (aIndex === -1 ? 99 : aIndex) - (bIndex === -1 ? 99 : bIndex);
+  });
+
   const formatPrice = (price) =>
     price === 0 ? "Free" : `${new Intl.NumberFormat().format(price)}`;
 
@@ -78,7 +87,7 @@ export function Pricing() {
           <p className="text-center text-red-500">Lỗi: {error.message}</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
-            {packages.map((plan, index) => {
+            {sortedPackages.map((plan, index) => {
               const popular = isPopular(plan);
               return (
                 <div
