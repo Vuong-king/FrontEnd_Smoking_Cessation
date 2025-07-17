@@ -107,8 +107,7 @@ const useQuitPlans = () => {
     setDateError("");
   };
 
-  const handleUserChange = (e) => {
-    const userId = e.target.value;
+  const handleUserChange = (userId) => {
     const user = users.find(u => u.id === userId);
     setSelectedUser(user);
     setFormData({ ...formData, user: userId });
