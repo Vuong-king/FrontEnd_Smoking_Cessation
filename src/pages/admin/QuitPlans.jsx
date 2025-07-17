@@ -1,9 +1,10 @@
 import React from "react";
-import { Table, Button, Modal, Input, Select, Tag, Spin } from "antd";
+import { Table, Button, Modal, Input, Select, Tag, Spin, Switch, message } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import useQuitPlans from "../../hook/useQuitPlans";
 import ColourfulText from "../../components/ui/ColourfulText";
 import { useNavigate } from "react-router-dom";
+import planService from "../../services/quitPlanService";
 
 const { Option } = Select;
 
@@ -32,7 +33,19 @@ const QuitPlans = () => {
     handleDateChange,
     handleSave,
     handleDelete,
+    fetchPlans,
   } = useQuitPlans();
+
+  // Add handler for toggling public status
+  const handleTogglePublic = async (plan, isPublic) => {
+    await handleSavePublicStatus(plan, isPublic);
+  };
+
+  // Save public status to backend
+  const handleSavePublicStatus = async (plan, isPublic) => {
+    await planService.updateQuitPlanPublic(plan._id, isPublic);
+    await fetchPlans();
+  };
 
   // Table columns
   const columns = [
@@ -63,6 +76,23 @@ const QuitPlans = () => {
       dataIndex: "user_id",
       key: "user_id",
       render: (user_id) => typeof user_id === 'object' ? user_id._id : user_id || "Không có",
+    },
+    {
+      title: "Công Khai",
+      dataIndex: "is_public",
+      key: "is_public",
+      render: (is_public, record) => (
+        <Switch
+          checked={!!is_public}
+          checkedChildren="Công khai"
+          unCheckedChildren="Riêng tư"
+          onClick={async (checked, e) => {
+            e.stopPropagation();
+            await handleTogglePublic(record, checked);
+            message.success(checked ? "Đã công khai kế hoạch" : "Đã chuyển về riêng tư");
+          }}
+        />
+      ),
     },
     {
       title: "Hành Động",
@@ -129,6 +159,15 @@ const QuitPlans = () => {
         status={errors.target_quit_date ? "error" : ""}
       />
       {errors.target_quit_date && <div style={{ color: "#ff4d4f" }}>{errors.target_quit_date}</div>}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span>Công khai:</span>
+        <Switch
+          checked={formData.is_public || false}
+          checkedChildren="Công khai"
+          unCheckedChildren="Riêng tư"
+          onChange={checked => setFormData({ ...formData, is_public: checked })}
+        />
+      </div>
     </div>
   );
 
