@@ -64,7 +64,6 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import ResetPassword from "./components/auth/ResetPassword";
 import ResetPasswordWithToken from "./components/auth/ResetPasswordWithToken";
 
-import CoachTask from "./pages/coach/CoachTask";
 import CoachProgress from "./pages/coach/CoachProgress";
 import CoachNotification from "./pages/coach/CoachNotification";
 import CoachMeetSession from "./pages/coach/CoachMeetSession";
@@ -180,7 +179,6 @@ function App() {
               <Route path='my-quit-plans' element={<CoachQuitPlan />} />
               <Route path='quit-plans-request' element={<RequestQuitPlan />} />
               <Route path='stages' element={<StagesCoach />} />
-              <Route path='task' element={<CoachTask />} />
               <Route path='progress' element={<CoachProgress />} />
               <Route path='notifications' element={<CoachNotification />} />
               <Route path='meet-session' element={<CoachMeetSession />} />

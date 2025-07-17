@@ -42,11 +42,7 @@ function SidebarCoach({ user = {} }) {
       icon: <BarChartOutlined />,
       path: "/coach/stages",
     },
-    {
-      label: "Nhiệm Vụ",
-      icon: <TrophyOutlined />,
-      path: "/coach/task",
-    },
+
     {
       label: "Tiến trình",
       icon: <FieldTimeOutlined />,
