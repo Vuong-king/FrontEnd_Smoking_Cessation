@@ -14,3 +14,13 @@ export const fetchTasksByStageIdAPI = (stageId) => {
     },
   });
 };
+export const fetchTaskByIdAPI = (taskId) => api.get(`/tasks/${taskId}`);
+
+export const createTaskAPI = (taskData) => api.post("/tasks", taskData);
+
+export const updateTaskAPI = (taskId, taskData) =>
+  api.put(`/tasks/${taskId}`, taskData);
+
+export const deleteTaskAPI = (taskId) => api.delete(`/tasks/${taskId}`);
+
+export const completeTaskAPI = (taskId) => api.post(`/tasks/${taskId}/complete`);

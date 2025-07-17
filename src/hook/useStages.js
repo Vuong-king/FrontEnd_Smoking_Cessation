@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import StageService from '../services/stageService';
 import QuitPlanServiceAdmin from '../services/quitPlanServiceAdmin';
 
-const useStages = () => {
+const useStages = (planId) => {
   const [stages, setStages] = useState([]);
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -41,12 +41,17 @@ const useStages = () => {
     }
   };
 
-  // Fetch stages
+  // Fetch stages (all hoặc theo planId)
   const fetchStages = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await StageService.getAllStages();
+      let data;
+      if (planId) {
+        data = await StageService.getStagesByPlanId(planId);
+      } else {
+        data = await StageService.getAllStages();
+      }
       setStages(data);
     } catch (err) {
       setError(err.response?.data?.message || 'Không thể tải danh sách giai đoạn');
@@ -58,7 +63,7 @@ const useStages = () => {
   useEffect(() => {
     fetchStages();
     fetchPlans();
-  }, []);
+  }, [planId]);
 
   // Modal handlers
   const openEditModal = (stage) => {

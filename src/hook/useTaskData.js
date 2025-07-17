@@ -3,6 +3,12 @@ import {
   fetchAllTasksAPI,
   fetchTasksByStageIdAPI,
 } from "../services/taskService";
+// Thêm các hàm API thao tác task
+import {
+  createTaskAPI,
+  updateTaskAPI,
+  deleteTaskAPI,
+} from "../services/taskService";
 
 export function useTaskData() {
   const [tasks, setTasks] = useState([]);
@@ -49,6 +55,51 @@ export function useTaskData() {
     }
   };
 
+  // Thêm các hàm thao tác task
+  const createTask = async (taskData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const newTask = await createTaskAPI(taskData);
+      setTasks((prev) => [...prev, newTask]);
+      return newTask;
+    } catch (err) {
+      setError(err.message || "Lỗi khi tạo task");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateTask = async (taskId, taskData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const updatedTask = await updateTaskAPI(taskId, taskData);
+      setTasks((prev) => prev.map((task) => (task._id === taskId ? updatedTask : task)));
+      return updatedTask;
+    } catch (err) {
+      setError(err.message || "Lỗi khi cập nhật task");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteTask = async (taskId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await deleteTaskAPI(taskId);
+      setTasks((prev) => prev.filter((task) => task._id !== taskId));
+    } catch (err) {
+      setError(err.message || "Lỗi khi xóa task");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     tasks,
     loading,
@@ -56,5 +107,8 @@ export function useTaskData() {
     fetchAllTasks,
     getTasksByStageId,
     fetchTasksByStageId,
+    createTask, // thêm
+    updateTask, // thêm
+    deleteTask, // thêm
   };
 }

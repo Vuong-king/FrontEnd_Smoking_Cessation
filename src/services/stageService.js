@@ -17,6 +17,11 @@ const StageService = {
     const response = await api.delete(`/stages/${id}`);
     return response.data;
   },
+  // Lấy stage theo planId (quitPlanId)
+  getStagesByPlanId: async (planId) => {
+    const response = await api.get(`/stages/plan/${planId}`);
+    return response.data;
+  },
 };
 
 export default StageService; 

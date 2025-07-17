@@ -3,10 +3,12 @@ import { Table, Button, Modal, Input, Select, Tag, Spin } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import useStages from "../../hook/useStages";
 import ColourfulText from "../../components/ui/ColourfulText";
+import TasksManager from "./TasksManager";
+import { useTaskData } from "../../hook/useTaskData";
 
 const { Option } = Select;
 
-const Stage = () => {
+const Stage = ({ planId }) => {
   const {
     stages,
     plans,
@@ -27,7 +29,25 @@ const Stage = () => {
     openNewModal,
     handleSaveChanges,
     handleDelete,
-  } = useStages();
+  } = useStages(planId);
+
+  const [taskModalOpen, setTaskModalOpen] = React.useState(false);
+  const [selectedStageForTask, setSelectedStageForTask] = React.useState(null);
+  const {
+    fetchTasksByStageId,
+    createTask,
+    updateTask,
+    deleteTask,
+  } = useTaskData();
+
+  const handleOpenTaskModal = (stage) => {
+    setSelectedStageForTask(stage);
+    setTaskModalOpen(true);
+  };
+  const handleCloseTaskModal = () => {
+    setTaskModalOpen(false);
+    setSelectedStageForTask(null);
+  };
 
   // Table columns
   const columns = [
@@ -82,6 +102,9 @@ const Stage = () => {
       align: "right",
       render: (_, record) => (
         <>
+          <Button type="link" onClick={() => handleOpenTaskModal(record)}>
+            Quản lý nhiệm vụ
+          </Button>
           <Button type="link" icon={<EditOutlined />} onClick={() => openEditModal(record)}>
             Chỉnh sửa
           </Button>
@@ -240,6 +263,26 @@ const Stage = () => {
         destroyOnClose
       >
         Bạn có chắc chắn muốn xóa giai đoạn này không?
+      </Modal>
+      <Modal
+        open={taskModalOpen}
+        onCancel={handleCloseTaskModal}
+        footer={null}
+        width={1000}
+        title={`Quản lý nhiệm vụ - Giai đoạn: ${selectedStageForTask?.title || ""}`}
+        destroyOnClose
+      >
+        {taskModalOpen && (
+          <TasksManager
+            visible={taskModalOpen}
+            onClose={handleCloseTaskModal}
+            selectedStage={selectedStageForTask}
+            fetchTasksByStageId={fetchTasksByStageId}
+            createTask={createTask}
+            updateTask={updateTask}
+            deleteTask={deleteTask}
+          />
+        )}
       </Modal>
     </section>
   );

@@ -17,8 +17,8 @@ const BadgesService = {
     const response = await api.delete(`/badges/${id}`);
     return response.data;
   },
-  getRankingBadges: async () => {
-    const response = await api.get('/badges/leaderboard');
+  getRankingBadges: async (type) => {
+    const response = await api.get(`/badges/leaderboard?type=${type}`);
     return response.data;
   },
 };
