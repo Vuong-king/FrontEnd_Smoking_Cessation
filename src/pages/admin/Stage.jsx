@@ -119,7 +119,7 @@ const Stage = ({ planId }) => {
   // Modal form content
   const modalForm = (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <Select
+      {/* <Select
         placeholder="Chọn một kế hoạch"
         value={editedStage.plan_id}
         onChange={value => setEditedStage({ ...editedStage, plan_id: value })}
@@ -129,7 +129,7 @@ const Stage = ({ planId }) => {
           <Option key={plan._id} value={plan._id}>{plan.name}</Option>
         ))}
       </Select>
-      {errors.plan_id && <div style={{ color: "#ff4d4f" }}>{errors.plan_id}</div>}
+      {errors.plan_id && <div style={{ color: "#ff4d4f" }}>{errors.plan_id}</div>} */}
       <Input
         placeholder="Tiêu đề giai đoạn"
         value={editedStage.title}
