@@ -83,7 +83,7 @@ const useStages = (planId) => {
   const openNewModal = () => {
     setIsNew(true);
     setEditedStage({
-      plan_id: '',
+      plan_id: planId || '',
       title: '',
       description: '',
       stage_number: '',
