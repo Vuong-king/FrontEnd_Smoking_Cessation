@@ -68,6 +68,7 @@ import CoachProgress from "./pages/coach/CoachProgress";
 import CoachNotification from "./pages/coach/CoachNotification";
 import CoachMeetSession from "./pages/coach/CoachMeetSession";
 import RankingPage from "./pages/generic/RankingPage";
+import PackageItem from "./pages/admin/PackageItem";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -155,6 +156,7 @@ function App() {
               <Route path='notifications' element={<Notifications />} />
               <Route path='progress' element={<Progress />} />
               <Route path='quit-plans' element={<QuitPlans />} />
+              <Route path='packages' element={<PackageItem />} />
               <Route
                 path='quit-plans/:id'
                 element={<QuitPlanDetailPageAdmin />}
