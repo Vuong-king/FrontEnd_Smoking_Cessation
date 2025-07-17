@@ -10,21 +10,6 @@ const Testimonials = () => {
     error,
   } = useFeedbacks();
 
-  // Fetch feedbacks on component mount
-
-  // Filter approved feedbacks and transform them to testimonials format
-  const approvedFeedbacks = feedbacks
-    .filter(feedback => feedback.status === 'approved')
-    .slice(0, 6) // Limit to 6 testimonials
-    .map(feedback => ({
-      quote: feedback.content,
-      author: feedback.user_id?.name || feedback.user_id?.email || 'Anonymous',
-      position: "Client",
-      avatar: feedback.user_id?.avatar || "/default-avatar.png",
-      rating: feedback.rating
-    }));
-
-  // Fallback testimonials if no approved feedbacks
   const fallbackTestimonials = [
     {
       quote: "Thanks to this smoking cessation counseling program, I finally quit smoking after 15 years. The support and guidance were incredible.",
@@ -49,7 +34,7 @@ const Testimonials = () => {
     },
   ];
 
-  const testimonials = approvedFeedbacks.length > 0 ? approvedFeedbacks : fallbackTestimonials;
+  const testimonials = feedbacks.length > 0 ? feedbacks : fallbackTestimonials;
 
   return (
     <section id="testimonials" className="py-20 bg-gradient-to-b from-gray-900 to-black">
@@ -97,19 +82,19 @@ const Testimonials = () => {
                   ))}
                 </div>
               </div>
-              <p className="text-white/80 mb-6 italic">"{testimonial.quote}"</p>
+              <p className="text-white/80 mb-6 italic">"{testimonial.content}"</p>
               <div className="flex items-center">
                 <Image
-                  src={testimonial.avatar}
-                  alt={testimonial.author}
+                  src={testimonial.user_id?.avatar_url}
+                  alt={testimonial.user_id?.name}
                   width={48}
                   height={48}
                   className="rounded-full mr-4"
                   fallback="/default-avatar.png"
                 />
                 <div className="ml-2">
-                  <h4 className="font-medium text-white">{testimonial.author}</h4>
-                  <p className="text-white/60 text-sm">{testimonial.position}</p>
+                  <h4 className="font-medium text-white">{testimonial.user_id?.name}</h4>
+                  <p className="text-white/60 text-sm">{testimonial.feedback_type === 'user_to_coach' ? 'Client to Coach' : 'Client'}</p>
                 </div>
               </div>
             </div>

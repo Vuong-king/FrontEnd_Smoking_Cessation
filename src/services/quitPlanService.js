@@ -43,6 +43,10 @@ const QuitPlanService = {
     const { data } = await api.put(`/quitPlan/${id}`, planData);
     return data;
   },
+  updateQuitPlanPublic: async (id, isPublic) => {
+    const { data } = await api.put(`/quitPlan/${id}/toggle-public`, { isPublic });
+    return data;
+  },
 
   deleteQuitPlan: async (id) => {
     const { data } = await api.delete(`/quitPlan/${id}`);

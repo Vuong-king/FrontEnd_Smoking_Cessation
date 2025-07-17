@@ -17,6 +17,10 @@ const NotificationService = {
     const response = await api.delete(`/notifications/${id}`);
     return response.data;
   },
+  getUserNotifications: async (userId) => {
+    const response = await api.get(`/notifications/user/${userId}`);
+    return response.data;
+  },
 };
 
 export default NotificationService; 

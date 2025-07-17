@@ -1,14 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Avatar, Dropdown, Menu } from "antd";
-import { DashboardOutlined } from "@ant-design/icons";
+import { Avatar, Badge, Button, Dropdown, Menu, Popover, List } from "antd";
+import { BellOutlined, DashboardOutlined } from "@ant-design/icons";
 import { MdLogout } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
+import NotificationService from "../../services/notificationService";
 
 const UserHeader = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      const response = await NotificationService.getUserNotifications(user?.id);
+      setNotifications(response);
+    };
+    fetchNotifications();
+  }, [user?.id]);
+
 
   const handleLogout = async () => {
     try {
@@ -17,6 +28,28 @@ const UserHeader = () => {
       console.error("Logout error:", error);
     }
   };
+
+  const notificationContent = (
+    <div style={{ width: 300, maxHeight: 400, overflowY: "auto" }}>
+      <List
+        dataSource={notifications}
+        renderItem={(item) => (
+          <List.Item key={item._id}>
+            <div>
+              <div className="font-semibold">{item.type}</div>
+              <div>{item.message}</div>
+              {item.schedule && (
+                <div className="text-xs text-gray-400">
+                  {new Date(item.schedule).toLocaleString()}
+                </div>
+              )}
+            </div>
+          </List.Item>
+        )}
+        locale={{ emptyText: "Không có thông báo" }}
+      />
+    </div>
+  );
 
   const getUserMenuItems = (role) => {
     const baseItems = [
@@ -38,7 +71,7 @@ const UserHeader = () => {
       key: "dashboard",
       icon: <DashboardOutlined className="text-blue-400" />,
       label: (
-        <Link to={role === "admin" ? "/admin/dashboard" : "/user/dashboard"}>
+        <Link to={role === "admin" ? "/admin" : "/user/dashboard"}>
           <span className="text-white">Dashboard</span>
         </Link>
       ),
@@ -88,6 +121,20 @@ const UserHeader = () => {
 
           {/* User Dropdown */}
           <div className="flex items-center gap-4">
+            <Popover
+              content={notificationContent}
+              title="Thông báo"
+              trigger="click"
+              placement="bottomRight"
+            >
+              <Badge count={notifications.length}>
+                <Button
+                  icon={<BellOutlined />}
+                  className="flex items-center justify-center"
+                  shape="circle"
+                />
+              </Badge>
+            </Popover>
             <Dropdown overlay={menu} placement="bottomRight" arrow>
               <div className="flex items-center gap-3 cursor-pointer">
                 <span className="text-white font-medium">
