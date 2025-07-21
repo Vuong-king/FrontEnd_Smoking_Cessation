@@ -34,7 +34,6 @@ import UserBlogPage from "./pages/user/UserBlogPage";
 import SmokingStatusPage from "./pages/user/SmokingStatusPage";
 import ProfilePage from "./pages/user/ProfilePage";
 import UserAchievement from "./pages/user/UserAchievement";
-import UserSupport from "./pages/user/UserSupport";
 import UserProgress from "./pages/user/UserProgress";
 import UserQuitPlanPage from "./pages/user/UserQuitPlanPage";
 import QuitPlanManagePage from "./pages/user/QuitPlanManagePage";
@@ -69,15 +68,16 @@ import CoachNotification from "./pages/coach/CoachNotification";
 import CoachMeetSession from "./pages/coach/CoachMeetSession";
 import RankingPage from "./pages/generic/RankingPage";
 import PackageItem from "./pages/admin/PackageItem";
+import UserMeetSessionPage from "./pages/user/UserMeetSessionPage";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
   const { user } = useAuth();
 
   return (
-    <div className='min-h-screen bg-black text-white'>
+    <div className="min-h-screen bg-black text-white">
       {user ? <UserHeader /> : <Navbar />}
-      <main className='mt-16'>
+      <main className="mt-16">
         <Outlet />
       </main>
       <Footer />
@@ -88,109 +88,112 @@ const Layout = () => {
 // ===== App with Routing =====
 function App() {
   return (
-    <div className='bg-white min-h-screen'>
+    <div className="bg-white min-h-screen">
       <Router>
         <AuthProvider>
           {/* <ScrollToTop /> */}
           <Routes>
             {/* Auth routes */}
-            <Route path='/login' element={<AuthPage />} />
-            <Route path='/login/:token' element={<AuthPage />} />
-            <Route path='/payment-success' element={<PaymentSuccessPage />} />
-            <Route path='/payment-cancel' element={<PaymentCancelPage />} />
-            <Route path='/reset-password' element={<ResetPassword />} />
+            <Route path="/login" element={<AuthPage />} />
+            <Route path="/login/:token" element={<AuthPage />} />
+            <Route path="/payment-success" element={<PaymentSuccessPage />} />
+            <Route path="/payment-cancel" element={<PaymentCancelPage />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route
-              path='/resset-password/:token'
+              path="/resset-password/:token"
               element={<ResetPasswordWithToken />}
             />
             {/* Public layout */}
             <Route element={<Layout />}>
-              <Route path='/' element={<HomePages />} />
-              <Route path='/quit-plan' element={<QuitPlanPage />} />
+              <Route path="/" element={<HomePages />} />
+              <Route path="/quit-plan" element={<QuitPlanPage />} />
               <Route
-                path='/quit-plan-detail/:id'
+                path="/quit-plan-detail/:id"
                 element={<QuitPlanDetailPage />}
               />
-              <Route path='/blog' element={<BlogPage />} />
-              <Route path='/blog/:id' element={<BlogDetail />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/blog/:id" element={<BlogDetail />} />
               <Route
-                path='/quitplan/:id/manage'
+                path="/quitplan/:id/manage"
                 element={<QuitPlanManagePage />}
               />
-              <Route path='/ranking' element={<RankingPage />} />
+              <Route path="/ranking" element={<RankingPage />} />
             </Route>
 
             {/* User protected routes */}
             <Route
-              path='/user'
+              path="/user"
               element={
                 <ProtectedRoute allowedRoles={["user"]}>
                   <UserLayout />
                 </ProtectedRoute>
-              }>
-              <Route path='dashboard' element={<DashBoardUser />} />
-              <Route path='quitplan' element={<UserQuitPlanPage />} />
-              <Route path='profile/:id' element={<ProfilePage />} />
-              <Route path='blog' element={<UserBlogPage />} />
-              <Route path='smoking-status' element={<SmokingStatusPage />} />
-              <Route path='progress' element={<UserProgress />} />
-              <Route path='achievements' element={<UserAchievement />} />
-              <Route path='support' element={<UserSupport />} />
+              }
+            >
+              <Route path="dashboard" element={<DashBoardUser />} />
+              <Route path="quitplan" element={<UserQuitPlanPage />} />
+              <Route path="profile/:id" element={<ProfilePage />} />
+              <Route path="blog" element={<UserBlogPage />} />
+              <Route path="smoking-status" element={<SmokingStatusPage />} />
+              <Route path="progress" element={<UserProgress />} />
+              <Route path="achievements" element={<UserAchievement />} />
+              <Route path="meet-session" element={<UserMeetSessionPage />} />
             </Route>
 
             {/* Admin protected routes */}
             <Route
-              path='/admin'
+              path="/admin"
               element={
                 <ProtectedRoute allowedRoles={["admin"]}>
                   <AdminLayout />
                 </ProtectedRoute>
-              }>
+              }
+            >
               <Route index element={<AdminDashboardHome />} />
-              <Route path='users' element={<Users />} />
-              <Route path='subscriptions' element={<Subscriptions />} />
-              <Route path='badges' element={<Badges />} />
-              <Route path='stages' element={<Stages />} />
-              <Route path='feedbacks' element={<Feedbacks />} />
-              <Route path='leaderboard' element={<Leaderboard />} />
-              <Route path='notifications' element={<Notifications />} />
-              <Route path='progress' element={<Progress />} />
-              <Route path='quit-plans' element={<QuitPlans />} />
-              <Route path='packages' element={<PackageItem />} />
+              <Route path="users" element={<Users />} />
+              <Route path="subscriptions" element={<Subscriptions />} />
+              <Route path="badges" element={<Badges />} />
+              <Route path="stages" element={<Stages />} />
+              <Route path="feedbacks" element={<Feedbacks />} />
+              <Route path="leaderboard" element={<Leaderboard />} />
+              <Route path="notifications" element={<Notifications />} />
+              <Route path="progress" element={<Progress />} />
+              <Route path="quit-plans" element={<QuitPlans />} />
+              <Route path="packages" element={<PackageItem />} />
               <Route
-                path='quit-plans/:id'
+                path="quit-plans/:id"
                 element={<QuitPlanDetailPageAdmin />}
               />
-              <Route path='blogs' element={<BlogPosts />} />
-              <Route path='blogs/:id' element={<BlogDetail />} />
-              <Route path='request' element={<Request />} />
-              <Route path='profile/:id' element={<ProfilePage />} />
+              <Route path="blogs" element={<BlogPosts />} />
+              <Route path="blogs/:id" element={<BlogDetail />} />
+              <Route path="request" element={<Request />} />
+              <Route path="profile/:id" element={<ProfilePage />} />
             </Route>
 
             {/* Coach protected routes */}
             <Route
-              path='/coach'
+              path="/coach"
               element={
                 <ProtectedRoute allowedRoles={["coach"]}>
                   <CoachLayout />
                 </ProtectedRoute>
-              }>
-              <Route path='my-quit-plans' element={<CoachQuitPlan />} />
-              <Route path='quit-plans-request' element={<RequestQuitPlan />} />
-              <Route path='stages' element={<StagesCoach />} />
+              }
+            >
+              <Route path="my-quit-plans" element={<CoachQuitPlan />} />
+              <Route path="quit-plans-request" element={<RequestQuitPlan />} />
+              <Route path="stages" element={<StagesCoach />} />
             </Route>
-            <Route path='/coach' element={<CoachLayout />}>
-              <Route path='my-quit-plans' element={<CoachQuitPlan />} />
-              <Route path='quit-plans-request' element={<RequestQuitPlan />} />
-              <Route path='stages' element={<StagesCoach />} />
-              <Route path='progress' element={<CoachProgress />} />
-              <Route path='notifications' element={<CoachNotification />} />
-              <Route path='meet-session' element={<CoachMeetSession />} />
+            <Route path="/coach" element={<CoachLayout />}>
+              <Route path="my-quit-plans" element={<CoachQuitPlan />} />
+              <Route path="quit-plans-request" element={<RequestQuitPlan />} />
+              <Route path="stages" element={<StagesCoach />} />
+              <Route path="progress" element={<CoachProgress />} />
+              <Route path="notifications" element={<CoachNotification />} />
+              <Route path="meet-session" element={<CoachMeetSession />} />
             </Route>
 
             {/* Unauthorized + 404 */}
 
-            <Route path='*' element={<NotFoundPage />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AuthProvider>
       </Router>
