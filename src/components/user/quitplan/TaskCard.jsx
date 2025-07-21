@@ -1,9 +1,9 @@
-import { Button, Typography, Checkbox } from "antd";
+import { Typography, Button, Checkbox } from "antd";
 
 const { Title, Paragraph, Text } = Typography;
 
 const TaskCard = ({ task, index, onComplete }) => {
-  const isLocked = false; 
+  const isLocked = false; // Trong tương lai có thể thêm logic lock task
 
   return (
     <div
@@ -26,7 +26,7 @@ const TaskCard = ({ task, index, onComplete }) => {
                 : "bg-blue-500 text-white"
             }`}
           >
-            {task.is_completed ? "✓" : isLocked ? "🔒" : index + 1}
+            {task.is_completed ? "" : isLocked ? "" : index + 1}
           </div>
           <Checkbox checked={task.is_completed} disabled size="small" />
         </div>
