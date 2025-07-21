@@ -27,7 +27,7 @@ const menu = [
   { label: "Kế Hoạch", icon: <CarryOutOutlined />, path: "/user/quitplan" },
   { label: "Tiến triển", icon: <FieldTimeOutlined />, path: "/user/progress" },
   { label: "Thành tựu ", icon: <Trophy />, path: "/user/achievements" },
-  { label: "Support", icon: <MessageCircleHeart />, path: "/user/support" },
+  { label: "Tư vấn ", icon: <MessageCircleHeart />, path: "/user/meet-session" },
 ];
 
 function Sidebar() {
