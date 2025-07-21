@@ -17,16 +17,16 @@ import ColourfulText from "../../components/ui/ColourfulText";
 import { useAuth } from "../../context/AuthContext";
 
 const menu = [
-  { label: "Dashboard", icon: <DashboardOutlined />, path: "/user/dashboard" },
+  { label: "Bảng Thống Kê", icon: <DashboardOutlined />, path: "/user/dashboard" },
   {
-    label: "Smoking Status",
+    label: "Tình trạng hút thuốc",
     icon: <Cigarette />,
     path: "/user/smoking-status",
   },
-  { label: "Blog", icon: <AuditOutlined />, path: "/user/blog" },
-  { label: "Quit Plan", icon: <CarryOutOutlined />, path: "/user/quitplan" },
-  { label: "Progress", icon: <FieldTimeOutlined />, path: "/user/progress" },
-  { label: "Achievements", icon: <Trophy />, path: "/user/achievements" },
+  { label: "Bài Viết", icon: <AuditOutlined />, path: "/user/blog" },
+  { label: "Kế Hoạch", icon: <CarryOutOutlined />, path: "/user/quitplan" },
+  { label: "Tiến triển", icon: <FieldTimeOutlined />, path: "/user/progress" },
+  { label: "Thành tựu ", icon: <Trophy />, path: "/user/achievements" },
   { label: "Support", icon: <MessageCircleHeart />, path: "/user/support" },
 ];
 
