@@ -108,6 +108,45 @@ const QuitPlanService = {
     );
     return data;
   },
+   coach: {
+    getAllPlans: async () => {
+      return await QuitPlanService.getAllQuitPlans();
+    },
+
+    createPlan: async (planData) => {
+      return await QuitPlanService.createQuitPlan(planData);
+    },
+
+    updatePlan: async (id, planData) => {
+      return await QuitPlanService.updateQuitPlan(id, planData);
+    },
+
+    deletePlan: async (id) => {
+      return await QuitPlanService.deleteQuitPlan(id);
+    },
+
+    getMyUsers: async () => {
+      return await QuitPlanService.getMyUsers();
+    },
+
+    getMyRequests: async (coachId) => {
+      return await QuitPlanService.getRequestsByCoachId(coachId);
+    },
+
+    approveRequest: async (requestId, approvalData) => {
+      return await QuitPlanService.approveQuitPlanRequest(
+        requestId,
+        approvalData
+      );
+    },
+
+    rejectRequest: async (requestId, rejectionData) => {
+      return await QuitPlanService.rejectQuitPlanRequest(
+        requestId,
+        rejectionData
+      );
+    },
+  },
 };
 
 export default QuitPlanService;
