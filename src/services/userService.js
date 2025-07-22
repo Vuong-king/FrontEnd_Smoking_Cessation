@@ -32,6 +32,10 @@ const UserService = {
     const response = await api.delete(`/user/${id}`);
     return response.data;
   },
+  adminDashboard: async () => {
+    const response = await api.get('/dashboard/statistics');
+    return response.data;
+  },
 };
 
 export default UserService;

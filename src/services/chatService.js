@@ -24,6 +24,10 @@ const ChatService = {
     const response = await api.get(`/chat/sessions/${userId}`);
     return response.data;
   },
+  relapse: async (message) => {
+    const response = await api.post(`/relapse-events`, message);
+    return response.data;
+  },
 };
 
 export default ChatService;
