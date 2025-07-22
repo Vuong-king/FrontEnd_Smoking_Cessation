@@ -21,6 +21,11 @@ const BadgesService = {
     const response = await api.get(`/badges/leaderboard?type=${type}`);
     return response.data;
   },
+  
+  getAllBadgesWithUserStatus: async (userId) => {
+    const response = await api.get(`/badges/user/${userId}`);
+    return response.data;
+  },
 };
 
 export default BadgesService; 

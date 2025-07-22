@@ -1,11 +1,9 @@
-
 import AchievementStats from "./AchievementStats";
 import BadgeGallery from "./BadgeGallery";
 import AchievementModals from "./AchievementModals";
+import { useAuth } from "../../../context/AuthContext";
 import ColourfulText from "../../ui/ColourfulText";
-import BadgeIcon from "../../ui/BadgeIcon";
-import useBadges from "../../../hook/useBadges";
-
+import useBadgeAchievementsManager from "../../../hook/useUserBadges";
 
 const styles = {
   modalTitle: {
@@ -20,6 +18,10 @@ const styles = {
 };
 
 const Achievements = ({ lightTheme = false }) => {
+  const { user, loading: authLoading } = useAuth();
+  const userId = user?.userId || user?.id;
+  const token = user?.token;
+
   const {
     badges,
     stats,
@@ -33,11 +35,54 @@ const Achievements = ({ lightTheme = false }) => {
     handleShareBadge,
     closeDetailModal,
     closeShareModal,
-    newAwards,
-    showNewAwardsModal,
-    setShowNewAwardsModal,
     refreshData,
-  } = useBadges();
+  } = useBadgeAchievementsManager(userId, token);
+
+  if (authLoading) {
+    return (
+      <div
+        className={`${
+          lightTheme ? "text-slate-800" : "min-h-screen text-white"
+        } p-4 max-w-6xl mx-auto`}
+      >
+        <div className="flex justify-center items-center mt-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div
+        className={`${
+          lightTheme ? "text-slate-800" : "min-h-screen text-white"
+        } p-4 max-w-6xl mx-auto`}
+      >
+        <div className="text-center mt-20">
+          <div
+            className={`${
+              lightTheme ? "bg-slate-100" : "bg-white/10"
+            } rounded-2xl p-8 border ${
+              lightTheme ? "border-slate-200" : "border-white/20"
+            }`}
+          >
+            <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-700 via-blue-700 to-cyan-700 bg-clip-text text-transparent">
+              Đăng nhập để xem thành tựu
+            </h2>
+            <p
+              className={`${
+                lightTheme ? "text-slate-600" : "text-gray-300"
+              } mb-6`}
+            >
+              Bạn cần đăng nhập để theo dõi tiến trình và xem các thành tựu đã
+              đạt được.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -117,78 +162,6 @@ const Achievements = ({ lightTheme = false }) => {
           )
         )}
       </div>
-
-      {/* Modal cho huy hiệu mới */}
-      {showNewAwardsModal && newAwards.length > 0 && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
-          <div
-            className={`${
-              lightTheme
-                ? "bg-gradient-to-br from-white to-gray-50"
-                : "bg-slate-800"
-            } rounded-lg p-6 max-w-lg w-full border ${
-              lightTheme
-                ? "border-blue-300 hover:border-blue-400"
-                : "border-blue-500/50"
-            } shadow-lg hover:shadow-xl transition-all duration-300`}
-          >
-            <h2
-              className={`text-2xl font-bold text-center mb-4 ${
-                lightTheme ? "text-slate-800" : "text-white"
-              }`}
-            >
-              Thành tựu mới!
-            </h2>
-            <p
-              className={`text-center ${
-                lightTheme ? "text-slate-700" : "text-white"
-              } mb-6`}
-            >
-              Xin chúc mừng! Bạn vừa nhận được {newAwards.length} thành tựu mới.
-            </p>
-            <div className="max-h-60 overflow-y-auto mb-6">
-              {newAwards.map((badge) => (
-                <div
-                  key={badge.id}
-                  className={`flex items-center p-3 mb-2 ${
-                    lightTheme
-                      ? "bg-gradient-to-br from-white to-gray-50 border border-gray-200 hover:border-blue-300"
-                      : "bg-slate-700"
-                  } rounded-lg hover:shadow-md transition-all duration-300`}
-                >
-                  <div className="mr-3 bg-gradient-to-br from-white to-gray-50 p-1 rounded-full shadow-sm hover:shadow-md border border-gray-200 hover:border-blue-300 transition-all duration-300 badge-icon-container hover:scale-105">
-                    <BadgeIcon icon={badge.icon} size="lg" earned={true} />
-                  </div>
-                  <div>
-                    <h3
-                      className={`font-bold ${
-                        lightTheme ? "text-blue-600" : "text-blue-400"
-                      }`}
-                    >
-                      {badge.name}
-                    </h3>
-                    <p
-                      className={`text-sm ${
-                        lightTheme ? "text-slate-600" : "text-slate-300"
-                      }`}
-                    >
-                      {badge.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-center">
-              <button
-                onClick={() => setShowNewAwardsModal(false)}
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded shadow-md hover:shadow-lg border border-blue-700 hover:border-blue-800 transition-all duration-300"
-              >
-                Tuyệt vời!
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <AchievementStats
         badges={badges}
