@@ -107,7 +107,39 @@ const AdminDashboardHome = () => {
             place.
           </p>
         </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
+          <div className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white rounded-xl p-6 shadow-lg border border-white hover:scale-[1.03] hover:shadow-xl transition-all duration-300 text-center">
+            <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shadow-inner">
+              <Users className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-lg font-semibold mb-1">Total Users</h3>
+            <p className="text-3xl font-bold">{kpi.totalUsers}</p>
+          </div>
 
+          <div className="bg-gradient-to-r from-purple-400 to-pink-500 text-white rounded-xl p-6 shadow-lg border border-white hover:scale-[1.03] hover:shadow-xl transition-all duration-300 text-center">
+            <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shadow-inner">
+              <CreditCard className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-lg font-semibold mb-1">Active Plans</h3>
+            <p className="text-3xl font-bold">{kpi.activePlans}</p>
+          </div>
+
+          <div className="bg-gradient-to-r from-blue-400 to-violet-500 text-white rounded-xl p-6 shadow-lg border border-white hover:scale-[1.03] hover:shadow-xl transition-all duration-300 text-center">
+            <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shadow-inner">
+              <DollarSign className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-lg font-semibold mb-1">Total Revenue</h3>
+            <p className="text-3xl font-bold">{kpi.totalRevenue?.toLocaleString?.('en-US', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }) || kpi.totalRevenue}</p>
+          </div>
+
+          <div className="bg-gradient-to-r from-cyan-400 to-purple-500 text-white rounded-xl p-6 shadow-lg border border-white hover:scale-[1.03] hover:shadow-xl transition-all duration-300 text-center">
+            <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shadow-inner">
+              <MessageSquare className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-lg font-semibold mb-1">Feedbacks</h3>
+            <p className="text-3xl font-bold">{kpi.totalFeedbacks}</p>
+          </div>
+        </div>
         {/* Chart Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* User Growth */}
@@ -166,39 +198,7 @@ const AdminDashboardHome = () => {
         <br />
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white rounded-xl p-6 shadow-lg border border-white hover:scale-[1.03] hover:shadow-xl transition-all duration-300 text-center">
-            <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shadow-inner">
-              <Users className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="text-lg font-semibold mb-1">Total Users</h3>
-            <p className="text-3xl font-bold">{kpi.totalUsers}</p>
-          </div>
-
-          <div className="bg-gradient-to-r from-purple-400 to-pink-500 text-white rounded-xl p-6 shadow-lg border border-white hover:scale-[1.03] hover:shadow-xl transition-all duration-300 text-center">
-            <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shadow-inner">
-              <CreditCard className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="text-lg font-semibold mb-1">Active Plans</h3>
-            <p className="text-3xl font-bold">{kpi.activePlans}</p>
-          </div>
-
-          <div className="bg-gradient-to-r from-blue-400 to-violet-500 text-white rounded-xl p-6 shadow-lg border border-white hover:scale-[1.03] hover:shadow-xl transition-all duration-300 text-center">
-            <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shadow-inner">
-              <DollarSign className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="text-lg font-semibold mb-1">Total Revenue</h3>
-            <p className="text-3xl font-bold">{kpi.totalRevenue?.toLocaleString?.('en-US', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }) || kpi.totalRevenue}</p>
-          </div>
-
-          <div className="bg-gradient-to-r from-cyan-400 to-purple-500 text-white rounded-xl p-6 shadow-lg border border-white hover:scale-[1.03] hover:shadow-xl transition-all duration-300 text-center">
-            <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shadow-inner">
-              <MessageSquare className="w-6 h-6 text-white" />
-            </div>
-            <h3 className="text-lg font-semibold mb-1">Feedbacks</h3>
-            <p className="text-3xl font-bold">{kpi.totalFeedbacks}</p>
-          </div>
-        </div>
+        
       </div>
     </section>
   );
