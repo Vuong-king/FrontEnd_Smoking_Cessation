@@ -1,8 +1,9 @@
 import { Alert, Col, Row, Spin } from "antd";
 import { useEffect } from "react";
-import ColourfulText from "../../ui/ColourfulText";
+
 import PlanCard from "./PlanCard";
-import { useQuitPlanData } from "../../../hook/useQuitPlanData";
+import useQuitPlanData from "../../../hook/useQuitPlanData";
+import ColourfulText from "../../ui/ColourfulText";
 
 function PlanSection() {
   const { publicPlans, loading, error, fetchPublicPlans } = useQuitPlanData();
@@ -37,31 +38,32 @@ function PlanSection() {
           />
         ) : (
           <Row gutter={[24, 24]} justify="center">
-            {Array.isArray(publicPlans) && publicPlans.map((plan, index) => (
-              <Col xs={24} sm={12} md={8} lg={6} key={plan._id}>
-                <PlanCard
-                  id={plan._id}
-                  image={plan.image || "/placeholder.svg"}
-                  title={plan.name}
-                  description={
-                    <>
-                      <p className="text-sm text-gray-500 mb-2">
-                        {plan.reason}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        Bắt đầu:{" "}
-                        {new Date(plan.start_date).toLocaleDateString()}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        Mục tiêu:{" "}
-                        {new Date(plan.target_quit_date).toLocaleDateString()}
-                      </p>
-                    </>
-                  }
-                  delay={index}
-                />
-              </Col>
-            ))}
+            {Array.isArray(publicPlans) &&
+              publicPlans.map((plan, index) => (
+                <Col xs={24} sm={12} md={8} lg={6} key={plan._id}>
+                  <PlanCard
+                    id={plan._id}
+                    image={plan.image || "/placeholder.svg"}
+                    title={plan.name}
+                    description={
+                      <>
+                        <p className="text-sm text-gray-500 mb-2">
+                          {plan.reason}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          Bắt đầu:{" "}
+                          {new Date(plan.start_date).toLocaleDateString()}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          Mục tiêu:{" "}
+                          {new Date(plan.target_quit_date).toLocaleDateString()}
+                        </p>
+                      </>
+                    }
+                    delay={index}
+                  />
+                </Col>
+              ))}
           </Row>
         )}
       </div>
