@@ -60,7 +60,8 @@ export const useCoachSelection = () => {
         serviceRef.current.getMyQuitPlanRequests(),
       ]);
 
-      setCoaches(coachList || []);
+      console.log("coachList from API:", coachList);
+      setCoaches(Array.isArray(coachList) ? coachList : coachList?.data || []);
 
       // Check for approved quit plan
       let approvedPlan = Array.isArray(quitPlans)
@@ -122,7 +123,8 @@ export const useCoachSelection = () => {
         ]);
 
         if (!isCanceled) {
-          setCoaches(coachList || []);
+          console.log("coachList from API:", coachList);
+          setCoaches(Array.isArray(coachList) ? coachList : coachList?.data || []);
 
           let approvedPlan = Array.isArray(quitPlans)
             ? quitPlans.find(
