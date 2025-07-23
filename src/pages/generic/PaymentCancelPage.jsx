@@ -2,19 +2,11 @@ import React from 'react';
 import { XCircle } from 'lucide-react';
 import { Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 
 const PaymentCancelPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth(); 
-
   const handleGoHome = () => {
-        console.log('Current user:', user);
-    if (user) {
-      navigate('/dashboard');
-    } else {
-      navigate('/'); 
-    }
+    navigate('/');
   };
 
   return (
