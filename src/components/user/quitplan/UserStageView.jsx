@@ -40,7 +40,7 @@ const UserStageView = () => {
   const { hasRated, setHasRated } = useCoachRating(
     myQuitPlan?.coach_id?._id,
     myQuitPlan?._id,
-    user?.userId
+    user?.id
   );
 
   const allStagesCompleted =
@@ -180,7 +180,7 @@ const UserStageView = () => {
             onClose={handleCloseRating}
             coachInfo={myQuitPlan?.coach_id}
             planInfo={myQuitPlan}
-            userId={user?.userId}
+            userId={user?.id}
             onRatingSubmitted={handleRatingSubmitted}
           />
         </div>
@@ -300,7 +300,7 @@ const UserStageView = () => {
         onClose={handleCloseRating}
         coachInfo={myQuitPlan?.coach_id}
         planInfo={myQuitPlan}
-        userId={user?.userId}
+        userId={user?.id}
         onRatingSubmitted={handleRatingSubmitted}
       />
     </div>

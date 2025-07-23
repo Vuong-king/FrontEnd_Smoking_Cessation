@@ -11,9 +11,11 @@ export function useCoachData() {
       setLoading(true);
       const data = await CoachService.getAllCoaches();
       setCoaches(data);
+      return data; // Thêm dòng này để trả về dữ liệu
     } catch (err) {
       console.error(err);
       setError(err);
+      return [];
     } finally {
       setLoading(false);
     }
