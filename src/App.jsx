@@ -69,6 +69,7 @@ import CoachMeetSession from "./pages/coach/CoachMeetSession";
 import RankingPage from "./pages/generic/RankingPage";
 import PackageItem from "./pages/admin/PackageItem";
 import UserMeetSessionPage from "./pages/user/UserMeetSessionPage";
+import PlanStageView from "./components/generic/quitplan/PlanStageView";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
@@ -114,8 +115,8 @@ function App() {
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/blog/:id" element={<BlogDetail />} />
               <Route
-                path="/quitplan/:id/manage"
-                element={<QuitPlanManagePage />}
+                path="/stages/:id"
+                element={<PlanStageView />}
               />
               <Route path="/ranking" element={<RankingPage />} />
             </Route>

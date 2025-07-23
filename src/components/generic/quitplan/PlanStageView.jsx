@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { Spin, Alert } from "antd";
-import StageOverview from "../../user/quitplan/StageOverview";
-import StageHeader from "../../user/quitplan/StageHeader";
-import StageStats from "../../user/quitplan/StageStats";
-import StageTaskList from "../../user/quitplan/StageTaskList";
-import UserQuitPlanService from "../../../services/userQuitPlanService";
-import { StageEmptyCard, StageErrorCard, StageLoadingSkeleton } from "../../user/quitplan/StateFallbacks.jsx";
+import { useParams } from "react-router-dom";
 
-const PlanStageView = ({ quitPlanId }) => {
+import { StageEmptyCard, StageErrorCard, StageLoadingSkeleton } from "./StateFallbacks";
+import StageOverview from "./StageOverview";
+import StageHeader from "./StageHeader";
+import StageStats from "./StageStats";
+import StageTaskList from "./StageTaskList";
+import UserQuitPlanService from "../../../services/userQuitPlanService";
+
+const PlanStageView = (props) => {
+  const params = useParams();
+  const quitPlanId = props.quitPlanId || params.id;
   const [stages, setStages] = useState([]);
   const [currentStage, setCurrentStage] = useState(null);
   const [stageTasks, setStageTasks] = useState([]);
@@ -115,29 +118,33 @@ const PlanStageView = ({ quitPlanId }) => {
   };
 
   return (
-    <div>
-      <StageOverview myStages={stages} currentStage={currentStage} />
-      <StageHeader
-        currentStage={currentStage}
-        stageTasks={stageTasks}
-        progress={progress}
-        completedCount={completedCount}
-        loading={loading}
-        onRefresh={fetchData}
-        onMoveToNextStage={handleMoveToNextStage}
-      />
-      <StageStats
-        currentStage={currentStage}
-        myStages={stages}
-        progress={progress}
-        completedCount={completedCount}
-        totalTasks={stageTasks.length}
-      />
-      <StageTaskList
-        tasks={stageTasks}
-        progress={progress}
-        onComplete={handleCompleteTask}
-      />
+    <div className="bg-white min-h-screen pt-10">
+      <div className="max-w-3xl mx-auto mt-0 mb-8">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <StageOverview myStages={stages} currentStage={currentStage} />
+          <StageHeader
+            currentStage={currentStage}
+            stageTasks={stageTasks}
+            progress={progress}
+            completedCount={completedCount}
+            loading={loading}
+            onRefresh={fetchData}
+            onMoveToNextStage={handleMoveToNextStage}
+          />
+          <StageStats
+            currentStage={currentStage}
+            myStages={stages}
+            progress={progress}
+            completedCount={completedCount}
+            totalTasks={stageTasks.length}
+          />
+          <StageTaskList
+            tasks={stageTasks}
+            progress={progress}
+            onComplete={handleCompleteTask}
+          />
+        </div>
+      </div>
     </div>
   );
 };
