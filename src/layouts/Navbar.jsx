@@ -1,5 +1,3 @@
-
-
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -12,7 +10,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white backdrop-blur-md border-b border-gray-200">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center">
@@ -25,33 +23,27 @@ export function Navbar() {
           <nav className="hidden md:flex items-center space-x-8">
             <Link
               to="/"
-              className="text-white/80 hover:text-white transition-colors"
+              className="text-black/80 hover:text-black transition-colors"
             >
-              Home
+              Trang chủ
             </Link>
             <Link
               to="/blog"
-              className="text-white/80 hover:text-white transition-colors"
+              className="text-black/80 hover:text-black transition-colors"
             >
-              Blog
+              Bài viết
             </Link>
             <Link
               to="*"
-              className="text-white/80 hover:text-white transition-colors"
+              className="text-black/80 hover:text-black transition-colors"
             >
-              Community
-            </Link>
-            <Link
-              to="*"
-              className="text-white/80 hover:text-white transition-colors"
-            >
-              Ranking
+              Bảng xếp hạng
             </Link>
             <Link
               to="/login"
               className="px-4 py-2 rounded-full bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 transition-all"
             >
-              Join Now
+              Tham gia ngay
             </Link>
           </nav>
 

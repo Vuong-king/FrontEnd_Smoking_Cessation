@@ -1,21 +1,28 @@
-import { Alert, Card, Descriptions, Spin, Badge, Divider, Button } from "antd";
+import { Alert, Card, Descriptions, Spin, Badge, Divider, Button, message } from "antd";
 import { useEffect, useState, useCallback } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   CalendarOutlined,
   BulbOutlined,
   TrophyOutlined,
 } from "@ant-design/icons";
 import { useQuitPlanData } from "../../hook/useQuitPlanData";
-
+import useQuitPlanActions from "../../hook/useQuitPlanActions";
+import { useAuth } from "../../context/AuthContext";
 
 
 function QuitPlanDetailPage() {
   const { id } = useParams();
   const { getQuitPlanById } = useQuitPlanData();
+  const { adoptPlan } = useQuitPlanActions();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Thêm state để disable nút khi đang xử lý
+  const [adopting, setAdopting] = useState(false);
 
   // Wrap fetchPlan trong useCallback
   const fetchPlan = useCallback(async () => {
@@ -33,6 +40,22 @@ function QuitPlanDetailPage() {
   useEffect(() => {
     fetchPlan();
   }, [fetchPlan]);
+
+  const handleAdoptPlan = async () => {
+    if (!user) return;
+    message.info("Bạn cần vào 'Kế hoạch của tôi' để nhập tiến trình!");
+    setAdopting(true);
+    try {
+      // Gửi user info cần thiết, ví dụ user_id
+      const userData = { user_id: user.user_id || user.id || user._id, email: user.email, name: user.name };
+      const result = await adoptPlan(id, userData);
+      if (result) {
+        navigate(`/stages/${id}`);
+      }
+    } finally {
+      setAdopting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -158,15 +181,15 @@ function QuitPlanDetailPage() {
                 </div>
 
                 <div className="col-span-full flex justify-center mt-6">
-               <Link to={`/stages/${id}`}>
-                    <Button
-                      type="primary"
-                      size="large"
-                      className="px-10 py-5 text-lg"
-                    >
-                      Bắt đầu
-                    </Button>
-                  </Link>
+                  <Button
+                    type="primary"
+                    size="large"
+                    className="px-10 py-5 text-lg"
+                    loading={adopting}
+                    onClick={handleAdoptPlan}
+                  >
+                    Bắt đầu
+                  </Button>
                 </div>
               </div>
             </Card>

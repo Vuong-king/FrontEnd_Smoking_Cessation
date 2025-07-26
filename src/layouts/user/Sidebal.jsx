@@ -1,7 +1,6 @@
 import {
   AuditOutlined,
   CarryOutOutlined,
-  DashboardOutlined,
   FieldTimeOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -17,7 +16,6 @@ import ColourfulText from "../../components/ui/ColourfulText";
 import { useAuth } from "../../context/AuthContext";
 
 const menu = [
-  { label: "Bảng Thống Kê", icon: <DashboardOutlined />, path: "/user/dashboard" },
   {
     label: "Tình trạng hút thuốc",
     icon: <Cigarette />,
@@ -28,6 +26,7 @@ const menu = [
   { label: "Tiến triển", icon: <FieldTimeOutlined />, path: "/user/progress" },
   { label: "Thành tựu ", icon: <Trophy />, path: "/user/achievements" },
   { label: "Tư vấn ", icon: <MessageCircleHeart />, path: "/user/meet-session" },
+  { label: "Kế hoạch của tôi", icon: <SettingOutlined />, path: "/user/my-quit-plans" },
 ];
 
 function Sidebar() {
@@ -55,19 +54,13 @@ function Sidebar() {
     {
       key: "2",
       label: "Profile",
-      icon: <FaUser />,
+      icon: <FaUser className="text-purple-400" />,
       onClick: () => navigate(`/user/profile/${user.id}`),
-    },
-    {
-      key: "3",
-      label: "Settings",
-      icon: <SettingOutlined />,
-      onClick: () => navigate("/user/settings"),
     },
     {
       key: "4",
       label: "Logout",
-      icon: <MdLogout />,
+      icon: <MdLogout className="text-blue-400" />,
       onClick: async () => {
         try {
           await logout();
@@ -82,13 +75,13 @@ function Sidebar() {
     <div
       className={`h-screen sticky top-0 ${
         collapsed ? "w-20" : "w-64"
-      } bg-gradient-to-b from-[#1a1333] via-[#2b2256] to-[#1a2a3a] flex flex-col transition-all duration-300`}
+      } bg-white border-r border-gray-200 flex flex-col transition-all duration-300`}
     >
       {/* Collapse button */}
       <div
         className={`${
           !collapsed
-            ? "flex justify-between items-center border-b border-[#1f1f1f] p-2"
+            ? "flex justify-between items-center border-b border-gray-200 p-2"
             : "flex items-center justify-center p-2"
         }`}
       >
@@ -103,7 +96,7 @@ function Sidebar() {
           type="text"
           icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           onClick={() => setCollapsed(!collapsed)}
-          className="text-white"
+          className="text-gray-700"
         />
       </div>
 
@@ -111,9 +104,9 @@ function Sidebar() {
       <div
         className={`${
           !collapsed
-            ? "px-4 py-3 border-b border-[#1f1f1f] flex items-center gap-3"
-            : "px-4 py-3 border-b border-[#1f1f1f] flex flex-col items-center gap-3"
-        } hover:bg-[#232042] hover:cursor-pointer transition-colors duration-200`}
+            ? "px-4 py-3 border-b border-gray-200 flex items-center gap-3"
+            : "px-4 py-3 border-b border-gray-200 flex flex-col items-center gap-3"
+        } hover:bg-gray-100 hover:cursor-pointer transition-colors duration-200`}
       >
         <Dropdown menu={{ items }}>
           <a onClick={(e) => e.preventDefault()}>
@@ -124,10 +117,10 @@ function Sidebar() {
               />
               {!collapsed && (
                 <div>
-                  <div className="text-sm font-semibold">
+                  <div className="text-sm font-semibold text-gray-800">
                     {user?.name || "Guest"}
                   </div>
-                  <div className="text-xs text-gray-400">{user?.email}</div>
+                  <div className="text-xs text-gray-500">{user?.email}</div>
                 </div>
               )}
             </Space>
@@ -145,15 +138,11 @@ function Sidebar() {
               to={item.path}
               className={`
                 flex items-center transition-all duration-200 mt-1
-                ${
-                  collapsed
-                    ? "justify-center w-12 h-12"
-                    : "px-6 py-2 w-11/12"
-                }
+                ${collapsed ? "justify-center w-12 h-12" : "px-6 py-2 w-11/12"}
                 ${
                   isActive
                     ? "bg-gray-200 text-[#232042] rounded-2xl"
-                    : "text-white hover:bg-[#232042] hover:text-[#1ecbe1] rounded-2xl"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-[#1ecbe1] rounded-2xl"
                 }
               `}
               style={{

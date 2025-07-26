@@ -56,13 +56,13 @@ const UserHeader = () => {
       {
         key: "profile",
         icon: <FaUser className="text-purple-400" />,
-        label: <span className="text-white">Profile</span>,
+        label: <span className="text-black">Profile</span>,
         onClick: () => navigate(`/user/profile/${user?.id}`),
       },
       {
         key: "logout",
         icon: <MdLogout className="text-red-400" />,
-        label: <span className="text-white">Logout</span>,
+        label: <span className="text-black">Logout</span>,
         onClick: handleLogout,
       },
     ];
@@ -71,8 +71,8 @@ const UserHeader = () => {
       key: "dashboard",
       icon: <DashboardOutlined className="text-blue-400" />,
       label: (
-        <Link to={role === "admin" ? "/admin" : "/user/dashboard"}>
-          <span className="text-white">Dashboard</span>
+        <Link to={role === "admin" ? "/admin" : "/user/smoking-status"}>
+          <span className="text-black">Dashboard</span>
         </Link>
       ),
     };
@@ -83,14 +83,14 @@ const UserHeader = () => {
   const menu = (
     <Menu
       items={getUserMenuItems(user?.role)}
-      className="rounded-xl border-none bg-gradient-to-br from-gray-800 to-gray-900 shadow-2xl p-2"
+      className="rounded-xl border-none bg-white-to-br from-gray-800 to-gray-900 shadow-2xl p-2"
       style={{
         minWidth: "180px",
       }}
     />
   );
   return (
-    <header className="fixed w-full top-0 z-50 bg-gray-900/90 backdrop-blur-sm">
+    <header className="fixed w-full top-0 z-50 bg-[#e6f0f8] border-t border-blue-200 ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -104,15 +104,14 @@ const UserHeader = () => {
           <nav className="hidden md:flex space-x-8">
             {[
               { name: "Home", path: "/" },
-              { name: "Blog", path: "/blog" },
-              { name: "Kế Hoạch", path: "/quit-plan" },
-              { name: "Community", path: "/community" },
-              { name: "Ranking", path: "/ranking" },
+              { name: "Bài viết", path: "/blog" },
+              { name: "Kế hoạch", path: "/quit-plan" },
+              { name: "Bảng xếp hạng", path: "/ranking" },
             ].map((item) => (
               <Link
                 key={item.name}
                 to={item.path}
-                className="text-white hover:text-purple-400 transition-colors"
+                className="text-black hover:text-purple-400 transition-colors font-medium"
               >
                 {item.name}
               </Link>
@@ -137,7 +136,7 @@ const UserHeader = () => {
             </Popover>
             <Dropdown overlay={menu} placement="bottomRight" arrow>
               <div className="flex items-center gap-3 cursor-pointer">
-                <span className="text-white font-medium">
+                <span className="text-black font-medium">
                   {user?.name || "User"}
                 </span>
                 <Avatar

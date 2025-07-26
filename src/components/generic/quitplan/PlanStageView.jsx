@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 import { StageEmptyCard, StageErrorCard, StageLoadingSkeleton } from "./StateFallbacks";
 import StageOverview from "./StageOverview";
@@ -7,15 +7,21 @@ import StageHeader from "./StageHeader";
 import StageStats from "./StageStats";
 import StageTaskList from "./StageTaskList";
 import UserQuitPlanService from "../../../services/userQuitPlanService";
+import ProgressService from '../../../services/progressService';
 
 const PlanStageView = (props) => {
   const params = useParams();
+  const location = useLocation();
   const quitPlanId = props.quitPlanId || params.id;
   const [stages, setStages] = useState([]);
   const [currentStage, setCurrentStage] = useState(null);
   const [stageTasks, setStageTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [stageProgressEntries, setStageProgressEntries] = useState([]);
+
+  // Xác định nguồn truy cập (ví dụ: từ query hoặc props)
+  const isFromMyQuitPlan = location.state?.isFromMyQuitPlan || false;
 
   // Helper xác định current stage
   const determineCurrentStage = (stages) => {
@@ -41,8 +47,17 @@ const PlanStageView = (props) => {
       if (current) {
         const tasks = await UserQuitPlanService.getTasksWithCompletion(current._id);
         setStageTasks(tasks);
+        // Fetch progress entries for this stage
+        try {
+          const entries = await ProgressService.getSingleStageProgressAPI(current._id);
+          setStageProgressEntries(Array.isArray(entries) ? entries : []);
+        } catch (e) {
+          setStageProgressEntries([]);
+          console.error("Error fetching stage progress entries:", e);
+        }
       } else {
         setStageTasks([]);
+        setStageProgressEntries([]);
       }
     } catch (err) {
       setError(err.message || "Lỗi khi tải dữ liệu");
@@ -117,6 +132,8 @@ const PlanStageView = (props) => {
     }
   };
 
+  const totalCigarettesSmoked = stageProgressEntries && Array.isArray(stageProgressEntries) ? stageProgressEntries.reduce((sum, entry) => sum + (entry.cigarettes_smoked || 0), 0) : 0;
+
   return (
     <div className="bg-white min-h-screen pt-10">
       <div className="max-w-3xl mx-auto mt-0 mb-8">
@@ -130,6 +147,7 @@ const PlanStageView = (props) => {
             loading={loading}
             onRefresh={fetchData}
             onMoveToNextStage={handleMoveToNextStage}
+            showProgressButton={isFromMyQuitPlan}
           />
           <StageStats
             currentStage={currentStage}
@@ -137,11 +155,12 @@ const PlanStageView = (props) => {
             progress={progress}
             completedCount={completedCount}
             totalTasks={stageTasks.length}
+            totalCigarettesSmoked={totalCigarettesSmoked}
           />
           <StageTaskList
             tasks={stageTasks}
-            progress={progress}
             onComplete={handleCompleteTask}
+            loading={loading}
           />
         </div>
       </div>
@@ -149,4 +168,4 @@ const PlanStageView = (props) => {
   );
 };
 
-export default PlanStageView; 
+export default PlanStageView;

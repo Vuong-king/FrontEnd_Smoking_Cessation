@@ -1,40 +1,77 @@
-import { Card, Steps, Typography } from "antd";
-import {
-  CheckCircleFilled,
-  ClockCircleFilled,
-} from "@ant-design/icons";
+import { Typography, Progress, Tag } from "antd";
 
-const { Title } = Typography;
+const { Text } = Typography;
 
 const StageOverview = ({ myStages, currentStage }) => {
-  if (!myStages?.length) return null;
+  const totalStages = myStages.length;
+  const currentStageIndex = myStages.findIndex(
+    (stage) => stage._id === currentStage._id
+  );
+  const progress = totalStages > 0 ? ((currentStageIndex + 1) / totalStages) * 100 : 0;
+
+  // Kiểm tra xem đã hết ngày của giai đoạn chưa
+  const isStageEndDateReached = () => {
+    if (!currentStage?.end_date) return false;
+    const today = new Date();
+    const endDate = new Date(currentStage.end_date);
+    return today >= endDate;
+  };
 
   return (
-    <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-      <Title level={4} className="mb-4 text-gray-800">
-        📋 Tổng quan hành trình cai thuốc
-      </Title>
-      <Steps
-        current={myStages.findIndex((s) => s._id === currentStage?._id)}
+    <div className="mb-6">
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <Text strong className="text-lg text-gray-800">
+            Tổng quan lộ trình cai thuốc
+          </Text>
+          <div className="text-sm text-gray-600 mt-1">
+            Giai đoạn {currentStageIndex + 1} / {totalStages}
+          </div>
+        </div>
+        
+        {/* Thông tin giới hạn và số lần thử */}
+        <div className="flex gap-3">
+          <div className="text-center">
+            <div className="text-sm text-gray-600">Giới hạn thuốc lá</div>
+            {currentStage.cigarette_limit ? (
+              <Tag color="red" className="font-medium text-sm">
+                {currentStage.cigarette_limit} điếu
+              </Tag>
+            ) : (
+              <Tag color="orange" className="text-sm">Không giới hạn</Tag>
+            )}
+          </div>
+          <div className="text-center">
+            <div className="text-sm text-gray-600">Lần thử thứ</div>
+            <Tag color="blue" className="font-medium text-sm">
+              Lần {currentStage.attempt_number || 1}
+            </Tag>
+          </div>
+          {currentStage.end_date && (
+            <div className="text-center">
+              <div className="text-sm text-gray-600">Ngày kết thúc</div>
+              <Tag color={isStageEndDateReached() ? "green" : "orange"} className="font-medium text-sm">
+                {new Date(currentStage.end_date).toLocaleDateString('vi-VN')}
+              </Tag>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      <Progress
+        percent={progress}
         size="small"
-        items={myStages.map((stage, index) => ({
-          title: `Giai đoạn ${stage.stage_number || index + 1}`,
-          description: stage.title,
-          status:
-            stage.status === "completed"
-              ? "finish"
-              : stage._id === currentStage?._id
-              ? "process"
-              : "wait",
-          icon:
-            stage.status === "completed" ? (
-              <CheckCircleFilled style={{ color: "#52c41a" }} />
-            ) : stage._id === currentStage?._id ? (
-              <ClockCircleFilled style={{ color: "#1890ff" }} />
-            ) : undefined,
-        }))}
+        showInfo={false}
+        strokeColor={{
+          "0%": "#108ee9",
+          "100%": "#87d068",
+        }}
       />
-    </Card>
+      <div className="flex justify-between text-xs text-gray-500 mt-2">
+        <span>Bắt đầu</span>
+        <span>Hoàn thành</span>
+      </div>
+    </div>
   );
 };
 

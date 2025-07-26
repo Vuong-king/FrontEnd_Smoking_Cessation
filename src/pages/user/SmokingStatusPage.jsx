@@ -33,6 +33,7 @@ export default function SmokingStatusPage() {
     }
 
     const recordData = {
+      user_id: userId, // Thêm user_id vào payload
       cigarettes_per_day: Number(values.cigarettes_per_day),
       cost_per_pack: Number(values.cost_per_pack),
       frequency: values.frequency || "daily", // Include frequency field

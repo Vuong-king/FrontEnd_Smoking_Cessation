@@ -80,7 +80,7 @@ function SidebarAdmin() {
     <div
   className={`h-screen sticky top-0 overflow-y-auto sidebar-scroll ${
     collapsed ? "w-20" : "w-64"
-  } bg-gradient-to-b from-[#1a1333] via-[#2b2256] to-[#1a2a3a] flex flex-col transition-all duration-300`}
+  } bg-white-to-b from-[#1a1333] via-[#2b2256] to-[#1a2a3a] flex flex-col transition-all duration-300`}
 >
 
 
@@ -94,7 +94,7 @@ function SidebarAdmin() {
       >
         {!collapsed && (
           <Link to="/">
-            <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500 px-4 py-3">
+            <div className="text-2xl font-bold bg-clip-text text-transparent bg-white-to-r from-purple-500 to-cyan-500 px-4 py-3">
               EXHELA
             </div>
           </Link>
