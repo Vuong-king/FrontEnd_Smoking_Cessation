@@ -75,6 +75,7 @@ const StagesCoach = () => {
         start_date: values.start_date.toISOString(),
         end_date: values.end_date.toISOString(),
         stage_number: 1,
+        cigarette_limit: Number(values.cigarette_limit),
       };
       await api.post("/stages", payload);
       message.success("Tạo giai đoạn thành công");
@@ -166,6 +167,10 @@ const StagesCoach = () => {
       render: (date) => dayjs(date).format("DD/MM/YYYY"),
     },
     {
+      title: "Giới hạn thuốc",
+      dataIndex: "cigarette_limit",
+    },
+    {
       title: "Kết thúc",
       dataIndex: "end_date",
       render: (date) => dayjs(date).format("DD/MM/YYYY"),
@@ -225,6 +230,15 @@ const StagesCoach = () => {
             rules={[{ required: true }]}>
             <Input.TextArea rows={3} />
           </Form.Item>
+          <Form.Item
+            name='cigarette_limit'
+            label='Giới hạn số điếu thuốc'
+            rules={[
+              { required: true, message: "Vui lòng nhập giới hạn thuốc" },
+            ]}>
+            <Input type='number' min={0} />
+          </Form.Item>
+
           <Form.Item
             name='start_date'
             label='Ngày bắt đầu'
@@ -308,5 +322,4 @@ const StagesCoach = () => {
     </section>
   );
 };
-
 export default StagesCoach;
