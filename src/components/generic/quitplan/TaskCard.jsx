@@ -1,85 +1,103 @@
-import { Button, Typography, Checkbox } from "antd";
+import { Card, Button, Tag, Typography } from "antd";
+import { CheckCircle, Circle, Clock } from "lucide-react";
 
-const { Title, Paragraph, Text } = Typography;
+const { Text } = Typography;
 
-const TaskCard = ({ task, index, onComplete }) => {
-  const isLocked = false; 
+const TaskCard = ({ task, onComplete, loading }) => {
+  const isCompleted = task.is_completed;
+  const isOverdue = task.due_date && new Date(task.due_date) < new Date();
+
+  const getStatusIcon = () => {
+    if (isCompleted) {
+      return <CheckCircle className="w-5 h-5 text-green-500" />;
+    }
+    if (isOverdue) {
+      return <Clock className="w-5 h-5 text-red-500" />;
+    }
+    return <Circle className="w-5 h-5 text-gray-400" />;
+  };
+
+  const getStatusText = () => {
+    if (isCompleted) return "Hoàn thành";
+    if (isOverdue) return "Quá hạn";
+    return "Chưa hoàn thành";
+  };
+
+  const getStatusColor = () => {
+    if (isCompleted) return "green";
+    if (isOverdue) return "red";
+    return "default";
+  };
 
   return (
-    <div
-      className={`group relative overflow-hidden rounded-lg border transition-all duration-300 mb-3 ${
-        task.is_completed
-          ? "bg-green-50 border-green-200"
-          : isLocked
-          ? "bg-gray-50 border-gray-200 opacity-60"
-          : "bg-white border-gray-200 hover:border-blue-300 hover:shadow-lg"
+    <Card
+      className={`mb-4 transition-all duration-300 hover:shadow-md ${
+        isCompleted ? "bg-green-50 border-green-200" : "bg-white"
       }`}
+      bodyStyle={{ padding: "16px" }}
     >
-      <div className="p-4 flex items-start gap-3">
-        <div className="flex items-center gap-2">
-          <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-              task.is_completed
-                ? "bg-green-500 text-white"
-                : isLocked
-                ? "bg-gray-400 text-white"
-                : "bg-blue-500 text-white"
-            }`}
-          >
-            {task.is_completed ? "✓" : isLocked ? "🔒" : index + 1}
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2">
+            {getStatusIcon()}
+            <div className="flex-1">
+              <h4 className={`font-medium ${isCompleted ? "line-through text-gray-500" : "text-gray-800"}`}>
+                {task.title}
+              </h4>
+              {task.description && (
+                <Text type="secondary" className="text-sm">
+                  {task.description}
+                </Text>
+              )}
+            </div>
           </div>
-          <Checkbox checked={task.is_completed} disabled size="small" />
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <Title
-            level={5}
-            className={`${
-              task.is_completed
-                ? "line-through text-gray-500"
-                : isLocked
-                ? "text-gray-400"
-                : "text-gray-800"
-            } mb-1`}
-            ellipsis={{ rows: 2, tooltip: task.title }}
-            style={{ fontSize: "14px" }}
-          >
-            {task.title}
-          </Title>
-          <Paragraph
-            className={`${
-              task.is_completed
-                ? "text-gray-400"
-                : isLocked
-                ? "text-gray-400"
-                : "text-gray-600"
-            } mb-2`}
-            ellipsis={{ rows: 2 }}
-          >
-            {task.description}
-          </Paragraph>
-          {task.deadline && (
-            <Text className="text-xs text-gray-500">
-              Hạn: {new Date(task.deadline).toLocaleDateString("vi-VN")}
-            </Text>
+          
+          {/* Hiển thị thông tin giới hạn và số lần thử nếu có */}
+          {(task.cigarette_limit || task.attempt_number) && (
+            <div className="flex gap-2 mt-2">
+              {task.cigarette_limit && (
+                <Tag color="red" size="small">
+                  Giới hạn: {task.cigarette_limit} điếu
+                </Tag>
+              )}
+              {task.attempt_number && (
+                <Tag color="blue" size="small">
+                  Lần thử thứ {task.attempt_number}
+                </Tag>
+              )}
+            </div>
           )}
+          
+          <div className="flex items-center gap-4 mt-3">
+            <Tag color={getStatusColor()} size="small">
+              {getStatusText()}
+            </Tag>
+            {task.due_date && (
+              <Text type="secondary" className="text-xs">
+                Hạn: {new Date(task.due_date).toLocaleDateString()}
+              </Text>
+            )}
+            {task.priority && (
+              <Tag color={task.priority === "high" ? "red" : task.priority === "medium" ? "orange" : "green"} size="small">
+                {task.priority === "high" ? "Cao" : task.priority === "medium" ? "Trung bình" : "Thấp"}
+              </Tag>
+            )}
+          </div>
         </div>
-
-        {!task.is_completed && !isLocked && (
+        
+        {!isCompleted && (
           <Button
+            type="primary"
             size="small"
             onClick={() => onComplete(task._id)}
-            className="ml-2 bg-green-500 hover:bg-green-600 border-0 shadow-md hover:shadow-lg text-white text-xs"
+            loading={loading}
+            className="ml-4"
           >
             Hoàn thành
           </Button>
         )}
-
-        {task.is_completed && (
-          <div className="ml-2 text-green-500 text-xl">✅</div>
-        )}
       </div>
-    </div>
+    </Card>
   );
 };
 

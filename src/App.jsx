@@ -29,14 +29,13 @@ import PaymentSuccessPage from "./pages/generic/PaymentSuccessPage";
 import PaymentCancelPage from "./pages/generic/PaymentCancelPage";
 
 // Pages - User
-import DashBoardUser from "./pages/user/DashBoardUser";
 import UserBlogPage from "./pages/user/UserBlogPage";
 import SmokingStatusPage from "./pages/user/SmokingStatusPage";
 import ProfilePage from "./pages/user/ProfilePage";
 import UserAchievement from "./pages/user/UserAchievement";
 import UserProgress from "./pages/user/UserProgress";
 import UserQuitPlanPage from "./pages/user/UserQuitPlanPage";
-import QuitPlanManagePage from "./pages/user/QuitPlanManagePage";
+
 
 // Pages - Admin
 import AdminDashboardHome from "./pages/admin/AdminDashboardHome";
@@ -70,15 +69,16 @@ import RankingPage from "./pages/generic/RankingPage";
 import PackageItem from "./pages/admin/PackageItem";
 import UserMeetSessionPage from "./pages/user/UserMeetSessionPage";
 import PlanStageView from "./components/generic/quitplan/PlanStageView";
+import MyQuitPlanPage from "./pages/user/MyQuitPlanPage";
 
 // ===== Layout Wrapper =====
 const Layout = () => {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-white text-black ">
       {user ? <UserHeader /> : <Navbar />}
-      <main className="mt-16">
+      <main className="pt-24">
         <Outlet />
       </main>
       <Footer />
@@ -130,7 +130,6 @@ function App() {
                 </ProtectedRoute>
               }
             >
-              <Route path="dashboard" element={<DashBoardUser />} />
               <Route path="quitplan" element={<UserQuitPlanPage />} />
               <Route path="profile/:id" element={<ProfilePage />} />
               <Route path="blog" element={<UserBlogPage />} />
@@ -138,6 +137,7 @@ function App() {
               <Route path="progress" element={<UserProgress />} />
               <Route path="achievements" element={<UserAchievement />} />
               <Route path="meet-session" element={<UserMeetSessionPage />} />
+              <Route path="my-quit-plans" element={<MyQuitPlanPage />} />
             </Route>
 
             {/* Admin protected routes */}

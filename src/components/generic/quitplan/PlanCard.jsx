@@ -1,9 +1,9 @@
-import { Card } from "antd"
+import { Card, Tag } from "antd"
 import { ArrowRight } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 
-function PlanCard({ id, image, title, description, delay = 0 }) {
+function PlanCard({ id, image, title, description, delay = 0, cigarette_limit, attempt_number }) {
   const [isVisible, setIsVisible] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
@@ -66,7 +66,23 @@ function PlanCard({ id, image, title, description, delay = 0 }) {
           }}
         ></div>
         <h3 className="text-lg font-bold text-gray-800 mb-3">{title}</h3>
-        <p className="text-gray-600">{description}</p>
+        <p className="text-gray-600 mb-3">{description}</p>
+        
+        {/* Hiển thị thông tin giới hạn và số lần thử nếu có */}
+        {(cigarette_limit || attempt_number) && (
+          <div className="flex flex-wrap gap-2 mt-3">
+            {cigarette_limit && (
+              <Tag color="red" className="text-xs">
+                Giới hạn: {cigarette_limit} điếu
+              </Tag>
+            )}
+            {attempt_number && (
+              <Tag color="blue" className="text-xs">
+                Lần thử thứ {attempt_number}
+              </Tag>
+            )}
+          </div>
+        )}
       </div>
 
       <style jsx>{`

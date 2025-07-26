@@ -4,7 +4,7 @@ export function AdminTable({ data, columns }) {
   return (
     <div className="overflow-x-auto bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 shadow hover:border-purple-500/50 transition-all">
       <table className="min-w-full text-sm">
-        <thead className="bg-gradient-to-r from-purple-600 to-cyan-600 text-white rounded">
+        <thead className="bg-white-to-r from-purple-600 to-cyan-600 text-white rounded">
           <tr>
             {columns.map((col, idx) => (
               <th key={idx} className="px-4 py-2 text-left">

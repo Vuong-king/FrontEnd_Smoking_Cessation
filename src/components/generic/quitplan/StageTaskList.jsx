@@ -1,37 +1,40 @@
-import { Typography, Alert } from "antd";
+import { Typography, Empty } from "antd";
 import TaskCard from "./TaskCard";
-import { StageEmptyCard } from "./StateFallbacks";
-
 
 const { Title } = Typography;
 
-const StageTaskList = ({ tasks, progress, onComplete }) => {
+const StageTaskList = ({ tasks, onComplete, loading }) => {
+  if (!tasks || tasks.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <Empty
+          description="Chưa có nhiệm vụ nào được thiết lập cho giai đoạn này"
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+        />
+      </div>
+    );
+  }
+
   return (
     <div>
-      <Title level={4} className="mb-4 text-gray-800">
-        Nhiệm vụ cần hoàn thành
-      </Title>
-
-      {progress === 100 && tasks.length > 0 && (
-        <Alert
-          message="🎉 Chúc mừng! Bạn đã hoàn thành tất cả nhiệm vụ!"
-          type="success"
-          showIcon
-          className="mb-4"
-        />
-      )}
-
-      <div className="max-h-80 overflow-y-auto">
-        {tasks.length > 0 ? (
-          tasks.map((task, i) => (
-            <TaskCard key={task._id} task={task} index={i} onComplete={onComplete} />
-          ))
-        ) : (
-          <StageEmptyCard
-            title="Chưa có nhiệm vụ nào"
-            desc="Huấn luyện viên sẽ sớm thêm nhiệm vụ."
+      <div className="flex justify-between items-center mb-4">
+        <Title level={4} className="text-gray-800">
+          Danh sách nhiệm vụ ({tasks.length})
+        </Title>
+        <div className="text-sm text-gray-500">
+          {tasks.filter(t => t.is_completed).length}/{tasks.length} hoàn thành
+        </div>
+      </div>
+      
+      <div className="space-y-3">
+        {tasks.map((task) => (
+          <TaskCard
+            key={task._id}
+            task={task}
+            onComplete={onComplete}
+            loading={loading}
           />
-        )}
+        ))}
       </div>
     </div>
   );
