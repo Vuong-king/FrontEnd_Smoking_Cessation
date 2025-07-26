@@ -132,7 +132,7 @@ const PlanStageView = (props) => {
     }
   };
 
-  const totalCigarettesSmoked = stageProgressEntries && Array.isArray(stageProgressEntries) ? stageProgressEntries.reduce((sum, entry) => sum + (entry.cigarettes_smoked || 0), 0) : 0;
+  const totalCigarettesSmoked = currentStage?.total_cigarettes_smoked ?? 0;
 
   return (
     <div className="bg-white min-h-screen pt-10">

@@ -41,16 +41,16 @@ function QuitPlanDetailPage() {
     fetchPlan();
   }, [fetchPlan]);
 
+  const [showAddedAlert, setShowAddedAlert] = useState(false);
   const handleAdoptPlan = async () => {
     if (!user) return;
-    message.info("Bạn cần vào 'Kế hoạch của tôi' để nhập tiến trình!");
     setAdopting(true);
     try {
-      // Gửi user info cần thiết, ví dụ user_id
       const userData = { user_id: user.user_id || user.id || user._id, email: user.email, name: user.name };
       const result = await adoptPlan(id, userData);
       if (result) {
-        navigate(`/stages/${id}`);
+        setShowAddedAlert(true);
+        message.success("Kế Hoạch đã được thêm vào!");
       }
     } finally {
       setAdopting(false);
@@ -102,6 +102,14 @@ function QuitPlanDetailPage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-12">
+        {showAddedAlert && (
+          <Alert
+            type="success"
+            message="Kế Hoạch đã được thêm vào!"
+            showIcon
+            className="mb-6 shadow-lg text-lg"
+          />
+        )}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1">
             <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
