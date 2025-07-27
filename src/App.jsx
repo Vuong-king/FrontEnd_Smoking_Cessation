@@ -27,6 +27,8 @@ import QuitPlanPage from "./pages/generic/QuitPlanPage";
 import QuitPlanDetailPage from "./pages/generic/QuitPlanDetailPage";
 import PaymentSuccessPage from "./pages/generic/PaymentSuccessPage";
 import PaymentCancelPage from "./pages/generic/PaymentCancelPage";
+import RankingPage from "./pages/generic/RankingPage";
+import PlanStageView from "./components/generic/quitplan/PlanStageView";
 
 // Pages - User
 import UserBlogPage from "./pages/user/UserBlogPage";
@@ -35,7 +37,8 @@ import ProfilePage from "./pages/user/ProfilePage";
 import UserAchievement from "./pages/user/UserAchievement";
 import UserProgress from "./pages/user/UserProgress";
 import UserQuitPlanPage from "./pages/user/UserQuitPlanPage";
-
+import UserMeetSessionPage from "./pages/user/UserMeetSessionPage";
+import MyQuitPlanPage from "./pages/user/MyQuitPlanPage";
 
 // Pages - Admin
 import AdminDashboardHome from "./pages/admin/AdminDashboardHome";
@@ -51,25 +54,21 @@ import QuitPlanDetailPageAdmin from "./pages/admin/QuitPlansDetail";
 import BlogPosts from "./pages/admin/BlogPosts";
 import Request from "./pages/admin/Request";
 import Stages from "./pages/admin/Stage";
+import PackageItem from "./pages/admin/PackageItem";
 
 // Pages - Coach
 import CoachQuitPlan from "./pages/coach/CoachQuitPlan";
 import RequestQuitPlan from "./pages/coach/RequestQuitPlan";
 import StagesCoach from "./pages/coach/StagesCoach";
+import CoachProgress from "./pages/coach/CoachProgress";
+import CoachNotification from "./pages/coach/CoachNotification";
+import CoachMeetSession from "./pages/coach/CoachMeetSession";
 
 // Components
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import ResetPassword from "./components/auth/ResetPassword";
 import ResetPasswordWithToken from "./components/auth/ResetPasswordWithToken";
 
-import CoachProgress from "./pages/coach/CoachProgress";
-import CoachNotification from "./pages/coach/CoachNotification";
-import CoachMeetSession from "./pages/coach/CoachMeetSession";
-import RankingPage from "./pages/generic/RankingPage";
-import PackageItem from "./pages/admin/PackageItem";
-import UserMeetSessionPage from "./pages/user/UserMeetSessionPage";
-import PlanStageView from "./components/generic/quitplan/PlanStageView";
-import MyQuitPlanPage from "./pages/user/MyQuitPlanPage";
 
 // ===== Layout Wrapper =====
 const Layout = () => {

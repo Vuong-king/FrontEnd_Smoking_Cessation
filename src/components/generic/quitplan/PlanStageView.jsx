@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
+import { Alert, notification } from "antd";
+import { CheckCircleFilled } from "@ant-design/icons";
 
 import { StageEmptyCard, StageErrorCard, StageLoadingSkeleton } from "./StateFallbacks";
 import StageOverview from "./StageOverview";
@@ -18,7 +20,8 @@ const PlanStageView = (props) => {
   const [stageTasks, setStageTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [stageProgressEntries, setStageProgressEntries] = useState([]);
+  const [hasTodayProgress, setHasTodayProgress] = useState(false);
+  const [showProgressNotification, setShowProgressNotification] = useState(false);
 
   // Xác định nguồn truy cập (ví dụ: từ query hoặc props)
   const isFromMyQuitPlan = location.state?.isFromMyQuitPlan || false;
@@ -32,6 +35,28 @@ const PlanStageView = (props) => {
     if (currentStage) return currentStage;
     if (stages.length > 0) return stages[stages.length - 1];
     return stages[0];
+  };
+
+  // Helper kiểm tra xem có tiến trình trong ngày hôm nay không
+  const checkTodayProgress = (entries) => {
+    if (!entries || entries.length === 0) {
+      console.log('No entries found');
+      return false;
+    }
+    
+    const today = new Date();
+    const todayString = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    console.log('Today string:', todayString);
+    
+    const hasTodayEntry = entries.some(entry => {
+      const entryDate = new Date(entry.date);
+      const entryDateString = entryDate.toISOString().split('T')[0];
+      console.log('Entry date:', entryDateString, 'Entry:', entry);
+      return entryDateString === todayString;
+    });
+    
+    console.log('Has today entry:', hasTodayEntry);
+    return hasTodayEntry;
   };
 
   // Hàm fetch lại dữ liệu stage và task
@@ -50,14 +75,24 @@ const PlanStageView = (props) => {
         // Fetch progress entries for this stage
         try {
           const entries = await ProgressService.getSingleStageProgressAPI(current._id);
-          setStageProgressEntries(Array.isArray(entries) ? entries : []);
+          const entriesArray = Array.isArray(entries) ? entries : [];
+          
+          // Kiểm tra tiến trình hôm nay
+          const hasProgress = checkTodayProgress(entriesArray);
+          setHasTodayProgress(hasProgress);
+          
+          // Debug log
+          console.log('Progress entries:', entriesArray);
+          console.log('Has today progress:', hasProgress);
+          console.log('Show notification:', showProgressNotification);
+          
         } catch (e) {
-          setStageProgressEntries([]);
+          setHasTodayProgress(false);
           console.error("Error fetching stage progress entries:", e);
         }
       } else {
         setStageTasks([]);
-        setStageProgressEntries([]);
+        setHasTodayProgress(false);
       }
     } catch (err) {
       setError(err.message || "Lỗi khi tải dữ liệu");
@@ -69,6 +104,21 @@ const PlanStageView = (props) => {
   useEffect(() => {
     fetchData();
   }, [quitPlanId]);
+
+  // useEffect để hiển thị toast khi có tiến trình hôm nay
+  useEffect(() => {
+    if (hasTodayProgress && !showProgressNotification) {
+      console.log('Showing toast notification for today progress');
+      setShowProgressNotification(true);
+      notification.success({
+        message: '🎉 Tiến trình đã được cập nhật!',
+        description: 'Bạn đã nhập tiến trình cai thuốc cho ngày hôm nay. Hãy tiếp tục duy trì động lực!',
+        duration: 5,
+        placement: 'topRight',
+        icon: <CheckCircleFilled style={{ color: '#52c41a' }} />,
+      });
+    }
+  }, [hasTodayProgress, showProgressNotification]);
 
   if (loading) return <StageLoadingSkeleton text="Đang tải thông tin giai đoạn..." />;
   if (error) return <StageErrorCard message="Lỗi tải dữ liệu" description={error} />;
@@ -139,6 +189,39 @@ const PlanStageView = (props) => {
       <div className="max-w-3xl mx-auto mt-0 mb-8">
         <div className="bg-white p-6 rounded-lg shadow">
           <StageOverview myStages={stages} currentStage={currentStage} />
+          
+          {/* Thông báo tiến trình hôm nay */}
+          {hasTodayProgress && (
+            <Alert
+              message="✅ Tiến trình hôm nay đã được cập nhật"
+              description="Bạn đã nhập tiến trình cai thuốc cho ngày hôm nay. Hãy tiếp tục duy trì động lực và kiên trì với mục tiêu của mình!"
+              type="success"
+              showIcon
+              icon={<CheckCircleFilled />}
+              className="mb-6"
+              closable
+              onClose={() => setShowProgressNotification(false)}
+            />
+          )}
+          
+          {/* Test button để kiểm tra toast */}
+          <div className="mb-4">
+            <button
+              onClick={() => {
+                notification.success({
+                  message: '🎉 Test Toast Notification!',
+                  description: 'Toast notification đang hoạt động bình thường!',
+                  duration: 5,
+                  placement: 'topRight',
+                  icon: <CheckCircleFilled style={{ color: '#52c41a' }} />,
+                });
+              }}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Test Toast Notification
+            </button>
+          </div>
+          
           <StageHeader
             currentStage={currentStage}
             stageTasks={stageTasks}
