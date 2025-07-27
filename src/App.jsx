@@ -158,6 +158,7 @@ function App() {
               <Route path="notifications" element={<Notifications />} />
               <Route path="progress" element={<Progress />} />
               <Route path="quit-plans" element={<QuitPlans />} />
+              <Route path="coach-requests" element={<Request />} />
               <Route path="packages" element={<PackageItem />} />
               <Route
                 path="quit-plans/:id"

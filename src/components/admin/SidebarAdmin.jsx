@@ -55,6 +55,7 @@ function SidebarAdmin() {
     { label: "Tiến độ", icon: <FieldTimeOutlined />, path: "/admin/progress" },
     { label: "Bài viết blog", icon: <FileTextOutlined />, path: "/admin/blogs" },
     { label: "Gói dịch vụ", icon: <CreditCardOutlined />, path: "/admin/packages" },
+    { label: "Yêu cầu", icon: <SettingOutlined />, path: "/admin/coach-requests" },
     // { label: "Leaderboard", icon: <TrophyOutlined />, path: "/admin/leaderboard" },
     { label: "Thông báo", icon: <BellOutlined />, path: "/admin/notifications" },
     // { label: "Coaches", icon: <TeamOutlined />, path: "/admin/coaches" },
@@ -78,48 +79,44 @@ function SidebarAdmin() {
 
   return (
     <div
-  className={`h-screen sticky top-0 overflow-y-auto sidebar-scroll ${
-    collapsed ? "w-20" : "w-64"
-  } bg-white-to-b from-[#1a1333] via-[#2b2256] to-[#1a2a3a] flex flex-col transition-all duration-300`}
->
-
-
+      className={`h-screen sticky top-0 ${
+        collapsed ? "w-20" : "w-64"
+      } bg-white border-r border-gray-200 flex flex-col transition-all duration-300`}
+    >
       {/* Collapse Button & Logo */}
       <div
         className={`${
           !collapsed
-            ? "flex justify-between items-center border-b border-[#1f1f1f]"
-            : "flex items-center justify-center"
+            ? "flex justify-between items-center border-b border-gray-200 p-2"
+            : "flex items-center justify-center p-2"
         }`}
       >
         {!collapsed && (
           <Link to="/">
-            <div className="text-2xl font-bold bg-clip-text text-transparent bg-white-to-r from-purple-500 to-cyan-500 px-4 py-3">
+            <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
               EXHELA
             </div>
           </Link>
         )}
-        <div className="p-2">
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            className="text-white"
-          />
-        </div>
+        <Button
+          type="text"
+          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          onClick={() => setCollapsed(!collapsed)}
+          className="text-gray-700"
+        />
       </div>
 
       {/* Profile */}
       <div
         className={`${
-          collapsed
-            ? "px-4 py-3 border-b border-[#1f1f1f] flex flex-col items-center gap-2 hover:bg-[#232042] hover:cursor-pointer transition-colors duration-200"
-            : "px-4 py-3 border-b border-[#1f1f1f] flex items-center gap-3 hover:bg-[#232042] hover:cursor-pointer transition-colors duration-200"
-        }`}
+          !collapsed
+            ? "px-4 py-3 border-b border-gray-200 flex items-center gap-3"
+            : "px-4 py-3 border-b border-gray-200 flex flex-col items-center gap-3"
+        } hover:bg-gray-100 hover:cursor-pointer transition-colors duration-200`}
       >
         <Dropdown menu={{ items: dropdownItems }}>
           <a onClick={(e) => e.preventDefault()}>
-            <Space direction={collapsed ? "vertical" : "horizontal"}>
+            <Space>
               <Avatar
                 size={collapsed ? 32 : 40}
                 src={user.avatar}
@@ -127,10 +124,10 @@ function SidebarAdmin() {
               />
               {!collapsed && (
                 <div>
-                  <div className="text-sm font-semibold">
+                  <div className="text-sm font-semibold text-gray-800">
                     {user.name || "Admin"}
                   </div>
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-gray-500">
                     {user.role || "Administrator"}
                   </div>
                 </div>
@@ -148,13 +145,15 @@ function SidebarAdmin() {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center transition-all duration-200 mt-1 ${
-                collapsed ? "justify-center w-12 h-12" : "px-6 py-2 w-11/12"
-              } ${
-                isActive
-                  ? "bg-gray-200 text-[#232042] rounded-2xl"
-                  : "text-white hover:bg-[#232042] hover:text-[#1ecbe1] rounded-2xl"
-              }`}
+              className={`
+                flex items-center transition-all duration-200 mt-1
+                ${collapsed ? "justify-center w-12 h-12" : "px-6 py-2 w-11/12"}
+                ${
+                  isActive
+                    ? "bg-gray-200 text-[#232042] rounded-2xl"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-[#1ecbe1] rounded-2xl"
+                }
+              `}
               style={{
                 minHeight: collapsed ? 48 : undefined,
               }}

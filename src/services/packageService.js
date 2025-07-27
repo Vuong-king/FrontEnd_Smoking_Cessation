@@ -14,7 +14,7 @@ const PackageService = {
 
   // GET /api/packages - Get All Package
   getAllPackages: async () => {
-    const response = await api.get('/packages');
+    const response = await api.get('/packages/admin/all');
     return response.data.packages;
   },
 
@@ -47,6 +47,17 @@ const PackageService = {
       return response.data;
     } catch (error) {
       console.error(`Error deleting package ${id}:`, error);
+      throw error;
+    }
+  },
+
+  // PATCH /api/packages/:id/active - Toggle is_active
+  toggleActive: async (id, isActive) => {
+    try {
+      const response = await api.patch(`/packages/${id}/active`, { is_active: isActive });
+      return response.data;
+    } catch (error) {
+      console.error(`Error toggling active for package ${id}:`, error);
       throw error;
     }
   },

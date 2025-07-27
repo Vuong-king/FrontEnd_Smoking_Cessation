@@ -87,6 +87,12 @@ const Stage = ({ planId }) => {
       render: (date) => new Date(date).toLocaleDateString('vi-VN'),
     },
     {
+      title: "Giới hạn điếu thuốc",
+      dataIndex: "cigarette_limit",
+      key: "cigarette_limit",
+      render: (value) => value !== undefined ? value : '-',
+    },
+    {
       title: "Trạng thái",
       dataIndex: "is_completed",
       key: "is_completed",
@@ -153,6 +159,15 @@ const Stage = ({ planId }) => {
         status={errors.stage_number ? "error" : ""}
       />
       {errors.stage_number && <div style={{ color: "#ff4d4f" }}>{errors.stage_number}</div>}
+      <Input
+        type="number"
+        placeholder="Giới hạn điếu thuốc trong giai đoạn"
+        value={editedStage.cigarette_limit}
+        min={0}
+        onChange={e => setEditedStage({ ...editedStage, cigarette_limit: e.target.value })}
+        status={errors.cigarette_limit ? "error" : ""}
+      />
+      {errors.cigarette_limit && <div style={{ color: "#ff4d4f" }}>{errors.cigarette_limit}</div>}
       <Input
         type="date"
         placeholder="Ngày bắt đầu"
