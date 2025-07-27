@@ -234,7 +234,7 @@ export const useCoachSelection = () => {
       if (!isRefreshing) {
         refreshDataRef.current?.();
       }
-    }, 2000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [userId, pendingRequest, userQuitPlan, isRefreshing]);
