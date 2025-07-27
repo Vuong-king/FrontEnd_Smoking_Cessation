@@ -135,6 +135,7 @@ const CoachCardList = () => {
 
   // Show pending request view if user has pending request
   if (pendingRequest?._id) {
+    console.log('CoachCardList: Render PendingRequestView', pendingRequest);
     return (
       <PendingRequestView
         pendingRequest={pendingRequest}
@@ -146,12 +147,14 @@ const CoachCardList = () => {
 
   // Show quit plan view if user has approved plan with coach and stages
   if (userQuitPlan?._id && userQuitPlan?.coach_id) {
+    console.log('CoachCardList: Render QuitPlanView', userQuitPlan);
     return <QuitPlanView userQuitPlan={userQuitPlan} />;
   }
 
   // Show waiting for stages view if user has quit plan and coach but no stages
   // This case should be handled by the hook, but we'll add it as a fallback
   if (quitPlanWithoutCoach?._id && quitPlanWithoutCoach?.coach_id) {
+    console.log('CoachCardList: Render WaitingForStagesView', quitPlanWithoutCoach);
     return (
       <WaitingForStagesView
         userQuitPlan={quitPlanWithoutCoach}
@@ -163,6 +166,7 @@ const CoachCardList = () => {
 
   // Show no coach selected view if user has quit plan but no coach
   if (quitPlanWithoutCoach?._id) {
+    console.log('CoachCardList: Render NoCoachSelectedView', quitPlanWithoutCoach);
     return (
       <NoCoachSelectedView
         coaches={coaches}
@@ -175,6 +179,7 @@ const CoachCardList = () => {
   }
 
   // Show coach selection view for all other cases
+  console.log('CoachCardList: Render CoachSelectionView', coaches);
   return (
     <CoachSelectionView
       coaches={coaches}
