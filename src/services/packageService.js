@@ -14,7 +14,7 @@ const PackageService = {
 
   // GET /api/packages - Get All Package
   getAllPackages: async () => {
-    const response = await api.get('/packages');
+    const response = await api.get('/packages/admin/all');
     return response.data.packages;
   },
 
