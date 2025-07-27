@@ -1,5 +1,5 @@
 // Common UI components for quit plan functionality
-
+import React from "react";
 import { Card, Typography, Tag, Button, Avatar, Alert, Spin } from "antd";
 import {
   CheckCircleFilled,

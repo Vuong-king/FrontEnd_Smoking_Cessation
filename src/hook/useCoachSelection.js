@@ -3,7 +3,7 @@ import { message } from "antd";
 import useQuitPlanData from "./useQuitPlanData";
 import { useCoachData } from "./useCoachData";
 import { useAuth } from "../context/AuthContext";
-
+import StageService from "../services/stageService";
 
 /**
  * Custom hook to manage all the logic for coach selection and quit plan management
@@ -21,6 +21,7 @@ export const useCoachSelection = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [quitPlanWithoutCoach, setQuitPlanWithoutCoach] = useState(null);
 
   const userId = useMemo(
     () => user?.userId || user?.id || user?._id,
@@ -42,9 +43,27 @@ export const useCoachSelection = () => {
   const refreshDataRef = useRef();
 
   // Helper function to check if a quit plan has stages/tasks
-  const checkPlanHasStages = useCallback(async () => {
-    // Bỏ qua kiểm tra và luôn trả về true
-    return true;
+  const checkPlanHasStages = useCallback(async (planId) => {
+    try {
+      const response = await StageService.getStagesByPlanId(planId);
+
+      // Handle different response structures
+      let stages = [];
+      if (Array.isArray(response)) {
+        stages = response;
+      } else if (Array.isArray(response?.data)) {
+        stages = response.data;
+      } else if (response && typeof response === "object") {
+        stages = response.stages || response.results || [];
+      }
+
+      return stages.length > 0;
+    } catch (error) {
+      if (error.response?.status === 403) {
+        return true;
+      }
+      return false;
+    }
   }, []);
 
   // Refresh function
@@ -54,19 +73,38 @@ export const useCoachSelection = () => {
     setIsRefreshing(true);
     setLoading(true);
     try {
-      const [coachList, quitPlans, requests] = await Promise.all([
+      // Gọi coaches và quitPlans trước
+      const [coachList, quitPlans] = await Promise.all([
         serviceRef.current.getAllCoaches(),
         serviceRef.current.getQuitPlanByUserId(userId),
-        serviceRef.current.getMyQuitPlanRequests(),
       ]);
 
-      console.log("coachList from API:", coachList);
-      setCoaches(Array.isArray(coachList) ? coachList : coachList?.data || []);
+      // Gọi requests riêng và handle lỗi 500
+      let requests = [];
+      try {
+        requests = await serviceRef.current.getMyQuitPlanRequests();
+      } catch (requestError) {
+        console.warn(
+          "Failed to fetch quit plan requests in refresh:",
+          requestError
+        );
+        // Nếu lỗi 500 hoặc lỗi khác, set requests = [] để không crash app
+        requests = [];
+      }
+
+      setCoaches(coachList || []);
 
       // Check for approved quit plan
       let approvedPlan = Array.isArray(quitPlans)
-        ? quitPlans.find((plan) => plan.status === "approved" || plan.coach_id)
-        : quitPlans?.status === "approved" || quitPlans?.coach_id
+        ? quitPlans.find((plan) => plan.status === "approved" && plan.coach_id)
+        : quitPlans?.status === "approved" && quitPlans?.coach_id
+        ? quitPlans
+        : null;
+
+      // Check for quit plan without coach
+      let planWithoutCoach = Array.isArray(quitPlans)
+        ? quitPlans.find((plan) => plan.status === "approved" && !plan.coach_id)
+        : quitPlans?.status === "approved" && !quitPlans?.coach_id
         ? quitPlans
         : null;
 
@@ -79,6 +117,7 @@ export const useCoachSelection = () => {
       }
 
       setUserQuitPlan(approvedPlan);
+      setQuitPlanWithoutCoach(planWithoutCoach);
 
       // Check for pending request
       const pendingReq = Array.isArray(requests)
@@ -116,21 +155,30 @@ export const useCoachSelection = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [coachList, quitPlans, requests] = await Promise.all([
+        // Gọi coaches và quitPlans trước
+        const [coachList, quitPlans] = await Promise.all([
           serviceRef.current.getAllCoaches(),
           serviceRef.current.getQuitPlanByUserId(userId),
-          serviceRef.current.getMyQuitPlanRequests(),
         ]);
 
+        // Gọi requests riêng và handle lỗi 500
+        let requests = [];
+        try {
+          requests = await serviceRef.current.getMyQuitPlanRequests();
+        } catch (requestError) {
+          console.warn("Failed to fetch quit plan requests:", requestError);
+          // Nếu lỗi 500 hoặc lỗi khác, set requests = [] để không crash app
+          requests = [];
+        }
+
         if (!isCanceled) {
-          console.log("coachList from API:", coachList);
-          setCoaches(Array.isArray(coachList) ? coachList : coachList?.data || []);
+          setCoaches(coachList || []);
 
           let approvedPlan = Array.isArray(quitPlans)
             ? quitPlans.find(
-                (plan) => plan.status === "approved" || plan.coach_id
+                (plan) => plan.status === "approved" && plan.coach_id
               )
-            : quitPlans?.status === "approved" || quitPlans?.coach_id
+            : quitPlans?.status === "approved" && quitPlans?.coach_id
             ? quitPlans
             : null;
 
@@ -156,6 +204,14 @@ export const useCoachSelection = () => {
             ? requests
             : null;
           setPendingRequest(pendingReq);
+
+          // Check for quit plan without coach
+          let planWithoutCoach = Array.isArray(quitPlans)
+            ? quitPlans.find((plan) => plan.status === "approved" && !plan.coach_id)
+            : quitPlans?.status === "approved" && !quitPlans?.coach_id
+            ? quitPlans
+            : null;
+          setQuitPlanWithoutCoach(planWithoutCoach);
         }
       } catch (err) {
         if (!isCanceled)
@@ -230,6 +286,7 @@ export const useCoachSelection = () => {
     loading,
     error,
     isRefreshing,
+    quitPlanWithoutCoach,
 
     // Actions
     setSelectedCoach,

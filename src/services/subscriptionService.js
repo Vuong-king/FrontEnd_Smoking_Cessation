@@ -17,6 +17,16 @@ const SubscriptionService = {
     const response = await api.delete(`/subscriptions/${id}`);
     return response.data;
   },
+  
+  getMyActiveSubscription: async () => {
+    try {
+      const response = await api.get("/subscriptions/my-active-subscription");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user's active subscription:", error);
+      throw error;
+    }
+  },
 };
 
 export default SubscriptionService; 
