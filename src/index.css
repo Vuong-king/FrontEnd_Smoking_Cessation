@@ -80,3 +80,143 @@ body {
     }
   }
 }
+
+/* ---------- 🔔 Ant Design Notification Fix ---------- */
+/* Đảm bảo Ant Design notification hiển thị đúng với Tailwind */
+.ant-notification {
+  z-index: 9999 !important;
+  position: fixed !important;
+  top: 24px !important;
+  right: 24px !important;
+  max-width: 400px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.5715 !important;
+  word-wrap: break-word !important;
+  background: #fff !important;
+  border-radius: 6px !important;
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+.ant-notification-notice {
+  position: relative !important;
+  width: auto !important;
+  margin-bottom: 8px !important;
+  padding: 16px !important;
+  overflow: hidden !important;
+  line-height: 1.5715 !important;
+  background: #fff !important;
+  border-radius: 6px !important;
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+.ant-notification-notice-message {
+  margin-bottom: 8px !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  font-size: 16px !important;
+  line-height: 1.5715 !important;
+}
+
+.ant-notification-notice-description {
+  color: rgba(0, 0, 0, 0.45) !important;
+  font-size: 14px !important;
+  line-height: 1.5715 !important;
+}
+
+.ant-notification-notice-icon {
+  position: absolute !important;
+  top: 16px !important;
+  left: 16px !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+}
+
+.ant-notification-notice-with-icon .ant-notification-notice-message {
+  margin-left: 24px !important;
+  margin-bottom: 8px !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  font-size: 16px !important;
+  line-height: 1.5715 !important;
+}
+
+.ant-notification-notice-with-icon .ant-notification-notice-description {
+  margin-left: 24px !important;
+  color: rgba(0, 0, 0, 0.45) !important;
+  font-size: 14px !important;
+  line-height: 1.5715 !important;
+}
+
+/* Success notification styles */
+.ant-notification-notice-success {
+  border-left: 4px solid #52c41a !important;
+}
+
+.ant-notification-notice-success .ant-notification-notice-icon {
+  color: #52c41a !important;
+}
+
+/* Error notification styles */
+.ant-notification-notice-error {
+  border-left: 4px solid #ff4d4f !important;
+}
+
+.ant-notification-notice-error .ant-notification-notice-icon {
+  color: #ff4d4f !important;
+}
+
+/* Animation for notification */
+.ant-notification-notice-enter {
+  animation: antNotificationSlideUpIn 0.3s ease-out !important;
+}
+
+.ant-notification-notice-leave {
+  animation: antNotificationSlideUpOut 0.3s ease-out !important;
+}
+
+@keyframes antNotificationSlideUpIn {
+  0% {
+    transform: translateX(100%) !important;
+    opacity: 0 !important;
+  }
+  100% {
+    transform: translateX(0) !important;
+    opacity: 1 !important;
+  }
+}
+
+@keyframes antNotificationSlideUpOut {
+  0% {
+    transform: translateX(0) !important;
+    opacity: 1 !important;
+  }
+  100% {
+    transform: translateX(100%) !important;
+    opacity: 0 !important;
+  }
+}
+
+/* ---------- 🎯 Custom Toast Animation ---------- */
+@keyframes slideInRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
