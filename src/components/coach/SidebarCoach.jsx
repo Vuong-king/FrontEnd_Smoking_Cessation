@@ -42,7 +42,6 @@ function SidebarCoach({ user = {} }) {
       icon: <BarChartOutlined />,
       path: "/coach/stages",
     },
-
     {
       label: "Tiến trình",
       icon: <FieldTimeOutlined />,
@@ -61,11 +60,11 @@ function SidebarCoach({ user = {} }) {
   ];
 
   const dropdownItems = [
-    { key: "1", label: "My Account", disabled: true },
+    { key: "1", label: "Tài khoản", disabled: true },
     { type: "divider" },
     {
       key: "2",
-      label: "Profile",
+      label: "Hồ sơ cá nhân",
       icon: <UserOutlined />,
       onClick: () => {
         window.location.href = `/coach/profile/${user.id}`;
@@ -73,7 +72,7 @@ function SidebarCoach({ user = {} }) {
     },
     {
       key: "3",
-      label: "Logout",
+      label: "Đăng xuất",
       icon: <LogoutOutlined />,
       onClick: () => {
         localStorage.removeItem("token");
@@ -86,17 +85,17 @@ function SidebarCoach({ user = {} }) {
     <div
       className={`h-screen sticky top-0 overflow-y-auto sidebar-scroll ${
         collapsed ? "w-20" : "w-64"
-      } bg-gradient-to-b from-[#1a1333] via-[#2b2256] to-[#1a2a3a] flex flex-col transition-all duration-300`}>
+      } bg-white border-r border-gray-200 flex flex-col transition-all duration-300`}>
       {/* Collapse Button & Logo */}
       <div
         className={`${
           !collapsed
-            ? "flex justify-between items-center border-b border-[#1f1f1f]"
+            ? "flex justify-between items-center border-b border-gray-200"
             : "flex items-center justify-center"
         }`}>
         {!collapsed && (
           <Link to='/coach'>
-            <div className='text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500 px-4 py-3'>
+            <div className='text-xl font-bold text-blue-600 px-4 py-3'>
               COACH PANEL
             </div>
           </Link>
@@ -106,18 +105,18 @@ function SidebarCoach({ user = {} }) {
             type='text'
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
-            className='text-white'
+            className='text-gray-700'
           />
         </div>
       </div>
 
-      {/* Profile */}
+      {/* Profile Section */}
       <div
         className={`${
           collapsed
-            ? "px-4 py-3 border-b border-[#1f1f1f] flex flex-col items-center gap-2 hover:bg-[#232042] hover:cursor-pointer transition-colors duration-200"
-            : "px-4 py-3 border-b border-[#1f1f1f] flex items-center gap-3 hover:bg-[#232042] hover:cursor-pointer transition-colors duration-200"
-        }`}>
+            ? "px-4 py-3 border-b border-gray-200 flex flex-col items-center gap-2 hover:bg-gray-100"
+            : "px-4 py-3 border-b border-gray-200 flex items-center gap-3 hover:bg-gray-100"
+        } cursor-pointer transition-colors duration-200`}>
         <Dropdown menu={{ items: dropdownItems }}>
           <a onClick={(e) => e.preventDefault()}>
             <Space direction={collapsed ? "vertical" : "horizontal"}>
@@ -128,10 +127,10 @@ function SidebarCoach({ user = {} }) {
               />
               {!collapsed && (
                 <div>
-                  <div className='text-sm font-semibold'>
+                  <div className='text-sm font-semibold text-gray-800'>
                     {user.name || "Coach Name"}
                   </div>
-                  <div className='text-xs text-gray-400'>
+                  <div className='text-xs text-gray-500'>
                     {user.role || "Coach"}
                   </div>
                 </div>
@@ -141,7 +140,7 @@ function SidebarCoach({ user = {} }) {
         </Dropdown>
       </div>
 
-      {/* Menu */}
+      {/* Menu Items */}
       <nav className='flex-1 mt-4 flex flex-col items-center'>
         {menu.map((item) => {
           const isActive = location.pathname === item.path;
@@ -153,15 +152,13 @@ function SidebarCoach({ user = {} }) {
                 collapsed ? "justify-center w-12 h-12" : "px-6 py-2 w-11/12"
               } ${
                 isActive
-                  ? "bg-gray-200 text-[#232042] rounded-2xl"
-                  : "text-white hover:bg-[#232042] hover:text-[#1ecbe1] rounded-2xl"
+                  ? "bg-blue-100 text-blue-700 rounded-2xl"
+                  : "text-gray-700 hover:bg-gray-100 hover:text-blue-600 rounded-2xl"
               }`}
               style={{
                 minHeight: collapsed ? 48 : undefined,
               }}>
-              <span className={`text-lg ${isActive ? "text-[#232042]" : ""}`}>
-                {item.icon}
-              </span>
+              <span className='text-lg'>{item.icon}</span>
               {!collapsed && (
                 <span className='font-medium ml-3'>{item.label}</span>
               )}
