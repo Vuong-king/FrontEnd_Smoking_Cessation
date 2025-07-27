@@ -19,6 +19,7 @@ const useQuitPlans = () => {
     name: "",
     start_date: "",
     target_quit_date: "",
+    image: "",
   });
   const [errors, setErrors] = useState({
     user: "",
@@ -26,6 +27,7 @@ const useQuitPlans = () => {
     name: "",
     start_date: "",
     target_quit_date: "",
+    image: "",
   });
 
   useEffect(() => {
@@ -88,6 +90,7 @@ const useQuitPlans = () => {
       name: "",
       start_date: "",
       target_quit_date: "",
+      image: "",
     });
     setDateError("");
   };
@@ -103,6 +106,7 @@ const useQuitPlans = () => {
       name: plan.name,
       start_date: plan.start_date.split('T')[0],
       target_quit_date: plan.target_quit_date.split('T')[0],
+      image: plan.image || "",
     });
     setDateError("");
   };
@@ -121,6 +125,7 @@ const useQuitPlans = () => {
       name: !formData.name ? "Vui lòng nhập tên kế hoạch" : "",
       start_date: !formData.start_date ? "Vui lòng chọn ngày bắt đầu" : "",
       target_quit_date: !formData.target_quit_date ? "Vui lòng chọn ngày mục tiêu" : "",
+      image: "",
     };
     if (!validateDates(formData.start_date, formData.target_quit_date)) {
       newErrors.target_quit_date = "Ngày mục tiêu phải sau ngày bắt đầu";

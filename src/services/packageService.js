@@ -50,6 +50,17 @@ const PackageService = {
       throw error;
     }
   },
+
+  // PATCH /api/packages/:id/active - Toggle is_active
+  toggleActive: async (id, isActive) => {
+    try {
+      const response = await api.patch(`/packages/${id}/active`, { is_active: isActive });
+      return response.data;
+    } catch (error) {
+      console.error(`Error toggling active for package ${id}:`, error);
+      throw error;
+    }
+  },
 };
 
 export default PackageService;

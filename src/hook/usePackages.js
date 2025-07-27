@@ -107,15 +107,15 @@ const usePackages = () => {
     }
   };
 
-  // Delete package
-  const handleDelete = async (id) => {
+  // Toggle active status instead of delete
+  const handleToggleActive = async (pkg) => {
     setLoading(true);
     try {
-      await PackageService.deletePackage(id);
-      message.success("Xóa gói thành công!");
+      await PackageService.updatePackage(pkg._id, { is_active: !pkg.is_active });
+      message.success(!pkg.is_active ? "Kích hoạt gói thành công!" : "Đã ẩn gói thành công!");
       fetchPackages();
     } catch (err) {
-      message.error(err.response?.data?.message || "Không thể xóa gói");
+      message.error(err.response?.data?.message || "Không thể cập nhật trạng thái gói");
     } finally {
       setLoading(false);
     }
@@ -138,7 +138,7 @@ const usePackages = () => {
     openEditModal,
     openNewModal,
     handleSaveChanges,
-    handleDelete,
+    handleToggleActive,
     fetchPackages,
   };
 };

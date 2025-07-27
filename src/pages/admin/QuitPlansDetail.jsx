@@ -7,7 +7,7 @@ const { Title, Text } = Typography;
 const QuitPlanDetailPageAdmin = () => {
   const navigate = useNavigate();
   const { plan } = useLocation().state || {};
-
+  console.log(plan);
   if (!plan) {
     return (
       <Result
@@ -36,6 +36,7 @@ const QuitPlanDetailPageAdmin = () => {
           >
             Quay lại danh sách Kế Hoạch
           </Button>
+          <img src={plan.image} alt="plan" style={{ maxWidth: 500, maxHeight: 300, borderRadius: 4, border: '1px solid #eee', objectFit: 'cover' }} />
 
           <Title level={2} style={{ marginBottom: 8 }}>{plan.name}</Title>
           <Space direction="vertical" size="middle" style={{ marginBottom: 24 }}>

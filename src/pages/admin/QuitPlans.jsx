@@ -64,6 +64,19 @@ const QuitPlans = () => {
   // Table columns
   const columns = [
     {
+      title: "Hình ảnh",
+      dataIndex: "image",
+      key: "image",
+      render: (img, record) => {
+        const url = img || record.image_url;
+        return url ? (
+          <img src={url} alt="plan" style={{ maxWidth: 100, maxHeight: 80, borderRadius: 4, border: '1px solid #eee', objectFit: 'cover' }} />
+        ) : (
+          <span style={{ color: '#bbb' }}>Không có</span>
+        );
+      },
+    },
+    {
       title: "Tên Kế Hoạch",
       dataIndex: "name",
       key: "name",
@@ -174,6 +187,17 @@ const QuitPlans = () => {
         status={errors.target_quit_date ? "error" : ""}
       />
       {errors.target_quit_date && <div style={{ color: "#ff4d4f" }}>{errors.target_quit_date}</div>}
+      <Input
+        placeholder="Đường dẫn hình ảnh"
+        value={formData.image || ""}
+        onChange={e => setFormData({ ...formData, image: e.target.value })}
+        status={errors.image ? "error" : ""}
+      />
+      {formData.image && (
+        <div style={{ margin: '8px 0', textAlign: 'center' }}>
+          <img src={formData.image} alt="Preview" style={{ maxWidth: 200, maxHeight: 120, borderRadius: 8, border: '1px solid #eee' }} />
+        </div>
+      )}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <span>Công khai:</span>
         <Switch
