@@ -183,22 +183,79 @@ function ProgressUser() {
   if (userState.error) {
     return (
       <div className="w-full bg-gradient-to-br from-purple-50 via-white to-blue-50 min-h-screen py-8">
-        <div className="max-w-6xl mx-auto px-4">
-          <Alert
-            message="Lỗi tải dữ liệu"
-            description={userState.error}
-            type="error"
-            showIcon
-            className="mb-4"
-            action={
-              <button
-                onClick={fetchUserData}
-                className="text-blue-600 hover:text-blue-800 font-medium"
-              >
-                Thử lại
-              </button>
-            }
-          />
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center py-16">
+            {/* Icon Container */}
+            <div className="mb-8">
+              <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-orange-400 to-red-500 rounded-full shadow-2xl mb-6">
+                <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="max-w-2xl mx-auto">
+              <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                Cần liên kết với huấn luyện viên
+              </h1>
+              
+              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                Để theo dõi tiến trình cai thuốc một cách hiệu quả, bạn cần được hỗ trợ bởi một huấn luyện viên chuyên nghiệp. 
+                Huấn luyện viên sẽ giúp bạn xây dựng kế hoạch cá nhân và theo dõi quá trình cai thuốc.
+              </p>
+
+              {/* Feature Cards */}
+              <div className="grid md:grid-cols-3 gap-6 mb-10">
+                <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <h3 className="font-semibold text-gray-800 mb-2">Kế hoạch cá nhân</h3>
+                  <p className="text-sm text-gray-600">Lộ trình cai thuốc được thiết kế riêng cho bạn</p>
+                </div>
+
+                <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <h3 className="font-semibold text-gray-800 mb-2">Hỗ trợ chuyên môn</h3>
+                  <p className="text-sm text-gray-600">Được tư vấn bởi huấn luyện viên có kinh nghiệm</p>
+                </div>
+
+                <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                    <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </div>
+                  <h3 className="font-semibold text-gray-800 mb-2">Theo dõi tiến trình</h3>
+                  <p className="text-sm text-gray-600">Phân tích chi tiết quá trình cai thuốc</p>
+                </div>
+              </div>
+
+              {/* CTA Button */}
+              <div className="space-y-4">
+                <button
+                  onClick={() => window.location.href = '/user/quitplan'}
+                  className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                >
+                  <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  Chọn huấn luyện viên ngay
+                </button>
+                
+                <p className="text-sm text-gray-500">
+                  Quá trình này chỉ mất vài phút 
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -252,24 +309,5 @@ function ProgressUser() {
     </div>
   );
 }
-
-// Subcomponent cho từng thống kê
-const StatCard = ({ title, value, unit, description, color, Icon }) => (
-  <div
-    className={`text-center p-6 bg-gradient-to-b from-white to-${color}-50 rounded-xl border border-${color}-200 shadow-sm hover:shadow-md transition-all transform hover:-translate-y-1`}
-  >
-    <div
-      className={`inline-flex items-center justify-center w-16 h-16 bg-${color}-100 rounded-full mb-4`}
-    >
-      <Icon className={`text-2xl text-${color}-500`} />
-    </div>
-    <h4 className={`text-${color}-800 font-medium mb-3 text-lg`}>{title}</h4>
-    <p className={`text-3xl font-bold text-${color}-600`}>
-      {value}
-      <span className={`text-${color}-500 text-lg ml-1`}>{unit}</span>
-    </p>
-    <p className="text-xs text-gray-600 mt-2">{description}</p>
-  </div>
-);
 
 export default ProgressUser;
