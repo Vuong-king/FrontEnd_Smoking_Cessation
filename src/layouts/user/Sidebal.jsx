@@ -4,7 +4,7 @@ import {
   FieldTimeOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  SettingOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Space } from "antd";
 import { Cigarette, MessageCircleHeart, Trophy } from "lucide-react";
@@ -26,7 +26,7 @@ const menu = [
   { label: "Tiến triển", icon: <FieldTimeOutlined />, path: "/user/progress" },
   { label: "Thành tựu ", icon: <Trophy />, path: "/user/achievements" },
   { label: "Tư vấn ", icon: <MessageCircleHeart />, path: "/user/meet-session" },
-  { label: "Kế hoạch của tôi", icon: <SettingOutlined />, path: "/user/my-quit-plans" },
+  { label: "Kế hoạch của tôi", icon: <FileTextOutlined />, path: "/user/my-quit-plans" },
 ];
 
 function Sidebar() {
