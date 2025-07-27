@@ -5,6 +5,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   FileTextOutlined,
+  MoneyCollectOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Space } from "antd";
 import { Cigarette, MessageCircleHeart, Trophy } from "lucide-react";
@@ -25,8 +26,21 @@ const menu = [
   { label: "Kế Hoạch", icon: <CarryOutOutlined />, path: "/user/quitplan" },
   { label: "Tiến triển", icon: <FieldTimeOutlined />, path: "/user/progress" },
   { label: "Thành tựu ", icon: <Trophy />, path: "/user/achievements" },
-  { label: "Tư vấn ", icon: <MessageCircleHeart />, path: "/user/meet-session" },
-  { label: "Kế hoạch của tôi", icon: <FileTextOutlined />, path: "/user/my-quit-plans" },
+  {
+    label: "Tư vấn ",
+    icon: <MessageCircleHeart />,
+    path: "/user/meet-session",
+  },
+  {
+    label: "Kế hoạch của tôi",
+    icon: <FileTextOutlined />,
+    path: "/user/my-quit-plans",
+  },
+  {
+    label: "Mục tiêu tiết kiệm",
+    icon: <MoneyCollectOutlined />,
+    path: "/user/savings-goals",
+  },
 ];
 
 function Sidebar() {
@@ -54,13 +68,13 @@ function Sidebar() {
     {
       key: "2",
       label: "Profile",
-      icon: <FaUser className="text-purple-400" />,
+      icon: <FaUser className='text-purple-400' />,
       onClick: () => navigate(`/user/profile/${user.id}`),
     },
     {
       key: "4",
       label: "Logout",
-      icon: <MdLogout className="text-blue-400" />,
+      icon: <MdLogout className='text-blue-400' />,
       onClick: async () => {
         try {
           await logout();
@@ -75,28 +89,26 @@ function Sidebar() {
     <div
       className={`h-screen sticky top-0 ${
         collapsed ? "w-20" : "w-64"
-      } bg-white border-r border-gray-200 flex flex-col transition-all duration-300`}
-    >
+      } bg-white border-r border-gray-200 flex flex-col transition-all duration-300`}>
       {/* Collapse button */}
       <div
         className={`${
           !collapsed
             ? "flex justify-between items-center border-b border-gray-200 p-2"
             : "flex items-center justify-center p-2"
-        }`}
-      >
+        }`}>
         {!collapsed && (
-          <Link to="/">
-            <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500">
-              <ColourfulText text="EXHELA" />
+          <Link to='/'>
+            <div className='text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500'>
+              <ColourfulText text='EXHELA' />
             </div>
           </Link>
         )}
         <Button
-          type="text"
+          type='text'
           icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           onClick={() => setCollapsed(!collapsed)}
-          className="text-gray-700"
+          className='text-gray-700'
         />
       </div>
 
@@ -106,21 +118,23 @@ function Sidebar() {
           !collapsed
             ? "px-4 py-3 border-b border-gray-200 flex items-center gap-3"
             : "px-4 py-3 border-b border-gray-200 flex flex-col items-center gap-3"
-        } hover:bg-gray-100 hover:cursor-pointer transition-colors duration-200`}
-      >
+        } hover:bg-gray-100 hover:cursor-pointer transition-colors duration-200`}>
         <Dropdown menu={{ items }}>
           <a onClick={(e) => e.preventDefault()}>
             <Space>
               <Avatar
                 size={collapsed ? 32 : 40}
-                src={user?.avatar_url || "https://cdn-media.sforum.vn/storage/app/media/ve-capybara-2.jpg"}
+                src={
+                  user?.avatar_url ||
+                  "https://cdn-media.sforum.vn/storage/app/media/ve-capybara-2.jpg"
+                }
               />
               {!collapsed && (
                 <div>
-                  <div className="text-sm font-semibold text-gray-800">
+                  <div className='text-sm font-semibold text-gray-800'>
                     {user?.name || "Guest"}
                   </div>
-                  <div className="text-xs text-gray-500">{user?.email}</div>
+                  <div className='text-xs text-gray-500'>{user?.email}</div>
                 </div>
               )}
             </Space>
@@ -129,7 +143,7 @@ function Sidebar() {
       </div>
 
       {/* Menu */}
-      <nav className="flex-1 mt-4 flex flex-col items-center">
+      <nav className='flex-1 mt-4 flex flex-col items-center'>
         {menu.map((item) => {
           const isActive = location.pathname === item.path;
           return (
@@ -147,13 +161,12 @@ function Sidebar() {
               `}
               style={{
                 minHeight: collapsed ? 48 : undefined,
-              }}
-            >
+              }}>
               <span className={`text-lg ${isActive ? "text-[#232042]" : ""}`}>
                 {item.icon}
               </span>
               {!collapsed && (
-                <span className="font-medium ml-3">{item.label}</span>
+                <span className='font-medium ml-3'>{item.label}</span>
               )}
             </Link>
           );
