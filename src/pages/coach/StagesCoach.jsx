@@ -34,11 +34,60 @@ const StagesCoach = () => {
   const [openTaskModal, setOpenTaskModal] = useState(false);
   const [tasks, setTasks] = useState([]);
 
+  const fetchSmokingStatus = async (userId) => {
+    if (!userId) {
+      return "Không có dữ liệu (ID không hợp lệ)";
+    }
+
+    let idToFetch;
+    if (typeof userId === "object" && userId !== null && userId._id) {
+      idToFetch = userId._id.toString();
+    } else if (
+      typeof userId === "object" &&
+      userId !== null &&
+      userId.toString
+    ) {
+      idToFetch = userId.toString();
+    } else if (typeof userId === "string") {
+      idToFetch = userId;
+    } else {
+      return "Không có dữ liệu (ID không đúng định dạng)";
+    }
+
+    try {
+      const res = await api.get(`/smoking-status/student/${idToFetch}`);
+
+      if (res.data && res.data.cigarettes_per_day !== undefined) {
+        return res.data.cigarettes_per_day;
+      }
+
+      return "Không có dữ liệu";
+    } catch (err) {
+      if (err.response) {
+        if (err.response.status === 403) {
+          return "Không có quyền xem";
+        }
+        if (err.response.status === 404) {
+          return "Không có dữ liệu (chưa thiết lập)";
+        }
+      }
+      return "Không có dữ liệu (lỗi)";
+    }
+  };
+
   const fetchPlans = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/quitPlan");
-      setPlans(res.data);
+      const res = await api.get("/quitPlan/coach/my-plans");
+
+      const enrichedPlans = await Promise.all(
+        res.data.map(async (plan) => {
+          const smokingStatus = await fetchSmokingStatus(plan.user_id);
+          return { ...plan, smokingStatus };
+        })
+      );
+
+      setPlans(enrichedPlans);
     } catch (error) {
       message.error("Lỗi khi lấy danh sách kế hoạch");
     } finally {
@@ -58,11 +107,18 @@ const StagesCoach = () => {
   };
 
   const fetchTasks = async (stageId) => {
+    if (!stageId) {
+      message.error("Không thể lấy nhiệm vụ: ID giai đoạn không hợp lệ.");
+      setTasks([]);
+      return;
+    }
+
     try {
       const res = await api.get(`/tasks/stage/${stageId}`);
       setTasks(res.data);
     } catch (error) {
       message.error("Lỗi khi lấy danh sách nhiệm vụ");
+      setTasks([]);
     }
   };
 
@@ -74,21 +130,30 @@ const StagesCoach = () => {
         plan_id: selectedPlan._id,
         start_date: values.start_date.toISOString(),
         end_date: values.end_date.toISOString(),
-        stage_number: 1,
         cigarette_limit: Number(values.cigarette_limit),
       };
       await api.post("/stages", payload);
       message.success("Tạo giai đoạn thành công");
       setOpenStageModal(false);
       formStage.resetFields();
+      fetchPlans();
     } catch (error) {
-      message.error("Lỗi khi tạo giai đoạn");
+      message.error(
+        `Lỗi khi tạo giai đoạn: ${
+          error.response?.data?.message || error.message
+        }`
+      );
     }
   };
 
   const handleCreateTask = async () => {
     try {
       const values = await formTask.validateFields();
+      if (!selectedStage || !selectedStage._id) {
+        message.error("Vui lòng chọn một giai đoạn để thêm nhiệm vụ.");
+        return;
+      }
+
       await api.post("/tasks", {
         ...values,
         stage_id: selectedStage._id,
@@ -97,7 +162,11 @@ const StagesCoach = () => {
       formTask.resetFields();
       fetchTasks(selectedStage._id);
     } catch (error) {
-      message.error("Lỗi khi thêm nhiệm vụ");
+      message.error(
+        `Lỗi khi thêm nhiệm vụ: ${
+          error.response?.data?.message || error.message
+        }`
+      );
     }
   };
 
@@ -119,6 +188,10 @@ const StagesCoach = () => {
     {
       title: "Người dùng",
       render: (_, record) => record.user_id?.name || "Không rõ",
+    },
+    {
+      title: "Số điếu/ngày",
+      dataIndex: "smokingStatus",
     },
     {
       title: "Thời gian",
@@ -232,13 +305,12 @@ const StagesCoach = () => {
           </Form.Item>
           <Form.Item
             name='cigarette_limit'
-            label='Giới hạn số điếu thuốc'
+            label='Giới hạn số điếu mỗi ngày'
             rules={[
-              { required: true, message: "Vui lòng nhập giới hạn thuốc" },
+              { required: true, message: "Nhập giới hạn số điếu mỗi ngày" },
             ]}>
             <Input type='number' min={0} />
           </Form.Item>
-
           <Form.Item
             name='start_date'
             label='Ngày bắt đầu'
@@ -322,4 +394,5 @@ const StagesCoach = () => {
     </section>
   );
 };
+
 export default StagesCoach;
