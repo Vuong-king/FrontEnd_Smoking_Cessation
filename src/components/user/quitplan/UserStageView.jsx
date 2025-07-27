@@ -21,7 +21,7 @@ import SubscriptionUpgradeCard from "../../common/SubscriptionUpgradeCard";
 
 const { Title, Text, Paragraph } = Typography;
 
-const UserStageView = () => {
+const UserStageView = ({ quitPlan }) => {
   const { user } = useAuth();
   const [showRatingModal, setShowRatingModal] = useState(false);
 
@@ -31,19 +31,24 @@ const UserStageView = () => {
     canAccessCoach,
   } = useUserSubscription();
 
-  const {
-    currentStage,
-    myStages,
-    myQuitPlan,
-    stageTasks,
-    loading,
-    error,
-    progress,
-    completedCount,
-    completeTask,
-    moveToNextStage,
-    refetch,
-  } = useUserQuitPlan();
+  // Nếu có prop quitPlan thì ưu tiên dùng, nếu không thì lấy từ hook
+  const hookData = useUserQuitPlan();
+  const myQuitPlan = quitPlan || hookData.myQuitPlan;
+  const myStages = quitPlan?.stages || hookData.myStages;
+  const currentStage = quitPlan?.currentStage || hookData.currentStage;
+  const stageTasks = quitPlan?.stageTasks || hookData.stageTasks;
+  const loading = hookData.loading;
+  const error = hookData.error;
+  const progress = hookData.progress;
+  const completedCount = hookData.completedCount;
+  const completeTask = hookData.completeTask;
+  const moveToNextStage = hookData.moveToNextStage;
+  const refetch = hookData.refetch;
+
+  console.log('UserStageView/quitPlan:', quitPlan);
+  console.log('UserStageView/myStages:', myStages);
+  console.log('UserStageView/currentStage:', currentStage);
+  console.log('UserStageView/stageTasks:', stageTasks);
 
   const { hasRated, setHasRated } = useCoachRating(
     myQuitPlan?.coach_id?._id,
@@ -52,7 +57,7 @@ const UserStageView = () => {
   );
 
   const allStagesCompleted =
-    myStages.length > 0 && myStages.every((stage) => stage.is_completed);
+    myStages && myStages.length > 0 && myStages.every((stage) => stage.is_completed);
 
   useEffect(() => {
     refetch();

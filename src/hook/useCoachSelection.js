@@ -109,8 +109,9 @@ export const useCoachSelection = () => {
         : null;
 
       // Check if approved plan has stages
+      let hasStages = false;
       if (approvedPlan) {
-        const hasStages = await checkPlanHasStages(approvedPlan._id);
+        hasStages = await checkPlanHasStages(approvedPlan._id);
         if (!hasStages) {
           approvedPlan = null;
         }
@@ -120,19 +121,14 @@ export const useCoachSelection = () => {
       setQuitPlanWithoutCoach(planWithoutCoach);
 
       // Check for pending request
-      const pendingReq = Array.isArray(requests)
-        ? requests.find(
-            (req) =>
-              req.status === "pending" ||
-              (req.status === "approved" && !approvedPlan) ||
-              req.status === "created"
-          )
-        : requests?.status === "pending" ||
-          (requests?.status === "approved" && !approvedPlan) ||
-          requests?.status === "created"
-        ? requests
-        : null;
-
+      let pendingReq = null;
+      if (!approvedPlan) {
+        pendingReq = Array.isArray(requests)
+          ? requests.find((req) => req.status === "pending" || req.status === "created")
+          : (requests?.status === "pending" || requests?.status === "created")
+          ? requests
+          : null;
+      }
       setPendingRequest(pendingReq);
       setError(null);
     } catch (err) {
@@ -238,7 +234,7 @@ export const useCoachSelection = () => {
       if (!isRefreshing) {
         refreshDataRef.current?.();
       }
-    }, 5000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [userId, pendingRequest, userQuitPlan, isRefreshing]);
