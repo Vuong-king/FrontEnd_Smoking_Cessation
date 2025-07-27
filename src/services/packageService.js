@@ -14,9 +14,15 @@ const PackageService = {
 
   // GET /api/packages - Get All Package
   getAllPackages: async () => {
+    const response = await api.get('/packages');
+    return response.data.packages;
+  },
+
+  getAllPackagesAdmin: async () => {
     const response = await api.get('/packages/admin/all');
     return response.data.packages;
   },
+
 
   // GET /api/packages/:id - Get Package By Id
   getPackageById: async (id) => {

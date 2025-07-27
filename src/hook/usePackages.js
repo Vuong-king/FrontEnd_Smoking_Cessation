@@ -24,7 +24,7 @@ const usePackages = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await PackageService.getAllPackages();
+      const data = await PackageService.getAllPackagesAdmin();
       setPackages(data);
     } catch (err) {
       setError(err.response?.data?.message || "Không thể tải gói dịch vụ");
