@@ -17,7 +17,8 @@ const useStages = (planId) => {
     stage_number: '',
     start_date: '',
     end_date: '',
-    is_completed: false
+    is_completed: false,
+    cigarette_limit: ""
   });
   const [errors, setErrors] = useState({
     plan_id: '',
@@ -25,7 +26,8 @@ const useStages = (planId) => {
     description: '',
     stage_number: '',
     start_date: '',
-    end_date: ''
+    end_date: '',
+    cigarette_limit: ""
   });
   const [isNew, setIsNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -76,7 +78,8 @@ const useStages = (planId) => {
       stage_number: stage.stage_number,
       start_date: stage.start_date ? new Date(stage.start_date).toISOString().split('T')[0] : '',
       end_date: stage.end_date ? new Date(stage.end_date).toISOString().split('T')[0] : '',
-      is_completed: stage.is_completed
+      is_completed: stage.is_completed,
+      cigarette_limit: stage.cigarette_limit !== undefined ? stage.cigarette_limit : "",
     });
   };
 
@@ -89,7 +92,8 @@ const useStages = (planId) => {
       stage_number: '',
       start_date: '',
       end_date: '',
-      is_completed: false
+      is_completed: false,
+      cigarette_limit: "",
     });
     setSelectedStage({});
   };
@@ -102,7 +106,13 @@ const useStages = (planId) => {
       description: !editedStage.description ? 'Vui lòng nhập mô tả' : '',
       stage_number: !editedStage.stage_number ? 'Vui lòng nhập số thứ tự giai đoạn' : '',
       start_date: !editedStage.start_date ? 'Vui lòng chọn ngày bắt đầu' : '',
-      end_date: !editedStage.end_date ? 'Vui lòng chọn ngày kết thúc' : ''
+      end_date: !editedStage.end_date ? 'Vui lòng chọn ngày kết thúc' : '',
+      cigarette_limit:
+        editedStage.cigarette_limit === '' || editedStage.cigarette_limit === undefined || isNaN(Number(editedStage.cigarette_limit))
+          ? 'Vui lòng nhập giới hạn điếu thuốc'
+          : Number(editedStage.cigarette_limit) < 0
+          ? 'Giới hạn điếu thuốc phải >= 0'
+          : '',
     };
     setErrors(newErrors);
     return !Object.values(newErrors).some(error => error !== '');

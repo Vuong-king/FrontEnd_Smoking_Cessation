@@ -4,6 +4,7 @@ import {
   Button,
   Spin,
   Popconfirm,
+  Switch,
 } from "antd";
 import {
   PlusOutlined,
@@ -13,6 +14,7 @@ import {
 } from "@ant-design/icons";
 import usePackages from "../../hook/usePackages";
 import PackageModal from "./PackageModal";
+import ColourfulText from "../../components/ui/ColourfulText";
 
 const PackageItem = () => {
   const {
@@ -27,7 +29,7 @@ const PackageItem = () => {
     openNewModal,
     openEditModal,
     handleSaveChanges,
-    handleDelete,
+    handleToggleActive,
   } = usePackages();
 
   const columns = [
@@ -88,7 +90,7 @@ const PackageItem = () => {
       title: "Hành động",
       key: "actions",
       render: (_, record) => (
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <Button
             icon={<EditOutlined />}
             type="link"
@@ -96,17 +98,13 @@ const PackageItem = () => {
           >
             Sửa
           </Button>
-          <Popconfirm
-            title="Xác nhận xoá?"
-            icon={<ExclamationCircleOutlined style={{ color: "red" }} />}
-            okText="Xoá"
-            cancelText="Huỷ"
-            onConfirm={() => handleDelete(record._id)}
-          >
-            <Button danger type="link" icon={<DeleteOutlined />}>
-              Xoá
-            </Button>
-          </Popconfirm>
+          <Switch
+            checked={record.is_active}
+            checkedChildren="Đang bật"
+            unCheckedChildren="Đang tắt"
+            onChange={() => handleToggleActive(record)}
+            style={{ minWidth: 70 }}
+          />
         </div>
       ),
     },
@@ -114,6 +112,14 @@ const PackageItem = () => {
 
   return (
     <div style={{ padding: 40 }}>
+      <div style={{ textAlign: "center", marginBottom: 40 }}>
+        <h2 style={{ fontSize: 32, fontWeight: 700, marginBottom: 8, color: "black" }}>
+          Quản lý <ColourfulText text="Gói" />
+        </h2>
+        <p style={{ color: "#666", fontSize: 18 }}>
+          Xem xét và quản lý gói của người dùng nền tảng
+        </p>
+      </div>
       <div
         style={{
           display: "flex",
